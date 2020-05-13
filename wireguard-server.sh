@@ -723,7 +723,7 @@ if [ ! -f "$WG_CONFIG" ]; then
     if [ "$INSTALL_COREDNS" = "y" ]; then
       # Installation Begins Here
       CHECK_ARCHITECTURE=$(dpkg --print-architecture)
-      FILE_NAME=$(coredns_1.6.9_linux_$CHECK_ARCHITECTURE.tgz)
+      FILE_NAME=coredns_1.6.9_linux_$CHECK_ARCHITECTURE.tgz
       curl https://github.com/coredns/coredns/releases/download/v1.6.9/$FILE_NAME -o /etc/wireguard/$FILE_NAME
       tar xvzf /etc/wireguard/$FILE_NAME
       rm -f /etc/wireguard/$FILE_NAME
