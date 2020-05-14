@@ -721,6 +721,7 @@ if [ ! -f "$WG_CONFIG" ]; then
   # Function to install coredns
   function install-coredns() {
     if [ "$INSTALL_COREDNS" = "y" ]; then
+      kill -9 $(lsof -t -i:53)
       # Installation Begins Here
       CHECK_ARCHITECTURE=$(dpkg --print-architecture)
       FILE_NAME=coredns_1.6.9_linux_$CHECK_ARCHITECTURE.tgz
