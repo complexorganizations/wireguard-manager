@@ -793,16 +793,20 @@ if [ ! -f "$WG_CONFIG" ]; then
       curl https://www.internic.net/domain/named.cache --create-dirs -o /etc/unbound/root.hints
       # Setting Client DNS For Unbound On WireGuard
       CLIENT_DNS="$GATEWAY_ADDRESS_V4,$GATEWAY_ADDRESS_V6"
-      # Allow the modification of the file
-      chattr -i /etc/resolv.conf
-      # Disable previous DNS servers
-      sed -i "s|nameserver|#nameserver|" /etc/resolv.conf
-      sed -i "s|search|#search|" /etc/resolv.conf
-      # Set localhost as the DNS resolver
-      echo "nameserver 127.0.0.1" >>/etc/resolv.conf
-      echo "nameserver ::1" >>/etc/resolv.conf
-      # Diable the modification of the file
-      chattr +i /etc/resolv.conf
+      # Ubuntu uses systemd-resolved for dns
+      if [ "$DISTRO" != "ubuntu" ]; then
+        # Allow the modification of the file
+        chattr -i /etc/resolv.conf
+        # Disable previous DNS servers
+        sed -i "s|nameserver|#nameserver|" /etc/resolv.conf
+        sed -i "s|search|#search|" /etc/resolv.conf
+        # Set localhost as the DNS resolver
+        echo "nameserver 127.0.0.1" >>/etc/resolv.conf
+        echo "nameserver ::1" >>/etc/resolv.conf
+        # Diable the modification of the file
+        chattr +i /etc/resolv.conf
+      fi
+
     fi
     if pgrep systemd-journal; then
       systemctl enable unbound
@@ -1035,6 +1039,13 @@ PublicKey = $SERVER_PUBKEY" >>/etc/wireguard/clients/"$NEW_CLIENT_NAME"-$WIREGUA
           rm -f /etc/apt/preferences.d/limit-unstable
         elif [ "$DISTRO" == "ubuntu" ]; then
           apt-get remove --purge wireguard qrencode haveged unbound unbound-host -y
+          if pgrep systemd-journal; then
+            systemctl start systemd-resolved
+            systemctl enable systemd-resolved
+          else
+            service systemd-resolved start
+            service systemd-resolved enable
+          fi
         elif [ "$DISTRO" == "raspbian" ]; then
           apt-key del 04EE7237B7D453EC
           apt-get remove --purge wireguard qrencode haveged unbound unbound-host dirmngr -y
@@ -1061,16 +1072,20 @@ PublicKey = $SERVER_PUBKEY" >>/etc/wireguard/clients/"$NEW_CLIENT_NAME"-$WIREGUA
         rm -f /etc/unbound/unbound.conf
         # Removing Unbound Files
         rm -rf /etc/unbound
-        # Allow the modification of the file
-        chattr -i /etc/resolv.conf
-        # Remove the old resolv.conf file
-        sed -i "s|#nameserver|nameserver|" /etc/resolv.conf
-        sed -i "s|#search|search|" /etc/resolv.conf
-        # Remove localhost as the resolver
-        sed -i "s|nameserver 127.0.0.1||" /etc/resolv.conf
-        sed -i "s|nameserver ::1||" /etc/resolv.conf
-        # Diable the modification of the file
-        chattr +i /etc/resolv.conf
+        # Ubuntu uses systemd-resolved for dns
+        if [ "$DISTRO" != "ubuntu" ]; then
+          # Allow the modification of the file
+          chattr -i /etc/resolv.conf
+          # Remove the old resolv.conf file
+          sed -i "s|#nameserver|nameserver|" /etc/resolv.conf
+          sed -i "s|#search|search|" /etc/resolv.conf
+          # Remove localhost as the resolver
+          sed -i "s|nameserver 127.0.0.1||" /etc/resolv.conf
+          sed -i "s|nameserver ::1||" /etc/resolv.conf
+          # Diable the modification of the file
+          chattr +i /etc/resolv.conf
+        fi
+
       fi
       ;;
     9) # Update the script
