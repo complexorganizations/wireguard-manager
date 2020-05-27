@@ -1,7 +1,7 @@
 #!/bin/bash
 # https://github.com/complexorganizations/wireguard-manager
 
-# Require script to be run as root (or with sudo)
+# Require script to be run as root
 function super-user-check() {
   if [ "$EUID" -ne 0 ]; then
     echo "You need to run this script as super user."
@@ -206,7 +206,7 @@ function headless-install() {
     SERVER_HOST_SETTINGS=${SERVER_HOST_SETTINGS:-1}
     DISABLE_HOST_SETTINGS=${DISABLE_HOST_SETTINGS:-1}
     CLIENT_ALLOWED_IP_SETTINGS=${CLIENT_ALLOWED_IP_SETTINGS:-1}
-    INSTALL_UNBOUND=${INSTALL_UNBOUND:-y}
+    INSTALL_COREDNS=${INSTALL_COREDNS:-y}
     CLIENT_NAME=${CLIENT_NAME:-client}
   fi
 }
@@ -531,6 +531,11 @@ if [ ! -f "$WG_CONFIG" ]; then
 
   # Would you like to install Unbound.
   function ask-install-dns() {
+    if [ "$INSTALL_UNBOUND" == "" ]; then
+      # shellcheck disable=SC2034
+      read -rp "Do You Want To Install Unbound (y/n): " -e -i y INSTALL_UNBOUND
+    fi
+    if [ "$INSTALL_UNBOUND" == "n" ]; then
       echo "Which DNS do you want to use with the VPN?"
       echo "  1) IPengine (Recommended)"
       echo "  2) AdGuard"
@@ -573,6 +578,7 @@ if [ ! -f "$WG_CONFIG" ]; then
         read -rp "Custom DNS (IPv4 IPv6):" -e -i "167.172.156.151,161.35.62.143,2604:a880:400:d0::97:9001,2604:a880:400:d0::177d:8001" CLIENT_DNS
         ;;
       esac
+    fi
   }
 
   # Ask To Install DNS
@@ -717,6 +723,38 @@ if [ ! -f "$WG_CONFIG" ]; then
   # Kernel Version
   install-kernel-headers
 
+  # Function to install coredns
+  function install-coredns() {
+    if [ "$INSTALL_COREDNS" = "y" ]; then
+      mkdir -p /etc/coredns
+      CHECK_ARCHITECTURE=$(dpkg --print-architecture)
+      cd /etc/wireguard/
+      curl -LJO https://github.com/coredns/coredns/releases/download/v1.6.9/coredns_1.6.9_linux_$CHECK_ARCHITECTURE.tgz
+      tar xvzf /etc/wireguard/coredns_1.6.9_linux_$CHECK_ARCHITECTURE.tgz
+      rm -f /etc/wireguard/coredns_1.6.9_linux_$CHECK_ARCHITECTURE.tgz
+      # Setting Client DNS For Unbound On WireGuard
+      CLIENT_DNS="$GATEWAY_ADDRESS_V4,$GATEWAY_ADDRESS_V6"
+      # Allow the modification of the file
+      chattr -i /etc/resolv.conf
+      mv /etc/resolv.conf /etc/resolv.conf.old
+      # Set localhost as the DNS resolver
+      echo "nameserver 127.0.0.1" >>/etc/resolv.conf
+      echo "nameserver ::1" >>/etc/resolv.conf
+      # Stop the modification of the file
+      chattr +i /etc/resolv.conf
+    fi
+    if pgrep systemd-journal; then
+      systemctl enable unbound
+      systemctl restart unbound
+    else
+      service unbound enable
+      service unbound restart
+    fi
+  }
+
+  # Running Install Unbound
+  install-unbound
+
   # WireGuard Set Config
   function wireguard-setconf() {
     SERVER_PRIVKEY=$(wg genkey)
@@ -760,6 +798,8 @@ Endpoint = $SERVER_HOST:$SERVER_PORT
 PersistentKeepalive = $NAT_CHOICE
 PresharedKey = $PRESHARED_KEY
 PublicKey = $SERVER_PUBKEY" >>/etc/wireguard/clients/"$CLIENT_NAME"-$WIREGUARD_PUB_NIC.conf
+    # Clear
+    clear
     # Generate QR Code
     qrencode -t ansiutf8 -l L </etc/wireguard/clients/"$CLIENT_NAME"-$WIREGUARD_PUB_NIC.conf
     # Echo the file
@@ -917,31 +957,44 @@ PublicKey = $SERVER_PUBKEY" >>/etc/wireguard/clients/"$NEW_CLIENT_NAME"-$WIREGUA
           # Disable WireGuard
           systemctl disable wg-quick@$WIREGUARD_PUB_NIC
           wg-quick down $WIREGUARD_PUB_NIC
+          # Disable Unbound
+          systemctl disable unbound
+          systemctl stop unbound
         else
           # Disable WireGuard
           service wg-quick@$WIREGUARD_PUB_NIC disable
           wg-quick down $WIREGUARD_PUB_NIC
+          # Disable Unbound
+          service unbound disable
+          service unbound stop
         fi
         if [ "$DISTRO" == "centos" ]; then
-          yum remove wireguard qrencode haveged -y
+          yum remove wireguard qrencode haveged unbound unbound-host -y
         elif [ "$DISTRO" == "debian" ]; then
-          apt-get remove --purge wireguard qrencode haveged -y
+          apt-get remove --purge wireguard qrencode haveged unbound unbound-host -y
           rm -f /etc/apt/sources.list.d/unstable.list
           rm -f /etc/apt/preferences.d/limit-unstable
         elif [ "$DISTRO" == "ubuntu" ]; then
-          apt-get remove --purge wireguard qrencode haveged -y
+          apt-get remove --purge wireguard qrencode haveged unbound unbound-host -y
+          if pgrep systemd-journal; then
+            systemctl enable systemd-resolved
+            systemctl restart systemd-resolved
+          else
+            service systemd-resolved enable
+            service systemd-resolved restart
+          fi
         elif [ "$DISTRO" == "raspbian" ]; then
           apt-key del 04EE7237B7D453EC
-          apt-get remove --purge wireguard qrencode haveged dirmngr -y
+          apt-get remove --purge wireguard qrencode haveged unbound unbound-host dirmngr -y
           rm -f /etc/apt/sources.list.d/unstable.list
           rm -f /etc/apt/preferences.d/limit-unstable
         elif [ "$DISTRO" == "arch" ]; then
-          pacman -Rs wireguard qrencode haveged -y
+          pacman -Rs wireguard qrencode haveged unbound unbound-host -y
         elif [ "$DISTRO" == "fedora" ]; then
-          dnf remove wireguard qrencode haveged -y
+          dnf remove wireguard qrencode haveged unbound -y
           rm -f /etc/yum.repos.d/wireguard.repo
         elif [ "$DISTRO" == "rhel" ]; then
-          yum remove wireguard qrencode haveged -y
+          yum remove wireguard qrencode haveged unbound unbound-host -y
           rm -f /etc/yum.repos.d/wireguard.repo
         fi
         # Removing Wireguard User Config Files
@@ -952,6 +1005,18 @@ PublicKey = $SERVER_PUBKEY" >>/etc/wireguard/clients/"$NEW_CLIENT_NAME"-$WIREGUA
         rm -f /etc/sysctl.d/wireguard.conf
         # Removing wireguard config
         rm -f /etc/wireguard/$WIREGUARD_PUB_NIC.conf
+        # Removing Unbound Config
+        rm -f /etc/unbound/unbound.conf
+        # Removing Unbound Files
+        rm -rf /etc/unbound
+        # Allow the modification of the file
+        chattr -i /etc/resolv.conf
+        # remove resolv.conf
+        rm -f /etc/resolv.conf
+        # Moving to resolv.conf
+        mv /etc/resolv.conf.old /etc/resolv.conf
+        # Stop the modification of the file
+        chattr +i /etc/resolv.conf
       fi
       ;;
     9) # Update the script
