@@ -226,7 +226,7 @@ if [ ! -f "$WG_CONFIG" ]; then
     echo "  1) 10.8.0.0/24 (Recommended)"
     echo "  2) 10.0.0.0/24"
     echo "  3) Custom (Advanced)"
-    until [[ "$IPV4_SUBNET_SETTINGS" =~ ^[1-3]$ ]]; do
+    until [ "$IPV4_SUBNET_SETTINGS" =~ ^[1-3]$ ]; do
       read -rp "Subnetwork choice [1-3]: " -e -i 1 IPV4_SUBNET_SETTINGS
     done
     # Apply port response
@@ -252,7 +252,7 @@ if [ ! -f "$WG_CONFIG" ]; then
     echo "  1) fd42:42:42::0/64 (Recommended)"
     echo "  2) fd86:ea04:1115::0/64"
     echo "  3) Custom (Advanced)"
-    until [[ "$IPV6_SUBNET_SETTINGS" =~ ^[1-3]$ ]]; do
+    until [ "$IPV6_SUBNET_SETTINGS" =~ ^[1-3]$ ]; do
       read -rp "Subnetwork choice [1-3]: " -e -i 1 IPV6_SUBNET_SETTINGS
     done
     # Apply port response
@@ -291,7 +291,7 @@ if [ ! -f "$WG_CONFIG" ]; then
     echo "  1) Curl (Recommended)"
     echo "  2) IP (Advanced)"
     echo "  3) Custom (Advanced)"
-    until [[ "$SERVER_HOST_V4_SETTINGS" =~ ^[1-3]$ ]]; do
+    until [ "$SERVER_HOST_V4_SETTINGS" =~ ^[1-3]$ ]; do
       read -rp "ipv4 choice [1-3]: " -e -i 1 SERVER_HOST_V4_SETTINGS
     done
     # Apply port response
@@ -317,7 +317,7 @@ if [ ! -f "$WG_CONFIG" ]; then
     echo "  1) Curl (Recommended)"
     echo "  2) IP (Advanced)"
     echo "  3) Custom (Advanced)"
-    until [[ "$SERVER_HOST_V6_SETTINGS" =~ ^[1-3]$ ]]; do
+    until [ "$SERVER_HOST_V6_SETTINGS" =~ ^[1-3]$ ]; do
       read -rp "ipv6 choice [1-3]: " -e -i 1 SERVER_HOST_V6_SETTINGS
     done
     # Apply port response
@@ -342,7 +342,7 @@ if [ ! -f "$WG_CONFIG" ]; then
     echo "How would you like to detect IPV6?"
     echo "  1) IP (Recommended)"
     echo "  2) Custom (Advanced)"
-    until [[ "$SERVER_PUB_NIC_SETTINGS" =~ ^[1-2]$ ]]; do
+    until [ "$SERVER_PUB_NIC_SETTINGS" =~ ^[1-2]$ ]; do
       read -rp "nic choice [1-2]: " -e -i 1 SERVER_PUB_NIC_SETTINGS
     done
     # Apply port response
@@ -365,7 +365,7 @@ if [ ! -f "$WG_CONFIG" ]; then
     echo "  1) 51820 (Recommended)"
     echo "  2) Custom (Advanced)"
     echo "  3) Random [1024-65535]"
-    until [[ "$SERVER_PORT_SETTINGS" =~ ^[1-3]$ ]]; do
+    until [ "$SERVER_PORT_SETTINGS" =~ ^[1-3]$ ]; do
       read -rp "Port choice [1-3]: " -e -i 1 SERVER_PORT_SETTINGS
     done
     # Apply port response
@@ -374,7 +374,7 @@ if [ ! -f "$WG_CONFIG" ]; then
       SERVER_PORT="51820"
       ;;
     2)
-      until [[ "$SERVER_PORT" =~ ^[0-9]+$ ]] && [ "$SERVER_PORT" -ge 1024 ] && [ "$SERVER_PORT" -le 65535 ]; do
+      until [ "$SERVER_PORT" =~ ^[0-9]+$ ] && [ "$SERVER_PORT" -ge 1024 ] && [ "$SERVER_PORT" -le 65535 ]; do
         read -rp "Custom port [1024-65535]: " -e -i 51820 SERVER_PORT
       done
       ;;
@@ -394,7 +394,7 @@ if [ ! -f "$WG_CONFIG" ]; then
     echo "  1) 25 (Default)"
     echo "  2) Custom (Advanced)"
     echo "  3) Random [1-25]"
-    until [[ "$NAT_CHOICE_SETTINGS" =~ ^[1-3]$ ]]; do
+    until [ "$NAT_CHOICE_SETTINGS" =~ ^[1-3]$ ]; do
       read -rp "Nat Choice [1-3]: " -e -i 1 NAT_CHOICE_SETTINGS
     done
     # Nat Choices
@@ -403,7 +403,7 @@ if [ ! -f "$WG_CONFIG" ]; then
       NAT_CHOICE="25"
       ;;
     2)
-      until [[ "$NAT_CHOICE" =~ ^[0-9]+$ ]] && [ "$NAT_CHOICE" -ge 0 ] && [ "$NAT_CHOICE" -le 25 ]; do
+      until [ "$NAT_CHOICE" =~ ^[0-9]+$ ] && [ "$NAT_CHOICE" -ge 0 ] && [ "$NAT_CHOICE" -le 25 ]; do
         read -rp "Custom NAT [0-25]: " -e -i 25 NAT_CHOICE
       done
       ;;
@@ -422,7 +422,7 @@ if [ ! -f "$WG_CONFIG" ]; then
     echo "  1) 1280 (Recommended)"
     echo "  2) 1420"
     echo "  3) Custom (Advanced)"
-    until [[ "$MTU_CHOICE_SETTINGS" =~ ^[1-3]$ ]]; do
+    until [ "$MTU_CHOICE_SETTINGS" =~ ^[1-3]$ ]; do
       read -rp "MTU choice [1-3]: " -e -i 1 MTU_CHOICE_SETTINGS
     done
     case $MTU_CHOICE_SETTINGS in
@@ -433,7 +433,7 @@ if [ ! -f "$WG_CONFIG" ]; then
       MTU_CHOICE="1420"
       ;;
     3)
-      until [[ "$MTU_CHOICE" =~ ^[0-9]+$ ]] && [ "$MTU_CHOICE" -ge 0 ] && [ "$MTU_CHOICE" -le 1500 ]; do
+      until [ "$MTU_CHOICE" =~ ^[0-9]+$ ] && [ "$MTU_CHOICE" -ge 0 ] && [ "$MTU_CHOICE" -le 1500 ]; do
         read -rp "Custom MTU [0-1500]: " -e -i 1280 MTU_CHOICE
       done
       ;;
@@ -449,7 +449,7 @@ if [ ! -f "$WG_CONFIG" ]; then
     echo "  1) IPv4 (Recommended)"
     echo "  2) IPv6"
     echo "  3) Custom (Advanced)"
-    until [[ "$SERVER_HOST_SETTINGS" =~ ^[1-3]$ ]]; do
+    until [ "$SERVER_HOST_SETTINGS" =~ ^[1-3]$ ]; do
       read -rp "IP Choice [1-3]: " -e -i 1 SERVER_HOST_SETTINGS
     done
     case $SERVER_HOST_SETTINGS in
@@ -474,7 +474,7 @@ if [ ! -f "$WG_CONFIG" ]; then
     echo "  1) No (Recommended)"
     echo "  2) Disable IPV4"
     echo "  3) Disable IPV6"
-    until [[ "$DISABLE_HOST_SETTINGS" =~ ^[1-3]$ ]]; do
+    until [ "$DISABLE_HOST_SETTINGS" =~ ^[1-3]$ ]; do
       read -rp "Disable Host Choice [1-3]: " -e -i 1 DISABLE_HOST_SETTINGS
     done
     case $DISABLE_HOST_SETTINGS in
@@ -510,7 +510,7 @@ if [ ! -f "$WG_CONFIG" ]; then
     echo "  1) Everything (Recommended)"
     echo "  2) Exclude Private IPs"
     echo "  3) Custom (Advanced)"
-    until [[ "$CLIENT_ALLOWED_IP_SETTINGS" =~ ^[1-3]$ ]]; do
+    until [ "$CLIENT_ALLOWED_IP_SETTINGS" =~ ^[1-3]$ ]; do
       read -rp "Client Allowed IP Choice [1-3]: " -e -i 1 CLIENT_ALLOWED_IP_SETTINGS
     done
     case $CLIENT_ALLOWED_IP_SETTINGS in
@@ -546,7 +546,7 @@ if [ ! -f "$WG_CONFIG" ]; then
       echo "  7) Quad9"
       echo "  8) FDN"
       echo "  9) Custom (Advanced)"
-      until [[ "$CLIENT_DNS_SETTINGS" =~ ^[1-9]$ ]]; do
+      until [ "$CLIENT_DNS_SETTINGS" =~ ^[1-9]$ ]; do
         read -rp "DNS [1-9]: " -e -i 1 CLIENT_DNS_SETTINGS
       done
       case $CLIENT_DNS_SETTINGS in
@@ -890,7 +890,7 @@ else
     echo "   7) Reinstall WireGuard Interface"
     echo "   8) Uninstall WireGuard Interface"
     echo "   9) Update this script"
-    until [[ "$WIREGUARD_OPTIONS" =~ ^[1-9]$ ]]; do
+    until [ "$WIREGUARD_OPTIONS" =~ ^[1-9]$ ]; do
       read -rp "Select an Option [1-9]: " -e -i 1 WIREGUARD_OPTIONS
     done
     case $WIREGUARD_OPTIONS in
@@ -980,13 +980,13 @@ PublicKey = $SERVER_PUBKEY" >>/etc/wireguard/clients/"$NEW_CLIENT_NAME"-$WIREGUA
       cat $WG_CONFIG | grep start | awk '{ print $2 }'
       read -rp "Type in Client Name : " -e REMOVECLIENT
       read -rp "Are you sure you want to remove $REMOVECLIENT ? (y/n): " -n 1 -r
-      if [[ $REPLY =~ ^[Yy]$ ]]; then
+      if [ $REPLY =~ ^[Yy]$ ]; then
         # shellcheck disable=SC1117
         echo sed -i "/\# $REMOVECLIENT start/,/\# $REMOVECLIENT end/d" $WG_CONFIG
         rm /etc/wireguard/clients/"$REMOVECLIENT"-$WIREGUARD_PUB_NIC.conf
         echo "Client named $REMOVECLIENT has been removed."
       fi
-      if [[ $REPLY =~ ^[Nn]$ ]]; then
+      if [ $REPLY =~ ^[Nn]$ ]; then
         exit
       fi
       if pgrep systemd-journal; then
