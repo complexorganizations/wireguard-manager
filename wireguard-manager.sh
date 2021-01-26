@@ -70,9 +70,9 @@ function docker-check() {
     DOCKER_KERNEL_VERSION_LIMIT=5.6
     DOCKER_KERNEL_CURRENT_VERSION=$(uname -r | cut -c1-3)
     if (($(echo "$KERNEL_CURRENT_VERSION >= $KERNEL_VERSION_LIMIT" | bc -l))); then
-      echo "Correct: Kernel version, $KERNEL_CURRENT_VERSION" >/dev/null 2>&1
+      echo "Correct: Docker Kernel version, $KERNEL_CURRENT_VERSION" >/dev/null 2>&1
     else
-      echo "Error: Kernel version $DOCKER_KERNEL_CURRENT_VERSION please update to $DOCKER_KERNEL_VERSION_LIMIT" >&2
+      echo "Error: Docker Kernel version $DOCKER_KERNEL_CURRENT_VERSION please update to $DOCKER_KERNEL_VERSION_LIMIT" >&2
       exit
     fi
   fi
@@ -86,9 +86,9 @@ function kernel-check() {
   KERNEL_VERSION_LIMIT=3.1
   KERNEL_CURRENT_VERSION=$(uname -r | cut -c1-3)
   if (($(echo "$KERNEL_CURRENT_VERSION >= $KERNEL_VERSION_LIMIT" | bc -l))); then
-    echo "Correct: Kernel version, $KERNEL_CURRENT_VERSION" >/dev/null 2>&1
+    echo "Correct: Linux Kernel version, $KERNEL_CURRENT_VERSION" >/dev/null 2>&1
   else
-    echo "Error: Kernel version $KERNEL_CURRENT_VERSION please update to $KERNEL_VERSION_LIMIT" >&2
+    echo "Error: Linux Kernel version $KERNEL_CURRENT_VERSION please update to $KERNEL_VERSION_LIMIT" >&2
     exit
   fi
 }
@@ -101,3 +101,4 @@ WIREGUARD_PATH="/etc/wireguard"
 WIREGUARD_PUB_NIC="wg0"
 WIREGUARD_CONFIG="$WIREGUARD_PATH/$WIREGUARD_PUB_NIC.conf"
 WIREGUARD_MANAGER="$WIREGUARD_PATH/wireguard-manager"
+WIREGUARD_MANAGER_UPDATE="https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh"
