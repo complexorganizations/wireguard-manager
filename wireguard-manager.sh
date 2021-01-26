@@ -56,7 +56,7 @@ function installing-system-requirements() {
       fi
     fi
   else
-    echo "Error: Linux Distro not supported." >&2
+    echo "Error: $DISTRO not supported."
     exit
   fi
 }
@@ -70,9 +70,9 @@ function docker-check() {
     DOCKER_KERNEL_VERSION_LIMIT=5.6
     DOCKER_KERNEL_CURRENT_VERSION=$(uname -r | cut -c1-3)
     if (($(echo "$KERNEL_CURRENT_VERSION >= $KERNEL_VERSION_LIMIT" | bc -l))); then
-      echo "Correct: Docker Kernel version, $KERNEL_CURRENT_VERSION" >/dev/null 2>&1
+      echo "Correct: Kernel $KERNEL_CURRENT_VERSION supported." >> /dev/null
     else
-      echo "Error: Docker Kernel version $DOCKER_KERNEL_CURRENT_VERSION please update to $DOCKER_KERNEL_VERSION_LIMIT" >&2
+      echo "Error: Kernel $DOCKER_KERNEL_CURRENT_VERSION not supported, please update to $DOCKER_KERNEL_VERSION_LIMIT"
       exit
     fi
   fi
@@ -86,9 +86,9 @@ function kernel-check() {
   KERNEL_VERSION_LIMIT=3.1
   KERNEL_CURRENT_VERSION=$(uname -r | cut -c1-3)
   if (($(echo "$KERNEL_CURRENT_VERSION >= $KERNEL_VERSION_LIMIT" | bc -l))); then
-    echo "Correct: Linux Kernel version, $KERNEL_CURRENT_VERSION" >/dev/null 2>&1
+    echo "Correct: Kernel $KERNEL_CURRENT_VERSION supported." >> /dev/null
   else
-    echo "Error: Linux Kernel version $KERNEL_CURRENT_VERSION please update to $KERNEL_VERSION_LIMIT" >&2
+    echo "Error: Kernel $KERNEL_CURRENT_VERSION not supported, please update to $KERNEL_VERSION_LIMIT"
     exit
   fi
 }
