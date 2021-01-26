@@ -102,3 +102,15 @@ WIREGUARD_PUB_NIC="wg0"
 WIREGUARD_CONFIG="$WIREGUARD_PATH/$WIREGUARD_PUB_NIC.conf"
 WIREGUARD_MANAGER="$WIREGUARD_PATH/wireguard-manager"
 WIREGUARD_MANAGER_UPDATE="https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh"
+
+# Verify that it is an old installation or another installer
+function previous-wireguard-installation() {
+  if [ -d "$WIREGUARD_PATH" ]; then
+    if [ ! -f "$WIREGUARD_MANAGER" ]; then
+      rm -rf $WIREGUARD_PATH
+    fi
+  fi
+}
+
+# Run the function to eliminate old installation or another installer
+previous-wireguard-installation
