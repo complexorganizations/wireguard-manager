@@ -3,7 +3,7 @@
 
 # Require script to be run as root
 function super-user-check() {
-  if [ "$EUID" -ne 0 ]; then
+  if [ "${EUID}" -ne 0 ]; then
     echo "You need to run this script as super user."
     exit
   fi
@@ -17,8 +17,8 @@ function dist-check() {
   if [ -e /etc/os-release ]; then
     # shellcheck disable=SC1091
     source /etc/os-release
-    DISTRO=$ID
-    DISTRO_VERSION=$VERSION_ID
+    DISTRO="${ID}"
+    DISTRO_VERSION="${VERSION_ID}"
   fi
 }
 
