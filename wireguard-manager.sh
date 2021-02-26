@@ -297,23 +297,23 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
   function set-ipv4-subnet() {
     if [ -f "${WIREGUARD_INTERFACE}" ]; then
       echo "What ipv4 subnet do you want to use?"
-      echo "  1) 10.8.0.0/24 (Recommended)"
-      echo "  2) 10.0.0.0/24"
+      echo "  1) 10.8.0.0/12 (Recommended)"
+      echo "  2) 10.0.0.0/12"
       echo "  3) Custom (Advanced)"
       until [[ "${IPV4_SUBNET_SETTINGS}" =~ ^[1-3]$ ]]; do
         read -rp "Subnetwork Choice [1-3]: " -e -i 1 IPV4_SUBNET_SETTINGS
       done
       case ${IPV4_SUBNET_SETTINGS} in
       1)
-        IPV4_SUBNET="10.8.0.0/24"
+        IPV4_SUBNET="10.8.0.0/12"
         ;;
       2)
-        IPV4_SUBNET="10.0.0.0/24"
+        IPV4_SUBNET="10.0.0.0/12"
         ;;
       3)
-        read -rp "Custom Subnet: " -e -i "10.8.0.0/24" IPV4_SUBNET
+        read -rp "Custom Subnet: " -e -i "10.8.0.0/12" IPV4_SUBNET
         if [ -z "${IPV4_SUBNET}" ]; then
-          IPV4_SUBNET="10.8.0.0/24"
+          IPV4_SUBNET="10.8.0.0/12"
         fi
         ;;
       esac
@@ -327,23 +327,23 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
   function set-ipv6-subnet() {
     if [ -f "${WIREGUARD_INTERFACE}" ]; then
       echo "What ipv6 subnet do you want to use?"
-      echo "  1) fd42:42:42::0/64 (Recommended)"
-      echo "  2) fd86:ea04:1115::0/64"
+      echo "  1) fd42:42:42::0/32 (Recommended)"
+      echo "  2) fd86:ea04:1115::0/32"
       echo "  3) Custom (Advanced)"
       until [[ "${IPV6_SUBNET_SETTINGS}" =~ ^[1-3]$ ]]; do
         read -rp "Subnetwork Choice [1-3]: " -e -i 1 IPV6_SUBNET_SETTINGS
       done
       case ${IPV6_SUBNET_SETTINGS} in
       1)
-        IPV6_SUBNET="fd42:42:42::0/64"
+        IPV6_SUBNET="fd42:42:42::0/32"
         ;;
       2)
-        IPV6_SUBNET="fd86:ea04:1115::0/64"
+        IPV6_SUBNET="fd86:ea04:1115::0/32"
         ;;
       3)
-        read -rp "Custom Subnet: " -e -i "fd42:42:42::0/64" IPV6_SUBNET
+        read -rp "Custom Subnet: " -e -i "fd42:42:42::0/32" IPV6_SUBNET
         if [ -z "${IPV6_SUBNET}" ]; then
-          IPV6_SUBNET="fd42:42:42::0/64"
+          IPV6_SUBNET="fd42:42:42::0/32"
         fi
         ;;
       esac
@@ -1032,7 +1032,7 @@ SaveConfig = false
 [Peer]
 PublicKey = ${CLIENT_PUBKEY}
 PresharedKey = ${PRESHARED_KEY}
-AllowedIPs = ${CLIENT_ADDRESS_V4}/32,${CLIENT_ADDRESS_V6}/128
+AllowedIPs = ${CLIENT_ADDRESS_V4}/16,${CLIENT_ADDRESS_V6}/64
 # ${CLIENT_NAME} end" >>${WIREGUARD_CONFIG}
 
       echo "# ${WIREGUARD_WEBSITE_URL}
@@ -1146,19 +1146,15 @@ else
           MTU_CHOICE=$(head -n1 ${WIREGUARD_CONFIG} | awk '{print $7}')
           NAT_CHOICE=$(head -n1 ${WIREGUARD_CONFIG} | awk '{print $8}')
           CLIENT_ALLOWED_IP=$(head -n1 ${WIREGUARD_CONFIG} | awk '{print $9}')
-          LASTIPV4=$(grep "/32" ${WIREGUARD_CONFIG} | tail -n1 | awk '{print $3}' | cut -d "/" -f 1 | cut -d "." -f 4)
-          LASTIPV6=$(grep "/128" ${WIREGUARD_CONFIG} | tail -n1 | awk '{print $3}' | cut -d "/" -f 1 | cut -d "." -f 4)
+          LASTIPV4=$(grep "/16" ${WIREGUARD_CONFIG} | tail -n1 | awk '{print $3}' | cut -d "/" -f 1 | cut -d "." -f 4)
+          LASTIPV6=$(grep "/64" ${WIREGUARD_CONFIG} | tail -n1 | awk '{print $3}' | cut -d "/" -f 1 | cut -d "." -f 4)
           CLIENT_ADDRESS_V4="${PRIVATE_SUBNET_V4::-4}$((LASTIPV4 + 1))"
           CLIENT_ADDRESS_V6="${PRIVATE_SUBNET_V6::-4}$((LASTIPV6 + 1))"
-          if [ "${LASTIPV4}" -ge "255" ]; then
-            echo "Error: You have ${LASTIPV4} peers the max is 255"
-            exit
-          fi
           echo "# ${NEW_CLIENT_NAME} start
 [Peer]
 PublicKey = ${CLIENT_PUBKEY}
 PresharedKey = ${PRESHARED_KEY}
-AllowedIPs = ${CLIENT_ADDRESS_V4}/32,${CLIENT_ADDRESS_V6}/128
+AllowedIPs = ${CLIENT_ADDRESS_V4}/16,${CLIENT_ADDRESS_V6}/64
 # ${NEW_CLIENT_NAME} end" >${WIREGUARD_ADD_PEER_CONFIG}
           wg addconf ${WIREGUARD_PUB_NIC} ${WIREGUARD_ADD_PEER_CONFIG}
           cat ${WIREGUARD_ADD_PEER_CONFIG} >>${WIREGUARD_CONFIG}
