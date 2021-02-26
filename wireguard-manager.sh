@@ -101,13 +101,13 @@ kernel-check
 # Global variables
 WIREGUARD_WEBSITE_URL="https://www.wireguard.com"
 WIREGUARD_PATH="/etc/wireguard"
-WIREGUARD_CLIENT_PATH="$WIREGUARD_PATH/clients"
+WIREGUARD_CLIENT_PATH="${WIREGUARD_PATH}/clients"
 WIREGUARD_PUB_NIC="wg0"
-WIREGUARD_CONFIG="$WIREGUARD_PATH/$WIREGUARD_PUB_NIC.conf"
-WIREGUARD_ADD_PEER_CONFIG="$WIREGUARD_PATH/$WIREGUARD_PUB_NIC-add-peer.conf"
-WIREGUARD_MANAGER="$WIREGUARD_PATH/wireguard-manager"
-WIREGUARD_INTERFACE="$WIREGUARD_PATH/wireguard-interface"
-WIREGUARD_PEER="$WIREGUARD_PATH/wireguard-peer"
+WIREGUARD_CONFIG="${WIREGUARD_PATH}/$WIREGUARD_PUB_NIC.conf"
+WIREGUARD_ADD_PEER_CONFIG="${WIREGUARD_PATH}/$WIREGUARD_PUB_NIC-add-peer.conf"
+WIREGUARD_MANAGER="${WIREGUARD_PATH}/wireguard-manager"
+WIREGUARD_INTERFACE="${WIREGUARD_PATH}/wireguard-interface"
+WIREGUARD_PEER="${WIREGUARD_PATH}/wireguard-peer"
 WIREGUARD_MANAGER_UPDATE="https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh"
 WIREGUARD_CONFIG_BACKUP="/var/backups/wireguard-manager.zip"
 WIREGUARD_IP_FORWARDING_CONFIG="/etc/sysctl.d/wireguard.conf"
@@ -124,9 +124,9 @@ UNBOUND_ROOT_SERVER_CONFIG_URL="https://www.internic.net/domain/named.cache"
 
 # Verify that it is an old installation or another installer
 function previous-wireguard-installation() {
-  if [ -d "$WIREGUARD_PATH" ]; then
-    if [ ! -f "$WIREGUARD_MANAGER" ]; then
-      rm -rf $WIREGUARD_PATH
+  if [ -d "${WIREGUARD_PATH}" ]; then
+    if [ ! -f "${WIREGUARD_MANAGER}" ]; then
+      rm -rf ${WIREGUARD_PATH}
     fi
   fi
 }
@@ -136,7 +136,7 @@ previous-wireguard-installation
 
 # Which would you like to install interface or peer?
 function interface-or-peer() {
-  if [ ! -f "$WIREGUARD_MANAGER" ]; then
+  if [ ! -f "${WIREGUARD_MANAGER}" ]; then
     echo "Do you want the interface or peer to be installed?"
     echo "  1) Interface"
     echo "  2) Peer"
@@ -145,26 +145,26 @@ function interface-or-peer() {
     done
     case $INTERFACE_OR_PEER in
     1)
-      if [ -d "$WIREGUARD_PATH" ]; then
+      if [ -d "${WIREGUARD_PATH}" ]; then
         if [ -f "$WIREGUARD_PEER" ]; then
-          rm -rf $WIREGUARD_PATH
+          rm -rf ${WIREGUARD_PATH}
         fi
       fi
-      if [ ! -d "$WIREGUARD_PATH" ]; then
-        mkdir -p $WIREGUARD_PATH
+      if [ ! -d "${WIREGUARD_PATH}" ]; then
+        mkdir -p ${WIREGUARD_PATH}
       fi
-      if [ ! -f "$WIREGUARD_INTERFACE" ]; then
+      if [ ! -f "${WIREGUARD_INTERFACE}" ]; then
         echo "WireGuard Interface: true" >>$WIREGUARD_INTERFACE
       fi
       ;;
     2)
-      if [ -d "$WIREGUARD_PATH" ]; then
-        if [ -f "$WIREGUARD_INTERFACE" ]; then
-          rm -rf $WIREGUARD_PATH
+      if [ -d "${WIREGUARD_PATH}" ]; then
+        if [ -f "${WIREGUARD_INTERFACE}" ]; then
+          rm -rf ${WIREGUARD_PATH}
         fi
       fi
-      if [ ! -d "$WIREGUARD_PATH" ]; then
-        mkdir -p $WIREGUARD_PATH
+      if [ ! -d "${WIREGUARD_PATH}" ]; then
+        mkdir -p ${WIREGUARD_PATH}
       fi
       if [ ! -f "$WIREGUARD_PEER" ]; then
         echo "WireGuard Peer: true" >>$WIREGUARD_PEER
@@ -179,7 +179,7 @@ interface-or-peer
 
 # Usage Guide
 function usage-guide() {
-  if [ -f "$WIREGUARD_INTERFACE" ]; then
+  if [ -f "${WIREGUARD_INTERFACE}" ]; then
     echo "usage: ./$(basename "$0") <command>"
     echo "  --install     Install WireGuard"
     echo "  --start       Start WireGuard"
@@ -200,7 +200,7 @@ function usage-guide() {
 
 # The usage of the script
 function usage() {
-  if [ -f "$WIREGUARD_INTERFACE" ]; then
+  if [ -f "${WIREGUARD_INTERFACE}" ]; then
     while [ $# -ne 0 ]; do
       case "${1}" in
       --install)
@@ -295,7 +295,7 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
 
   # Custom ipv4 subnet
   function set-ipv4-subnet() {
-    if [ -f "$WIREGUARD_INTERFACE" ]; then
+    if [ -f "${WIREGUARD_INTERFACE}" ]; then
       echo "What ipv4 subnet do you want to use?"
       echo "  1) 10.8.0.0/24 (Recommended)"
       echo "  2) 10.0.0.0/24"
@@ -325,7 +325,7 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
 
   # Custom ipv6 subnet
   function set-ipv6-subnet() {
-    if [ -f "$WIREGUARD_INTERFACE" ]; then
+    if [ -f "${WIREGUARD_INTERFACE}" ]; then
       echo "What ipv6 subnet do you want to use?"
       echo "  1) fd42:42:42::0/64 (Recommended)"
       echo "  2) fd86:ea04:1115::0/64"
@@ -353,7 +353,7 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
   # Custom ipv6 Subnet
   set-ipv6-subnet
 
-  if [ -f "$WIREGUARD_INTERFACE" ]; then
+  if [ -f "${WIREGUARD_INTERFACE}" ]; then
     # Private Subnet Ipv4
     PRIVATE_SUBNET_V4=${PRIVATE_SUBNET_V4:-"$IPV4_SUBNET"}
     # Private Subnet Mask IPv4
@@ -370,15 +370,15 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
 
   # Get the IPV4
   function test-connectivity-v4() {
-    if [ -f "$WIREGUARD_INTERFACE" ]; then
+    if [ -f "${WIREGUARD_INTERFACE}" ]; then
       echo "How would you like to detect IPv4?"
       echo "  1) Curl (Recommended)"
       echo "  2) IP (Advanced)"
       echo "  3) Custom (Advanced)"
-      until [[ "$SERVER_HOST_V4_SETTINGS" =~ ^[1-3]$ ]]; do
+      until [[ "${SERVER_HOST_V4_SETTINGS}" =~ ^[1-3]$ ]]; do
         read -rp "IPv4 Choice [1-3]: " -e -i 1 SERVER_HOST_V4_SETTINGS
       done
-      case $SERVER_HOST_V4_SETTINGS in
+      case ${SERVER_HOST_V4_SETTINGS} in
       1)
         SERVER_HOST_V4="$(curl -4 -s 'https://api.ipengine.dev' | jq -r '.network.ip')"
         ;;
@@ -400,7 +400,7 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
 
   # Determine ipv6
   function test-connectivity-v6() {
-    if [ -f "$WIREGUARD_INTERFACE" ]; then
+    if [ -f "${WIREGUARD_INTERFACE}" ]; then
       echo "How would you like to detect IPv6?"
       echo "  1) Curl (Recommended)"
       echo "  2) IP (Advanced)"
@@ -430,7 +430,7 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
 
   # Determine public nic
   function server-pub-nic() {
-    if [ -f "$WIREGUARD_INTERFACE" ]; then
+    if [ -f "${WIREGUARD_INTERFACE}" ]; then
       echo "How would you like to detect NIC?"
       echo "  1) IP (Recommended)"
       echo "  2) Custom (Advanced)"
@@ -456,7 +456,7 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
 
   # Determine host port
   function set-port() {
-    if [ -f "$WIREGUARD_INTERFACE" ]; then
+    if [ -f "${WIREGUARD_INTERFACE}" ]; then
       echo "What port do you want WireGuard server to listen to?"
       echo "  1) 51820 (Recommended)"
       echo "  2) Custom (Advanced)"
@@ -486,7 +486,7 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
 
   # Determine Keepalive interval.
   function nat-keepalive() {
-    if [ -f "$WIREGUARD_INTERFACE" ]; then
+    if [ -f "${WIREGUARD_INTERFACE}" ]; then
       echo "What do you want your keepalive interval to be?"
       echo "  1) 25 (Default)"
       echo "  2) Custom (Advanced)"
@@ -515,7 +515,7 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
 
   # Custom MTU or default settings
   function mtu-set() {
-    if [ -f "$WIREGUARD_INTERFACE" ]; then
+    if [ -f "${WIREGUARD_INTERFACE}" ]; then
       echo "What MTU do you want to use?"
       echo "  1) 1280 (Recommended)"
       echo "  2) 1420"
@@ -544,7 +544,7 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
 
   # What ip version would you like to be available on this VPN?
   function ipvx-select() {
-    if [ -f "$WIREGUARD_INTERFACE" ]; then
+    if [ -f "${WIREGUARD_INTERFACE}" ]; then
       echo "What IPv do you want to use to connect to WireGuard server?"
       echo "  1) IPv4 (Recommended)"
       echo "  2) IPv6"
@@ -582,7 +582,7 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
 
   # Do you want to disable IPv4 or IPv6 or leave them both enabled?
   function disable-ipvx() {
-    if [ -f "$WIREGUARD_INTERFACE" ]; then
+    if [ -f "${WIREGUARD_INTERFACE}" ]; then
       echo "Do you want to disable IPv4 or IPv6 on the server?"
       echo "  1) No (Recommended)"
       echo "  2) Disable IPV4"
@@ -632,7 +632,7 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
 
   # Would you like to allow connections to your LAN neighbors?
   function client-allowed-ip() {
-    if [ -f "$WIREGUARD_INTERFACE" ]; then
+    if [ -f "${WIREGUARD_INTERFACE}" ]; then
       echo "What traffic do you want the client to forward to wireguard?"
       echo "  1) Everything (Recommended)"
       echo "  2) Exclude Private IPs"
@@ -662,7 +662,7 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
 
   # Would you like to install Unbound.
   function ask-install-dns() {
-    if [ -f "$WIREGUARD_INTERFACE" ]; then
+    if [ -f "${WIREGUARD_INTERFACE}" ]; then
       echo "Which DNS provider would you like to use?"
       echo "  1) Unbound (Recommended)"
       echo "  2) PiHole"
@@ -689,7 +689,7 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
 
   # What would you like to name your first WireGuard peer?
   function client-name() {
-    if [ -f "$WIREGUARD_INTERFACE" ]; then
+    if [ -f "${WIREGUARD_INTERFACE}" ]; then
       if [ "$CLIENT_NAME" == "" ]; then
         echo "Lets name the WireGuard Peer, Use one word only, no special characters. (No Spaces)"
         read -rp "Client name: " -e CLIENT_NAME
@@ -705,7 +705,7 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
 
   # Lets check the kernel version and check if headers are required
   function install-kernel-headers() {
-    if { [ -f "$WIREGUARD_INTERFACE" ] || [ -f "$WIREGUARD_PEER" ]; }; then
+    if { [ -f "${WIREGUARD_INTERFACE}" ] || [ -f "$WIREGUARD_PEER" ]; }; then
       KERNEL_VERSION_LIMIT=5.6
       KERNEL_CURRENT_VERSION=$(uname -r | cut -c1-3)
       if (($(echo "$KERNEL_CURRENT_VERSION <= $KERNEL_VERSION_LIMIT" | bc -l))); then
@@ -737,7 +737,7 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
   # Install WireGuard Server
   function install-wireguard-server() {
     if { [ ! -x "$(command -v wg)" ] || [ ! -x "$(command -v qrencode)" ]; }; then
-      if { [ -f "$WIREGUARD_INTERFACE" ] || [ -f "$WIREGUARD_PEER" ]; }; then
+      if { [ -f "${WIREGUARD_INTERFACE}" ] || [ -f "$WIREGUARD_PEER" ]; }; then
         if [ "$DISTRO" == "ubuntu" ] && { [ "$DISTRO_VERSION" == "20.10" ] || [ "$DISTRO_VERSION" == "20.04" ] || [ "$DISTRO_VERSION" == "19.10" ]; }; then
           apt-get update
           apt-get install wireguard qrencode haveged ifupdown resolvconf -y
@@ -824,8 +824,8 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
 
   # Install wireguard manager config
   function install-wireguard-manager-file() {
-    if [ -d "$WIREGUARD_PATH" ]; then
-      if [ ! -f "$WIREGUARD_MANAGER" ]; then
+    if [ -d "${WIREGUARD_PATH}" ]; then
+      if [ ! -f "${WIREGUARD_MANAGER}" ]; then
         echo "WireGuard: true" >>$WIREGUARD_MANAGER
       fi
     fi
@@ -836,7 +836,7 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
 
   # Function to install unbound
   function install-unbound() {
-    if [ -f "$WIREGUARD_INTERFACE" ]; then
+    if [ -f "${WIREGUARD_INTERFACE}" ]; then
       if [ "$INSTALL_UNBOUND" = "y" ]; then
         if [ ! -x "$(command -v unbound)" ]; then
           if [ "$DISTRO" == "ubuntu" ]; then
@@ -935,7 +935,7 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
 
   # Install pihole
   function install-pihole() {
-    if [ -f "$WIREGUARD_INTERFACE" ]; then
+    if [ -f "${WIREGUARD_INTERFACE}" ]; then
       if [ "$INSTALL_PIHOLE" = "y" ]; then
         if [ ! -x "$(command -v pihole)" ]; then
           curl -sSL https://install.pi-hole.net | bash
@@ -955,7 +955,7 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
 
   # Use custom dns
   function custom-dns() {
-    if [ -f "$WIREGUARD_INTERFACE" ]; then
+    if [ -f "${WIREGUARD_INTERFACE}" ]; then
       if [ "$CUSTOM_DNS" == "y" ]; then
         echo "Which DNS do you want to use with the VPN?"
         echo "  1) Google (Recommended)"
@@ -1008,7 +1008,7 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
 
   # WireGuard Set Config
   function wireguard-setconf() {
-    if [ -f "$WIREGUARD_INTERFACE" ]; then
+    if [ -f "${WIREGUARD_INTERFACE}" ]; then
       SERVER_PRIVKEY=$(wg genkey)
       SERVER_PUBKEY=$(echo "$SERVER_PRIVKEY" | wg pubkey)
       CLIENT_PRIVKEY=$(wg genkey)
@@ -1070,7 +1070,7 @@ else
 
   # Already installed what next?
   function wireguard-next-questions-interface() {
-    if [ -f "$WIREGUARD_INTERFACE" ]; then
+    if [ -f "${WIREGUARD_INTERFACE}" ]; then
       echo "What do you want to do?"
       echo "   1) Show WireGuard"
       echo "   2) Start WireGuard"
@@ -1221,7 +1221,7 @@ PublicKey = $SERVER_PUBKEY" >>$WIREGUARD_CLIENT_PATH/"$NEW_CLIENT_NAME"-$WIREGUA
         ;;
       8) # Uninstall Wireguard and purging files
         if [ -x "$(command -v wg)" ]; then
-          if [ -f "$WIREGUARD_MANAGER" ]; then
+          if [ -f "${WIREGUARD_MANAGER}" ]; then
             if pgrep systemd-journal; then
               systemctl disable wg-quick@$WIREGUARD_PUB_NIC
               wg-quick down $WIREGUARD_PUB_NIC
@@ -1230,7 +1230,7 @@ PublicKey = $SERVER_PUBKEY" >>$WIREGUARD_CLIENT_PATH/"$NEW_CLIENT_NAME"-$WIREGUA
               wg-quick down $WIREGUARD_PUB_NIC
             fi
             # Removing Wireguard Files
-            rm -rf $WIREGUARD_PATH
+            rm -rf ${WIREGUARD_PATH}
             rm -rf $WIREGUARD_CLIENT_PATH
             rm -f $WIREGUARD_CONFIG
             rm -f $WIREGUARD_IP_FORWARDING_CONFIG
@@ -1349,7 +1349,7 @@ PublicKey = $SERVER_PUBKEY" >>$WIREGUARD_CLIENT_PATH/"$NEW_CLIENT_NAME"-$WIREGUA
         ;;
       10) # Backup Wireguard Config
         if [ -x "$(command -v wg)" ]; then
-          if [ -d "$WIREGUARD_PATH" ]; then
+          if [ -d "${WIREGUARD_PATH}" ]; then
             rm -f $WIREGUARD_CONFIG_BACKUP
             zip -rej $WIREGUARD_CONFIG_BACKUP $WIREGUARD_CONFIG $WIREGUARD_MANAGER $WIREGUARD_INTERFACE
           else
@@ -1359,11 +1359,11 @@ PublicKey = $SERVER_PUBKEY" >>$WIREGUARD_CLIENT_PATH/"$NEW_CLIENT_NAME"-$WIREGUA
         ;;
       11) # Restore Wireguard Config
         if [ -x "$(command -v wg)" ]; then
-          if [ -d "$WIREGUARD_PATH" ]; then
-            rm -rf $WIREGUARD_PATH
+          if [ -d "${WIREGUARD_PATH}" ]; then
+            rm -rf ${WIREGUARD_PATH}
           fi
           if [ -f "$WIREGUARD_CONFIG_BACKUP" ]; then
-            unzip $WIREGUARD_CONFIG_BACKUP -d $WIREGUARD_PATH
+            unzip $WIREGUARD_CONFIG_BACKUP -d ${WIREGUARD_PATH}
           else
             exit
           fi
@@ -1452,7 +1452,7 @@ PublicKey = $SERVER_PUBKEY" >>$WIREGUARD_CLIENT_PATH/"$NEW_CLIENT_NAME"-$WIREGUA
         fi
         ;;
       6) # Uninstall Wireguard and purging files
-        if [ -f "$WIREGUARD_MANAGER" ]; then
+        if [ -f "${WIREGUARD_MANAGER}" ]; then
           if [ -x "$(command -v wg)" ]; then
             if pgrep systemd-journal; then
               systemctl disable wg-quick@$WIREGUARD_PUB_NIC
@@ -1462,7 +1462,7 @@ PublicKey = $SERVER_PUBKEY" >>$WIREGUARD_CLIENT_PATH/"$NEW_CLIENT_NAME"-$WIREGUA
               wg-quick down $WIREGUARD_PUB_NIC
             fi
             # Removing Wireguard Files
-            rm -rf $WIREGUARD_PATH
+            rm -rf ${WIREGUARD_PATH}
             rm -rf $WIREGUARD_CLIENT_PATH
             rm -f $WIREGUARD_CONFIG
             rm -f $WIREGUARD_IP_FORWARDING_CONFIG
@@ -1524,7 +1524,7 @@ PublicKey = $SERVER_PUBKEY" >>$WIREGUARD_CLIENT_PATH/"$NEW_CLIENT_NAME"-$WIREGUA
         ;;
       8) # Backup Wireguard Config
         if [ -x "$(command -v wg)" ]; then
-          if [ -d "$WIREGUARD_PATH" ]; then
+          if [ -d "${WIREGUARD_PATH}" ]; then
             rm -f $WIREGUARD_CONFIG_BACKUP
             zip -rej $WIREGUARD_CONFIG_BACKUP $WIREGUARD_CONFIG $WIREGUARD_MANAGER $WIREGUARD_PEER
           else
@@ -1534,11 +1534,11 @@ PublicKey = $SERVER_PUBKEY" >>$WIREGUARD_CLIENT_PATH/"$NEW_CLIENT_NAME"-$WIREGUA
         ;;
       9) # Restore Wireguard Config
         if [ -x "$(command -v wg)" ]; then
-          if [ -d "$WIREGUARD_PATH" ]; then
-            rm -rf $WIREGUARD_PATH
+          if [ -d "${WIREGUARD_PATH}" ]; then
+            rm -rf ${WIREGUARD_PATH}
           fi
           if [ -f "$WIREGUARD_CONFIG_BACKUP" ]; then
-            unzip $WIREGUARD_CONFIG_BACKUP -d $WIREGUARD_PATH
+            unzip $WIREGUARD_CONFIG_BACKUP -d ${WIREGUARD_PATH}
           else
             exit
           fi
