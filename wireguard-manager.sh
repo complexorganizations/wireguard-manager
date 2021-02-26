@@ -146,7 +146,7 @@ function interface-or-peer() {
     case $INTERFACE_OR_PEER in
     1)
       if [ -d "${WIREGUARD_PATH}" ]; then
-        if [ -f "$WIREGUARD_PEER" ]; then
+        if [ -f "${WIREGUARD_PEER}" ]; then
           rm -rf ${WIREGUARD_PATH}
         fi
       fi
@@ -166,8 +166,8 @@ function interface-or-peer() {
       if [ ! -d "${WIREGUARD_PATH}" ]; then
         mkdir -p ${WIREGUARD_PATH}
       fi
-      if [ ! -f "$WIREGUARD_PEER" ]; then
-        echo "WireGuard Peer: true" >>$WIREGUARD_PEER
+      if [ ! -f "${WIREGUARD_PEER}" ]; then
+        echo "WireGuard Peer: true" >>${WIREGUARD_PEER}
       fi
       ;;
     esac
@@ -291,7 +291,7 @@ function headless-install() {
 # No GUI
 headless-install
 
-if [ ! -f "$WIREGUARD_CONFIG" ]; then
+if [ ! -f "${WIREGUARD_CONFIG}" ]; then
 
   # Custom ipv4 subnet
   function set-ipv4-subnet() {
@@ -705,23 +705,23 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
 
   # Lets check the kernel version and check if headers are required
   function install-kernel-headers() {
-    if { [ -f "${WIREGUARD_INTERFACE}" ] || [ -f "$WIREGUARD_PEER" ]; }; then
+    if { [ -f "${WIREGUARD_INTERFACE}" ] || [ -f "${WIREGUARD_PEER}" ]; }; then
       KERNEL_VERSION_LIMIT=5.6
       KERNEL_CURRENT_VERSION=$(uname -r | cut -c1-3)
       if (($(echo "$KERNEL_CURRENT_VERSION <= $KERNEL_VERSION_LIMIT" | bc -l))); then
-        if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ] || [ "$DISTRO" == "linuxmint" ]; }; then
+        if { [ "${DISTRO}" == "ubuntu" ] || [ "${DISTRO}" == "debian" ] || [ "${DISTRO}" == "pop" ] || [ "${DISTRO}" == "kali" ] || [ "${DISTRO}" == "linuxmint" ]; }; then
           apt-get update
           apt-get install linux-headers-"$(uname -r)" -y
-        elif [ "$DISTRO" == "raspbian" ]; then
+        elif [ "${DISTRO}" == "raspbian" ]; then
           apt-get update
           apt-get install raspberrypi-kernel-headers -y
-        elif { [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "archarm" ] || [ "$DISTRO" == "manjaro" ]; }; then
+        elif { [ "${DISTRO}" == "arch" ] || [ "${DISTRO}" == "archarm" ] || [ "${DISTRO}" == "manjaro" ]; }; then
           pacman -Syu
           pacman -Syu --noconfirm --needed linux-headers
-        elif [ "$DISTRO" == "fedora" ]; then
+        elif [ "${DISTRO}" == "fedora" ]; then
           dnf update -y
           dnf install kernel-headers-"$(uname -r)" kernel-devel-"$(uname -r)" -y
-        elif { [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ]; }; then
+        elif { [ "${DISTRO}" == "centos" ] || [ "${DISTRO}" == "rhel" ]; }; then
           yum update -y
           yum install kernel-headers-"$(uname -r)" kernel-devel-"$(uname -r)" -y
         fi
@@ -737,20 +737,20 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
   # Install WireGuard Server
   function install-wireguard-server() {
     if { [ ! -x "$(command -v wg)" ] || [ ! -x "$(command -v qrencode)" ]; }; then
-      if { [ -f "${WIREGUARD_INTERFACE}" ] || [ -f "$WIREGUARD_PEER" ]; }; then
-        if [ "$DISTRO" == "ubuntu" ] && { [ "$DISTRO_VERSION" == "20.10" ] || [ "$DISTRO_VERSION" == "20.04" ] || [ "$DISTRO_VERSION" == "19.10" ]; }; then
+      if { [ -f "${WIREGUARD_INTERFACE}" ] || [ -f "${WIREGUARD_PEER}" ]; }; then
+        if [ "${DISTRO}" == "ubuntu" ] && { [ "$DISTRO_VERSION" == "20.10" ] || [ "$DISTRO_VERSION" == "20.04" ] || [ "$DISTRO_VERSION" == "19.10" ]; }; then
           apt-get update
           apt-get install wireguard qrencode haveged ifupdown resolvconf -y
-        elif [ "$DISTRO" == "ubuntu" ] && { [ "$DISTRO_VERSION" == "16.04" ] || [ "$DISTRO_VERSION" == "18.04" ]; }; then
+        elif [ "${DISTRO}" == "ubuntu" ] && { [ "$DISTRO_VERSION" == "16.04" ] || [ "$DISTRO_VERSION" == "18.04" ]; }; then
           apt-get update
           apt-get install software-properties-common -y
           add-apt-repository ppa:wireguard/wireguard -y
           apt-get update
           apt-get install wireguard qrencode haveged ifupdown resolvconf -y
-        elif { [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "linuxmint" ]; }; then
+        elif { [ "${DISTRO}" == "pop" ] || [ "${DISTRO}" == "linuxmint" ]; }; then
           apt-get update
           apt-get install wireguard qrencode haveged ifupdown resolvconf -y
-        elif { [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "kali" ]; }; then
+        elif { [ "${DISTRO}" == "debian" ] || [ "${DISTRO}" == "kali" ]; }; then
           apt-get update
           if [ ! -f "/etc/apt/sources.list.d/unstable.list" ]; then
             echo "deb http://deb.debian.org/debian/ unstable main" >>/etc/apt/sources.list.d/unstable.list
@@ -760,7 +760,7 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
           fi
           apt-get update
           apt-get install wireguard qrencode haveged ifupdown resolvconf -y
-        elif [ "$DISTRO" == "raspbian" ]; then
+        elif [ "${DISTRO}" == "raspbian" ]; then
           apt-get update
           apt-get install dirmngr -y
           apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 04EE7237B7D453EC
@@ -772,46 +772,46 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
           fi
           apt-get update
           apt-get install wireguard qrencode haveged ifupdown resolvconf -y
-        elif { [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "archarm" ] || [ "$DISTRO" == "manjaro" ]; }; then
+        elif { [ "${DISTRO}" == "arch" ] || [ "${DISTRO}" == "archarm" ] || [ "${DISTRO}" == "manjaro" ]; }; then
           pacman -Syu
           pacman -Syu --noconfirm --needed haveged qrencode iptables resolvconf
           pacman -Syu --noconfirm --needed wireguard-tools
-        elif [ "$DISTRO" = "fedora" ] && [ "$DISTRO_VERSION" == "32" ]; then
+        elif [ "${DISTRO}" = "fedora" ] && [ "$DISTRO_VERSION" == "32" ]; then
           dnf update -y
           dnf install qrencode wireguard-tools haveged resolvconf -y
-        elif [ "$DISTRO" = "fedora" ] && { [ "$DISTRO_VERSION" == "30" ] || [ "$DISTRO_VERSION" == "31" ]; }; then
+        elif [ "${DISTRO}" = "fedora" ] && { [ "$DISTRO_VERSION" == "30" ] || [ "$DISTRO_VERSION" == "31" ]; }; then
           dnf update -y
           dnf copr enable jdoss/wireguard -y
           dnf install qrencode wireguard-dkms wireguard-tools haveged resolvconf -y
-        elif [ "$DISTRO" == "centos" ] && { [ "$DISTRO_VERSION" == "8" ] || [ "$DISTRO_VERSION" == "8.1" ] || [ "$DISTRO_VERSION" == "8.2" ]; }; then
+        elif [ "${DISTRO}" == "centos" ] && { [ "$DISTRO_VERSION" == "8" ] || [ "$DISTRO_VERSION" == "8.1" ] || [ "$DISTRO_VERSION" == "8.2" ]; }; then
           yum update -y
           yum install elrepo-release epel-release -y
           yum install kmod-wireguard wireguard-tools qrencode haveged -y
-        elif [ "$DISTRO" == "centos" ] && [ "$DISTRO_VERSION" == "7" ]; then
+        elif [ "${DISTRO}" == "centos" ] && [ "$DISTRO_VERSION" == "7" ]; then
           yum update -y
           if [ ! -f "/etc/yum.repos.d/wireguard.repo" ]; then
             curl https://copr.fedorainfracloud.org/coprs/jdoss/wireguard/repo/epel-7/jdoss-wireguard-epel-7.repo --create-dirs -o /etc/yum.repos.d/wireguard.repo
           fi
           yum update -y
           yum install wireguard-dkms wireguard-tools qrencode haveged resolvconf -y
-        elif [ "$DISTRO" == "rhel" ] && [ "$DISTRO_VERSION" == "8" ]; then
+        elif [ "${DISTRO}" == "rhel" ] && [ "$DISTRO_VERSION" == "8" ]; then
           yum update -y
           yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
           yum update -y
           subscription-manager repos --enable codeready-builder-for-rhel-8-"$(arch)"-rpms
           yum copr enable jdoss/wireguard
           yum install epel-release wireguard-dkms wireguard-tools qrencode haveged resolvconf -y
-        elif [ "$DISTRO" == "rhel" ] && [ "$DISTRO_VERSION" == "7" ]; then
+        elif [ "${DISTRO}" == "rhel" ] && [ "$DISTRO_VERSION" == "7" ]; then
           yum update -y
           if [ ! -f "/etc/yum.repos.d/wireguard.repo" ]; then
             curl https://copr.fedorainfracloud.org/coprs/jdoss/wireguard/repo/epel-7/jdoss-wireguard-epel-7.repo --create-dirs -o /etc/yum.repos.d/wireguard.repo
           fi
           yum update -y
           yum install epel-release wireguard-dkms wireguard-tools qrencode haveged resolvconf -y
-        elif [ "$DISTRO" == "alpine" ]; then
+        elif [ "${DISTRO}" == "alpine" ]; then
           apk update
           apk add wireguard-tools libqrencode haveged
-        elif [ "$DISTRO" == "freebsd" ]; then
+        elif [ "${DISTRO}" == "freebsd" ]; then
           pkg update
           pkg install wireguard libqrencode
         fi
@@ -826,7 +826,7 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
   function install-wireguard-manager-file() {
     if [ -d "${WIREGUARD_PATH}" ]; then
       if [ ! -f "${WIREGUARD_MANAGER}" ]; then
-        echo "WireGuard: true" >>$WIREGUARD_MANAGER
+        echo "WireGuard: true" >>${WIREGUARD_MANAGER}
       fi
     fi
   }
@@ -839,7 +839,7 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
     if [ -f "${WIREGUARD_INTERFACE}" ]; then
       if [ "$INSTALL_UNBOUND" = "y" ]; then
         if [ ! -x "$(command -v unbound)" ]; then
-          if [ "$DISTRO" == "ubuntu" ]; then
+          if [ "${DISTRO}" == "ubuntu" ]; then
             apt-get install unbound unbound-host e2fsprogs -y
             if pgrep systemd-journal; then
               systemctl stop systemd-resolved
@@ -848,17 +848,17 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
               service systemd-resolved stop
               service systemd-resolved disable
             fi
-          elif { [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ] || [ "$DISTRO" == "linuxmint" ]; }; then
+          elif { [ "${DISTRO}" == "debian" ] || [ "${DISTRO}" == "raspbian" ] || [ "${DISTRO}" == "pop" ] || [ "${DISTRO}" == "kali" ] || [ "${DISTRO}" == "linuxmint" ]; }; then
             apt-get install unbound unbound-host e2fsprogs -y
-          elif { [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ]; }; then
+          elif { [ "${DISTRO}" == "centos" ] || [ "${DISTRO}" == "rhel" ]; }; then
             yum install unbound unbound-libs -y
-          elif [ "$DISTRO" == "fedora" ]; then
+          elif [ "${DISTRO}" == "fedora" ]; then
             dnf install unbound -y
-          elif { [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "archarm" ] || [ "$DISTRO" == "manjaro" ]; }; then
+          elif { [ "${DISTRO}" == "arch" ] || [ "${DISTRO}" == "archarm" ] || [ "${DISTRO}" == "manjaro" ]; }; then
             pacman -Syu --noconfirm unbound
-          elif [ "$DISTRO" == "alpine" ]; then
+          elif [ "${DISTRO}" == "alpine" ]; then
             apk add unbound
-          elif [ "$DISTRO" == "freebsd" ]; then
+          elif [ "${DISTRO}" == "freebsd" ]; then
             pkg install unbound
           fi
           if [ -f "$UNBOUND_ANCHOR" ]; then
@@ -1018,7 +1018,7 @@ if [ ! -f "$WIREGUARD_CONFIG" ]; then
       PRESHARED_KEY=$(wg genpsk)
       PEER_PORT=$(shuf -i1024-65535 -n1)
       mkdir -p $WIREGUARD_CLIENT_PATH && chmod 755 $WIREGUARD_CLIENT_PATH
-      touch $WIREGUARD_CONFIG && chmod 600 $WIREGUARD_CONFIG
+      touch ${WIREGUARD_CONFIG} && chmod 600 ${WIREGUARD_CONFIG}
       # Set Wireguard settings for this host and first peer.
       echo "# $PRIVATE_SUBNET_V4 $PRIVATE_SUBNET_V6 $SERVER_HOST:$SERVER_PORT $SERVER_PUBKEY $CLIENT_DNS $MTU_CHOICE $NAT_CHOICE $CLIENT_ALLOWED_IP
 [Interface]
@@ -1033,7 +1033,7 @@ SaveConfig = false
 PublicKey = $CLIENT_PUBKEY
 PresharedKey = $PRESHARED_KEY
 AllowedIPs = $CLIENT_ADDRESS_V4/32,$CLIENT_ADDRESS_V6/128
-# $CLIENT_NAME end" >>$WIREGUARD_CONFIG
+# $CLIENT_NAME end" >>${WIREGUARD_CONFIG}
 
       echo "# $WIREGUARD_WEBSITE_URL
 [Interface]
@@ -1136,18 +1136,18 @@ else
           CLIENT_PUBKEY=$(echo "$CLIENT_PRIVKEY" | wg pubkey)
           PRESHARED_KEY=$(wg genpsk)
           PEER_PORT=$(shuf -i1024-65535 -n1)
-          PRIVATE_SUBNET_V4=$(head -n1 $WIREGUARD_CONFIG | awk '{print $2}')
+          PRIVATE_SUBNET_V4=$(head -n1 ${WIREGUARD_CONFIG} | awk '{print $2}')
           PRIVATE_SUBNET_MASK_V4=$(echo "$PRIVATE_SUBNET_V4" | cut -d "/" -f 2)
-          PRIVATE_SUBNET_V6=$(head -n1 $WIREGUARD_CONFIG | awk '{print $3}')
+          PRIVATE_SUBNET_V6=$(head -n1 ${WIREGUARD_CONFIG} | awk '{print $3}')
           PRIVATE_SUBNET_MASK_V6=$(echo "$PRIVATE_SUBNET_V6" | cut -d "/" -f 2)
-          SERVER_HOST=$(head -n1 $WIREGUARD_CONFIG | awk '{print $4}')
-          SERVER_PUBKEY=$(head -n1 $WIREGUARD_CONFIG | awk '{print $5}')
-          CLIENT_DNS=$(head -n1 $WIREGUARD_CONFIG | awk '{print $6}')
-          MTU_CHOICE=$(head -n1 $WIREGUARD_CONFIG | awk '{print $7}')
-          NAT_CHOICE=$(head -n1 $WIREGUARD_CONFIG | awk '{print $8}')
-          CLIENT_ALLOWED_IP=$(head -n1 $WIREGUARD_CONFIG | awk '{print $9}')
-          LASTIPV4=$(grep "/32" $WIREGUARD_CONFIG | tail -n1 | awk '{print $3}' | cut -d "/" -f 1 | cut -d "." -f 4)
-          LASTIPV6=$(grep "/128" $WIREGUARD_CONFIG | tail -n1 | awk '{print $3}' | cut -d "/" -f 1 | cut -d "." -f 4)
+          SERVER_HOST=$(head -n1 ${WIREGUARD_CONFIG} | awk '{print $4}')
+          SERVER_PUBKEY=$(head -n1 ${WIREGUARD_CONFIG} | awk '{print $5}')
+          CLIENT_DNS=$(head -n1 ${WIREGUARD_CONFIG} | awk '{print $6}')
+          MTU_CHOICE=$(head -n1 ${WIREGUARD_CONFIG} | awk '{print $7}')
+          NAT_CHOICE=$(head -n1 ${WIREGUARD_CONFIG} | awk '{print $8}')
+          CLIENT_ALLOWED_IP=$(head -n1 ${WIREGUARD_CONFIG} | awk '{print $9}')
+          LASTIPV4=$(grep "/32" ${WIREGUARD_CONFIG} | tail -n1 | awk '{print $3}' | cut -d "/" -f 1 | cut -d "." -f 4)
+          LASTIPV6=$(grep "/128" ${WIREGUARD_CONFIG} | tail -n1 | awk '{print $3}' | cut -d "/" -f 1 | cut -d "." -f 4)
           CLIENT_ADDRESS_V4="${PRIVATE_SUBNET_V4::-4}$((LASTIPV4 + 1))"
           CLIENT_ADDRESS_V6="${PRIVATE_SUBNET_V6::-4}$((LASTIPV6 + 1))"
           if [ "$LASTIPV4" -ge "255" ]; then
@@ -1161,7 +1161,7 @@ PresharedKey = $PRESHARED_KEY
 AllowedIPs = $CLIENT_ADDRESS_V4/32,$CLIENT_ADDRESS_V6/128
 # $NEW_CLIENT_NAME end" >$WIREGUARD_ADD_PEER_CONFIG
           wg addconf $WIREGUARD_PUB_NIC $WIREGUARD_ADD_PEER_CONFIG
-          cat $WIREGUARD_ADD_PEER_CONFIG >>$WIREGUARD_CONFIG
+          cat $WIREGUARD_ADD_PEER_CONFIG >>${WIREGUARD_CONFIG}
           rm -f $WIREGUARD_ADD_PEER_CONFIG
           echo "# $WIREGUARD_WEBSITE_URL
 [Interface]
@@ -1184,11 +1184,11 @@ PublicKey = $SERVER_PUBKEY" >>$WIREGUARD_CLIENT_PATH/"$NEW_CLIENT_NAME"-$WIREGUA
         if [ -x "$(command -v wg)" ]; then
           echo "Which WireGuard user do you want to remove?"
           # shellcheck disable=SC2002
-          cat $WIREGUARD_CONFIG | grep start | awk '{ print $2 }'
+          cat ${WIREGUARD_CONFIG} | grep start | awk '{ print $2 }'
           read -rp "Type in Client Name : " -e REMOVECLIENT
           read -rp "Are you sure you want to remove $REMOVECLIENT ? (y/n): " -n 1 -r
           if [[ $REPLY =~ ^[Yy]$ ]]; then
-            sed -i "/\# $REMOVECLIENT start/,/\# $REMOVECLIENT end/d" $WIREGUARD_CONFIG
+            sed -i "/\# $REMOVECLIENT start/,/\# $REMOVECLIENT end/d" ${WIREGUARD_CONFIG}
             rm -f $WIREGUARD_CLIENT_PATH/"$REMOVECLIENT"-$WIREGUARD_PUB_NIC.conf
             echo "Client $REMOVECLIENT has been removed."
           elif [[ $REPLY =~ ^[Nn]$ ]]; then
@@ -1203,19 +1203,19 @@ PublicKey = $SERVER_PUBKEY" >>$WIREGUARD_CLIENT_PATH/"$NEW_CLIENT_NAME"-$WIREGUA
         fi
         ;;
       7) # Reinstall Wireguard
-        if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ] || [ "$DISTRO" == "linuxmint" ]; }; then
+        if { [ "${DISTRO}" == "ubuntu" ] || [ "${DISTRO}" == "debian" ] || [ "${DISTRO}" == "raspbian" ] || [ "${DISTRO}" == "pop" ] || [ "${DISTRO}" == "kali" ] || [ "${DISTRO}" == "linuxmint" ]; }; then
           dpkg-reconfigure wireguard-dkms
           modprobe wireguard
           systemctl restart wg-quick@$WIREGUARD_PUB_NIC
-        elif { [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ]; }; then
+        elif { [ "${DISTRO}" == "fedora" ] || [ "${DISTRO}" == "centos" ] || [ "${DISTRO}" == "rhel" ]; }; then
           yum reinstall wireguard-tools -y
           service wg-quick@$WIREGUARD_PUB_NIC restart
-        elif { [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "archarm" ] || [ "$DISTRO" == "manjaro" ]; }; then
+        elif { [ "${DISTRO}" == "arch" ] || [ "${DISTRO}" == "archarm" ] || [ "${DISTRO}" == "manjaro" ]; }; then
           pacman -Rs --noconfirm wireguard-tools
           service wg-quick@$WIREGUARD_PUB_NIC restart
-        elif [ "$DISTRO" == "alpine" ]; then
+        elif [ "${DISTRO}" == "alpine" ]; then
           apk fix wireguard-tools
-        elif [ "$DISTRO" == "freebsd" ]; then
+        elif [ "${DISTRO}" == "freebsd" ]; then
           pkg check wireguard
         fi
         ;;
@@ -1232,17 +1232,17 @@ PublicKey = $SERVER_PUBKEY" >>$WIREGUARD_CLIENT_PATH/"$NEW_CLIENT_NAME"-$WIREGUA
             # Removing Wireguard Files
             rm -rf ${WIREGUARD_PATH}
             rm -rf $WIREGUARD_CLIENT_PATH
-            rm -f $WIREGUARD_CONFIG
+            rm -f ${WIREGUARD_CONFIG}
             rm -f $WIREGUARD_IP_FORWARDING_CONFIG
-            if [ "$DISTRO" == "centos" ]; then
+            if [ "${DISTRO}" == "centos" ]; then
               yum remove wireguard qrencode haveged -y
-            elif { [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "kali" ]; }; then
+            elif { [ "${DISTRO}" == "debian" ] || [ "${DISTRO}" == "kali" ]; }; then
               apt-get remove --purge wireguard qrencode -y
               rm -f /etc/apt/sources.list.d/unstable.list
               rm -f /etc/apt/preferences.d/limit-unstable
-            elif { [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "linuxmint" ]; }; then
+            elif { [ "${DISTRO}" == "pop" ] || [ "${DISTRO}" == "linuxmint" ]; }; then
               apt-get remove --purge wireguard qrencode haveged -y
-            elif [ "$DISTRO" == "ubuntu" ]; then
+            elif [ "${DISTRO}" == "ubuntu" ]; then
               apt-get remove --purge wireguard qrencode haveged -y
               if pgrep systemd-journal; then
                 systemctl enable systemd-resolved
@@ -1251,22 +1251,22 @@ PublicKey = $SERVER_PUBKEY" >>$WIREGUARD_CLIENT_PATH/"$NEW_CLIENT_NAME"-$WIREGUA
                 service systemd-resolved enable
                 service systemd-resolved restart
               fi
-            elif [ "$DISTRO" == "raspbian" ]; then
+            elif [ "${DISTRO}" == "raspbian" ]; then
               apt-key del 04EE7237B7D453EC
               apt-get remove --purge wireguard qrencode haveged dirmngr -y
               rm -f /etc/apt/sources.list.d/unstable.list
               rm -f /etc/apt/preferences.d/limit-unstable
-            elif { [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "archarm" ] || [ "$DISTRO" == "manjaro" ]; }; then
+            elif { [ "${DISTRO}" == "arch" ] || [ "${DISTRO}" == "archarm" ] || [ "${DISTRO}" == "manjaro" ]; }; then
               pacman -Rs wireguard qrencode haveged -y
-            elif [ "$DISTRO" == "fedora" ]; then
+            elif [ "${DISTRO}" == "fedora" ]; then
               dnf remove wireguard qrencode haveged -y
               rm -f /etc/yum.repos.d/wireguard.repo
-            elif [ "$DISTRO" == "rhel" ]; then
+            elif [ "${DISTRO}" == "rhel" ]; then
               yum remove wireguard qrencode haveged -y
               rm -f /etc/yum.repos.d/wireguard.repo
-            elif [ "$DISTRO" == "alpine" ]; then
+            elif [ "${DISTRO}" == "alpine" ]; then
               apk del wireguard-tools libqrencode haveged
-            elif [ "$DISTRO" == "freebsd" ]; then
+            elif [ "${DISTRO}" == "freebsd" ]; then
               pkg delete wireguard libqrencode
             fi
           fi
@@ -1287,17 +1287,17 @@ PublicKey = $SERVER_PUBKEY" >>$WIREGUARD_CLIENT_PATH/"$NEW_CLIENT_NAME"-$WIREGUA
               mv $RESOLV_CONFIG_OLD $RESOLV_CONFIG
               chattr +i $RESOLV_CONFIG
             fi
-            if { [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ]; }; then
+            if { [ "${DISTRO}" == "centos" ] || [ "${DISTRO}" == "rhel" ]; }; then
               yum remove unbound unbound-host -y
-            elif { [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "kali" ] || [ "$DISTRO" == "linuxmint" ]; }; then
+            elif { [ "${DISTRO}" == "debian" ] || [ "${DISTRO}" == "pop" ] || [ "${DISTRO}" == "ubuntu" ] || [ "${DISTRO}" == "raspbian" ] || [ "${DISTRO}" == "kali" ] || [ "${DISTRO}" == "linuxmint" ]; }; then
               apt-get remove --purge unbound unbound-host -y
-            elif { [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "archarm" ] || [ "$DISTRO" == "manjaro" ]; }; then
+            elif { [ "${DISTRO}" == "arch" ] || [ "${DISTRO}" == "archarm" ] || [ "${DISTRO}" == "manjaro" ]; }; then
               pacman -Rs unbound unbound-host -y
-            elif [ "$DISTRO" == "fedora" ]; then
+            elif [ "${DISTRO}" == "fedora" ]; then
               dnf remove unbound -y
-            elif [ "$DISTRO" == "alpine" ]; then
+            elif [ "${DISTRO}" == "alpine" ]; then
               apk del unbound
-            elif [ "$DISTRO" == "freebsd" ]; then
+            elif [ "${DISTRO}" == "freebsd" ]; then
               pkg delete unbound
             fi
             rm -rf $UNBOUND_ROOT
@@ -1324,10 +1324,10 @@ PublicKey = $SERVER_PUBKEY" >>$WIREGUARD_CLIENT_PATH/"$NEW_CLIENT_NAME"-$WIREGUA
           fi
         fi
         # Delete wireguard Backup
-        if [ -f "$WIREGUARD_CONFIG_BACKUP" ]; then
+        if [ -f "${WIREGUARD_CONFIG_BACKUP}" ]; then
           read -rp "Do you really want to remove Wireguard Backup? (y/n): " -n 1 -r
           if [[ $REPLY =~ ^[Yy]$ ]]; then
-            rm -f $WIREGUARD_CONFIG_BACKUP
+            rm -f ${WIREGUARD_CONFIG_BACKUP}
           elif [[ $REPLY =~ ^[Nn]$ ]]; then
             exit
           fi
@@ -1336,9 +1336,9 @@ PublicKey = $SERVER_PUBKEY" >>$WIREGUARD_CLIENT_PATH/"$NEW_CLIENT_NAME"-$WIREGUA
       9) # Update the script
         if [ -x "$(command -v wg)" ]; then
           CURRENT_FILE_PATH="$(realpath "$0")"
-          if [ -f "$CURRENT_FILE_PATH" ]; then
-            curl -o "$CURRENT_FILE_PATH" $WIREGUARD_MANAGER_UPDATE
-            chmod +x "$CURRENT_FILE_PATH" || exit
+          if [ -f "${CURRENT_FILE_PATH}" ]; then
+            curl -o "${CURRENT_FILE_PATH}" $WIREGUARD_MANAGER_UPDATE
+            chmod +x "${CURRENT_FILE_PATH}" || exit
           fi
         fi
         if [ -x "$(command -v unbound)" ]; then
@@ -1350,8 +1350,8 @@ PublicKey = $SERVER_PUBKEY" >>$WIREGUARD_CLIENT_PATH/"$NEW_CLIENT_NAME"-$WIREGUA
       10) # Backup Wireguard Config
         if [ -x "$(command -v wg)" ]; then
           if [ -d "${WIREGUARD_PATH}" ]; then
-            rm -f $WIREGUARD_CONFIG_BACKUP
-            zip -rej $WIREGUARD_CONFIG_BACKUP $WIREGUARD_CONFIG $WIREGUARD_MANAGER $WIREGUARD_INTERFACE
+            rm -f ${WIREGUARD_CONFIG_BACKUP}
+            zip -rej ${WIREGUARD_CONFIG_BACKUP} ${WIREGUARD_CONFIG} ${WIREGUARD_MANAGER} $WIREGUARD_INTERFACE
           else
             exit
           fi
@@ -1362,8 +1362,8 @@ PublicKey = $SERVER_PUBKEY" >>$WIREGUARD_CLIENT_PATH/"$NEW_CLIENT_NAME"-$WIREGUA
           if [ -d "${WIREGUARD_PATH}" ]; then
             rm -rf ${WIREGUARD_PATH}
           fi
-          if [ -f "$WIREGUARD_CONFIG_BACKUP" ]; then
-            unzip $WIREGUARD_CONFIG_BACKUP -d ${WIREGUARD_PATH}
+          if [ -f "${WIREGUARD_CONFIG_BACKUP}" ]; then
+            unzip ${WIREGUARD_CONFIG_BACKUP} -d ${WIREGUARD_PATH}
           else
             exit
           fi
@@ -1383,7 +1383,7 @@ PublicKey = $SERVER_PUBKEY" >>$WIREGUARD_CLIENT_PATH/"$NEW_CLIENT_NAME"-$WIREGUA
   wireguard-next-questions-interface
 
   function wireguard-next-questions-peer() {
-    if [ -f "$WIREGUARD_PEER" ]; then
+    if [ -f "${WIREGUARD_PEER}" ]; then
       echo "What do you want to do?"
       echo "   1) Show WireGuard"
       echo "   2) Start WireGuard"
@@ -1435,19 +1435,19 @@ PublicKey = $SERVER_PUBKEY" >>$WIREGUARD_CLIENT_PATH/"$NEW_CLIENT_NAME"-$WIREGUA
         fi
         ;;
       5) # Reinstall Wireguard
-        if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ] || [ "$DISTRO" == "linuxmint" ]; }; then
+        if { [ "${DISTRO}" == "ubuntu" ] || [ "${DISTRO}" == "debian" ] || [ "${DISTRO}" == "raspbian" ] || [ "${DISTRO}" == "pop" ] || [ "${DISTRO}" == "kali" ] || [ "${DISTRO}" == "linuxmint" ]; }; then
           dpkg-reconfigure wireguard-dkms
           modprobe wireguard
           systemctl restart wg-quick@$WIREGUARD_PUB_NIC
-        elif { [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ]; }; then
+        elif { [ "${DISTRO}" == "fedora" ] || [ "${DISTRO}" == "centos" ] || [ "${DISTRO}" == "rhel" ]; }; then
           yum reinstall wireguard-dkms -y
           service wg-quick@$WIREGUARD_PUB_NIC restart
-        elif { [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "archarm" ] || [ "$DISTRO" == "manjaro" ]; }; then
+        elif { [ "${DISTRO}" == "arch" ] || [ "${DISTRO}" == "archarm" ] || [ "${DISTRO}" == "manjaro" ]; }; then
           pacman -Rs --noconfirm wireguard-tools
           service wg-quick@$WIREGUARD_PUB_NIC restart
-        elif [ "$DISTRO" == "alpine" ]; then
+        elif [ "${DISTRO}" == "alpine" ]; then
           apk fix wireguard-tools
-        elif [ "$DISTRO" == "freebsd" ]; then
+        elif [ "${DISTRO}" == "freebsd" ]; then
           pkg check wireguard
         fi
         ;;
@@ -1464,17 +1464,17 @@ PublicKey = $SERVER_PUBKEY" >>$WIREGUARD_CLIENT_PATH/"$NEW_CLIENT_NAME"-$WIREGUA
             # Removing Wireguard Files
             rm -rf ${WIREGUARD_PATH}
             rm -rf $WIREGUARD_CLIENT_PATH
-            rm -f $WIREGUARD_CONFIG
+            rm -f ${WIREGUARD_CONFIG}
             rm -f $WIREGUARD_IP_FORWARDING_CONFIG
-            if [ "$DISTRO" == "centos" ]; then
+            if [ "${DISTRO}" == "centos" ]; then
               yum remove wireguard qrencode haveged -y
-            elif { [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "kali" ]; }; then
+            elif { [ "${DISTRO}" == "debian" ] || [ "${DISTRO}" == "kali" ]; }; then
               apt-get remove --purge wireguard qrencode -y
               rm -f /etc/apt/sources.list.d/unstable.list
               rm -f /etc/apt/preferences.d/limit-unstable
-            elif { [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "linuxmint" ]; }; then
+            elif { [ "${DISTRO}" == "pop" ] || [ "${DISTRO}" == "linuxmint" ]; }; then
               apt-get remove --purge wireguard qrencode haveged -y
-            elif [ "$DISTRO" == "ubuntu" ]; then
+            elif [ "${DISTRO}" == "ubuntu" ]; then
               apt-get remove --purge wireguard qrencode haveged -y
               if pgrep systemd-journal; then
                 systemctl enable systemd-resolved
@@ -1483,31 +1483,31 @@ PublicKey = $SERVER_PUBKEY" >>$WIREGUARD_CLIENT_PATH/"$NEW_CLIENT_NAME"-$WIREGUA
                 service systemd-resolved enable
                 service systemd-resolved restart
               fi
-            elif [ "$DISTRO" == "raspbian" ]; then
+            elif [ "${DISTRO}" == "raspbian" ]; then
               apt-key del 04EE7237B7D453EC
               apt-get remove --purge wireguard qrencode haveged dirmngr -y
               rm -f /etc/apt/sources.list.d/unstable.list
               rm -f /etc/apt/preferences.d/limit-unstable
-            elif { [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "archarm" ] || [ "$DISTRO" == "manjaro" ]; }; then
+            elif { [ "${DISTRO}" == "arch" ] || [ "${DISTRO}" == "archarm" ] || [ "${DISTRO}" == "manjaro" ]; }; then
               pacman -Rs wireguard qrencode haveged -y
-            elif [ "$DISTRO" == "fedora" ]; then
+            elif [ "${DISTRO}" == "fedora" ]; then
               dnf remove wireguard qrencode haveged -y
               rm -f /etc/yum.repos.d/wireguard.repo
-            elif [ "$DISTRO" == "rhel" ]; then
+            elif [ "${DISTRO}" == "rhel" ]; then
               yum remove wireguard qrencode haveged -y
               rm -f /etc/yum.repos.d/wireguard.repo
-            elif [ "$DISTRO" == "alpine" ]; then
+            elif [ "${DISTRO}" == "alpine" ]; then
               apk del wireguard-tools libqrencode haveged
-            elif [ "$DISTRO" == "freebsd" ]; then
+            elif [ "${DISTRO}" == "freebsd" ]; then
               pkg delete wireguard libqrencode
             fi
           fi
         fi
         # Delete wireguard Backup
-        if [ -f "$WIREGUARD_CONFIG_BACKUP" ]; then
+        if [ -f "${WIREGUARD_CONFIG_BACKUP}" ]; then
           read -rp "Do you really want to remove Wireguard Backup? (y/n): " -n 1 -r
           if [[ $REPLY =~ ^[Yy]$ ]]; then
-            rm -f $WIREGUARD_CONFIG_BACKUP
+            rm -f ${WIREGUARD_CONFIG_BACKUP}
           elif [[ $REPLY =~ ^[Nn]$ ]]; then
             exit
           fi
@@ -1516,17 +1516,17 @@ PublicKey = $SERVER_PUBKEY" >>$WIREGUARD_CLIENT_PATH/"$NEW_CLIENT_NAME"-$WIREGUA
       7) # Update the script
         if [ -x "$(command -v wg)" ]; then
           CURRENT_FILE_PATH="$(realpath "$0")"
-          if [ -f "$CURRENT_FILE_PATH" ]; then
-            curl -o "$CURRENT_FILE_PATH" $WIREGUARD_MANAGER_UPDATE
-            chmod +x "$CURRENT_FILE_PATH" || exit
+          if [ -f "${CURRENT_FILE_PATH}" ]; then
+            curl -o "${CURRENT_FILE_PATH}" $WIREGUARD_MANAGER_UPDATE
+            chmod +x "${CURRENT_FILE_PATH}" || exit
           fi
         fi
         ;;
       8) # Backup Wireguard Config
         if [ -x "$(command -v wg)" ]; then
           if [ -d "${WIREGUARD_PATH}" ]; then
-            rm -f $WIREGUARD_CONFIG_BACKUP
-            zip -rej $WIREGUARD_CONFIG_BACKUP $WIREGUARD_CONFIG $WIREGUARD_MANAGER $WIREGUARD_PEER
+            rm -f ${WIREGUARD_CONFIG_BACKUP}
+            zip -rej ${WIREGUARD_CONFIG_BACKUP} ${WIREGUARD_CONFIG} ${WIREGUARD_MANAGER} ${WIREGUARD_PEER}
           else
             exit
           fi
@@ -1537,8 +1537,8 @@ PublicKey = $SERVER_PUBKEY" >>$WIREGUARD_CLIENT_PATH/"$NEW_CLIENT_NAME"-$WIREGUA
           if [ -d "${WIREGUARD_PATH}" ]; then
             rm -rf ${WIREGUARD_PATH}
           fi
-          if [ -f "$WIREGUARD_CONFIG_BACKUP" ]; then
-            unzip $WIREGUARD_CONFIG_BACKUP -d ${WIREGUARD_PATH}
+          if [ -f "${WIREGUARD_CONFIG_BACKUP}" ]; then
+            unzip ${WIREGUARD_CONFIG_BACKUP} -d ${WIREGUARD_PATH}
           else
             exit
           fi
