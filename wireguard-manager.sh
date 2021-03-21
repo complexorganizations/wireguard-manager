@@ -121,6 +121,7 @@ UNBOUND_CONFIG="${UNBOUND_ROOT}/unbound.conf"
 UNBOUND_ROOT_HINTS="${UNBOUND_ROOT}/root.hints"
 UNBOUND_ANCHOR="/var/lib/unbound/root.key"
 UNBOUND_ROOT_SERVER_CONFIG_URL="https://www.internic.net/domain/named.cache"
+CRON_JOBS_PATH="${WIREGUARD_PATH}/crontab-add"
 
 # Verify that it is an old installation or another installer
 function previous-wireguard-installation() {
@@ -598,7 +599,7 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
       done
       case ${DISABLE_HOST_SETTINGS} in
       1)
-        if [ -f "${WIREGUARD_IP_FORWARDING_CONFIG}" ]; then
+        if [ ! -f "${WIREGUARD_IP_FORWARDING_CONFIG}" ]; then
           rm -f ${WIREGUARD_IP_FORWARDING_CONFIG}
         fi
         if [ ! -f "${WIREGUARD_IP_FORWARDING_CONFIG}" ]; then
@@ -608,7 +609,7 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
         fi
         ;;
       2)
-        if [ -f "${WIREGUARD_IP_FORWARDING_CONFIG}" ]; then
+        if [ ! -f "${WIREGUARD_IP_FORWARDING_CONFIG}" ]; then
           rm -f ${WIREGUARD_IP_FORWARDING_CONFIG}
         fi
         if [ ! -f "${WIREGUARD_IP_FORWARDING_CONFIG}" ]; then
@@ -617,7 +618,7 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
         fi
         ;;
       3)
-        if [ -f "${WIREGUARD_IP_FORWARDING_CONFIG}" ]; then
+        if [ ! -f "${WIREGUARD_IP_FORWARDING_CONFIG}" ]; then
           rm -f ${WIREGUARD_IP_FORWARDING_CONFIG}
         fi
         if [ ! -f "${WIREGUARD_IP_FORWARDING_CONFIG}" ]; then
@@ -673,7 +674,9 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
       done
       case ${AUTOMATIC_UPDATES_SETTINGS} in
       1)
-        crontab -l | { cat; echo "0 0 * * * $(realpath "$0") --update"; } | crontab -
+        echo "0 0 * * * $(realpath "$0") --update" >>"${CRON_JOBS_PATH}"
+        crontab ${CRON_JOBS_PATH}
+        rm -f ${CRON_JOBS_PATH}
         if pgrep systemd-journal; then
           systemctl enable cron
           systemctl restart cron
@@ -722,7 +725,9 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
         if [ -z "${TWILIO_TO_NUMBER}" ]; then
           TWILIO_TO_NUMBER="$(openssl rand -hex 10)"
         fi
-        crontab -l | { cat; echo "* * * * * $(realpath "$0") --notification"; } | crontab -
+        echo "* * * * * $(realpath "$0") --notification" >>"${CRON_JOBS_PATH}"
+        crontab ${CRON_JOBS_PATH}
+        rm -f ${CRON_JOBS_PATH}
         if pgrep systemd-journal; then
           systemctl enable cron
           systemctl restart cron
@@ -787,7 +792,7 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
           CLIENT_DNS="8.8.8.8,8.8.4.4,2001:4860:4860::8888,2001:4860:4860::8844"
           ;;
         2)
-          CLIENT_DNS="176.103.130.130,176.103.130.131,2a00:5a60::ad1:0ff,2a00:5a60::ad2:0ff"
+          CLIENT_DNS="94.140.14.14,94.140.15.15,2a10:50c0::ad1:ff,2a10:50c0::ad2:ff"
           ;;
         3)
           CLIENT_DNS="45.90.28.167,45.90.30.167,2a07:a8c0::12:cf53,2a07:a8c1::12:cf53"
@@ -1104,11 +1109,11 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
       mkdir -p ${WIREGUARD_CLIENT_PATH} && chmod 755 ${WIREGUARD_CLIENT_PATH}
       touch ${WIREGUARD_CONFIG} && chmod 600 ${WIREGUARD_CONFIG}
       if { [ -f "${PIHOLE_MANAGER}" ] || [ -f "${UNBOUND_MANAGER}" ]; }; then
-        IPTABLES_POSTUP="iptables -A FORWARD -i ${WIREGUARD_PUB_NIC} -j ACCEPT; iptables -t nat -A POSTROUTING -o ${SERVER_PUB_NIC} -j MASQUERADE; ip6tables -A FORWARD -i ${WIREGUARD_PUB_NIC} -j ACCEPT; ip6tables -t nat -A POSTROUTING -o ${SERVER_PUB_NIC} -j MASQUERADE; iptables -A INPUT -s ${PRIVATE_SUBNET_V4} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT; ip6tables -A INPUT -s ${PRIVATE_SUBNET_V6} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT"
-        IPTABLES_POSTDOWN="iptables -D FORWARD -i ${WIREGUARD_PUB_NIC} -j ACCEPT; iptables -t nat -D POSTROUTING -o ${SERVER_PUB_NIC} -j MASQUERADE; ip6tables -D FORWARD -i ${WIREGUARD_PUB_NIC} -j ACCEPT; ip6tables -t nat -D POSTROUTING -o ${SERVER_PUB_NIC} -j MASQUERADE; iptables -D INPUT -s ${PRIVATE_SUBNET_V4} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT; ip6tables -D INPUT -s ${PRIVATE_SUBNET_V6} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT"
+        IPTABLES_POSTUP="iptables -A INPUT -i ${SERVER_PUB_NIC} -p icmp -j DROP; iptables -A FORWARD -i ${WIREGUARD_PUB_NIC} -j ACCEPT; iptables -t nat -A POSTROUTING -o ${SERVER_PUB_NIC} -j MASQUERADE; ip6tables -A FORWARD -i ${WIREGUARD_PUB_NIC} -j ACCEPT; ip6tables -t nat -A POSTROUTING -o ${SERVER_PUB_NIC} -j MASQUERADE; iptables -A INPUT -s ${PRIVATE_SUBNET_V4} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT; ip6tables -A INPUT -s ${PRIVATE_SUBNET_V6} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT"
+        IPTABLES_POSTDOWN="iptables -D INPUT -i ${SERVER_PUB_NIC} -p icmp -j DROP; iptables -D FORWARD -i ${WIREGUARD_PUB_NIC} -j ACCEPT; iptables -t nat -D POSTROUTING -o ${SERVER_PUB_NIC} -j MASQUERADE; ip6tables -D FORWARD -i ${WIREGUARD_PUB_NIC} -j ACCEPT; ip6tables -t nat -D POSTROUTING -o ${SERVER_PUB_NIC} -j MASQUERADE; iptables -D INPUT -s ${PRIVATE_SUBNET_V4} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT; ip6tables -D INPUT -s ${PRIVATE_SUBNET_V6} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT"
       else
-        IPTABLES_POSTUP="iptables -A FORWARD -i ${WIREGUARD_PUB_NIC} -j ACCEPT; iptables -t nat -A POSTROUTING -o ${SERVER_PUB_NIC} -j MASQUERADE; ip6tables -A FORWARD -i ${WIREGUARD_PUB_NIC} -j ACCEPT; ip6tables -t nat -A POSTROUTING -o ${SERVER_PUB_NIC} -j MASQUERADE"
-        IPTABLES_POSTDOWN="iptables -D FORWARD -i ${WIREGUARD_PUB_NIC} -j ACCEPT; iptables -t nat -D POSTROUTING -o ${SERVER_PUB_NIC} -j MASQUERADE; ip6tables -D FORWARD -i ${WIREGUARD_PUB_NIC} -j ACCEPT; ip6tables -t nat -D POSTROUTING -o ${SERVER_PUB_NIC} -j MASQUERADE"
+        IPTABLES_POSTUP="iptables -A INPUT -i ${SERVER_PUB_NIC} -p icmp -j DROP; iptables -A FORWARD -i ${WIREGUARD_PUB_NIC} -j ACCEPT; iptables -t nat -A POSTROUTING -o ${SERVER_PUB_NIC} -j MASQUERADE; ip6tables -A FORWARD -i ${WIREGUARD_PUB_NIC} -j ACCEPT; ip6tables -t nat -A POSTROUTING -o ${SERVER_PUB_NIC} -j MASQUERADE"
+        IPTABLES_POSTDOWN="iptables -D INPUT -i ${SERVER_PUB_NIC} -p icmp -j DROP; iptables -D FORWARD -i ${WIREGUARD_PUB_NIC} -j ACCEPT; iptables -t nat -D POSTROUTING -o ${SERVER_PUB_NIC} -j MASQUERADE; ip6tables -D FORWARD -i ${WIREGUARD_PUB_NIC} -j ACCEPT; ip6tables -t nat -D POSTROUTING -o ${SERVER_PUB_NIC} -j MASQUERADE"
       fi
       # Set Wireguard settings for this host and first peer.
       echo "# ${PRIVATE_SUBNET_V4} ${PRIVATE_SUBNET_V6} ${SERVER_HOST}:${SERVER_PORT} ${SERVER_PUBKEY} ${CLIENT_DNS} ${MTU_CHOICE} ${NAT_CHOICE} ${CLIENT_ALLOWED_IP}
