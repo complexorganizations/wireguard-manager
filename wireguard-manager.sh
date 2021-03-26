@@ -14,7 +14,7 @@ super-user-check
 
 # Detect Operating System
 function dist-check() {
-  if [ -e /etc/os-release ]; then
+  if [ -f /etc/os-release ]; then
     # shellcheck disable=SC1091
     source /etc/os-release
     DISTRO=${ID}
