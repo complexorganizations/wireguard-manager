@@ -46,6 +46,8 @@ function installing-system-requirements() {
         apk update && apk add iptables curl bc jq sed zip unzip grep gawk iproute2 systemd coreutils openssl cron ntp
       elif [ "${DISTRO}" == "freebsd" ]; then
         pkg update && pkg install curl jq zip unzip gawk openssl cron ntp
+      elif [ "${DISTRO}" == "darwin" ]; then
+        brew install curl bc jq zip unzip grep awk ntp
       fi
     fi
   else
