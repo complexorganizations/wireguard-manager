@@ -78,16 +78,16 @@ virt-check
 # Check for docker stuff
 function docker-check() {
   if { [ "${DISTRO}" == "ubuntu" ] || [ "${DISTRO}" == "debian" ] || [ "${DISTRO}" == "raspbian" ] || [ "${DISTRO}" == "pop" ] || [ "${DISTRO}" == "kali" ] || [ "${DISTRO}" == "linuxmint" ] || [ "${DISTRO}" == "fedora" ] || [ "${DISTRO}" == "centos" ] || [ "${DISTRO}" == "rhel" ] || [ "${DISTRO}" == "arch" ] || [ "${DISTRO}" == "archarm" ] || [ "${DISTRO}" == "manjaro" ] || [ "${DISTRO}" == "alpine" ] || [ "${DISTRO}" == "freebsd" ]; }; then
-  if [ -f /.dockerenv ]; then
-    DOCKER_KERNEL_VERSION_LIMIT=5.6
-    DOCKER_KERNEL_CURRENT_VERSION=$(uname -r | cut -c1-3)
-    if (($(echo "${KERNEL_CURRENT_VERSION} >= ${KERNEL_VERSION_LIMIT}" | bc -l))); then
-      echo "Correct: Kernel ${KERNEL_CURRENT_VERSION} supported." >>/dev/null
-    else
-      echo "Error: Kernel ${DOCKER_KERNEL_CURRENT_VERSION} not supported, please update to ${DOCKER_KERNEL_VERSION_LIMIT}"
-      exit
+    if [ -f /.dockerenv ]; then
+      DOCKER_KERNEL_VERSION_LIMIT=5.6
+      DOCKER_KERNEL_CURRENT_VERSION=$(uname -r | cut -c1-3)
+      if (($(echo "${KERNEL_CURRENT_VERSION} >= ${KERNEL_VERSION_LIMIT}" | bc -l))); then
+        echo "Correct: Kernel ${KERNEL_CURRENT_VERSION} supported." >>/dev/null
+      else
+        echo "Error: Kernel ${DOCKER_KERNEL_CURRENT_VERSION} not supported, please update to ${DOCKER_KERNEL_VERSION_LIMIT}"
+        exit
+      fi
     fi
-  fi
   fi
 }
 
@@ -97,14 +97,14 @@ docker-check
 # Lets check the kernel version
 function kernel-check() {
   if { [ "${DISTRO}" == "ubuntu" ] || [ "${DISTRO}" == "debian" ] || [ "${DISTRO}" == "raspbian" ] || [ "${DISTRO}" == "pop" ] || [ "${DISTRO}" == "kali" ] || [ "${DISTRO}" == "linuxmint" ] || [ "${DISTRO}" == "fedora" ] || [ "${DISTRO}" == "centos" ] || [ "${DISTRO}" == "rhel" ] || [ "${DISTRO}" == "arch" ] || [ "${DISTRO}" == "archarm" ] || [ "${DISTRO}" == "manjaro" ] || [ "${DISTRO}" == "alpine" ] || [ "${DISTRO}" == "freebsd" ]; }; then
-  KERNEL_VERSION_LIMIT=3.1
-  KERNEL_CURRENT_VERSION=$(uname -r | cut -c1-3)
-  if (($(echo "${KERNEL_CURRENT_VERSION} >= ${KERNEL_VERSION_LIMIT}" | bc -l))); then
-    echo "Correct: Kernel ${KERNEL_CURRENT_VERSION} supported." >>/dev/null
-  else
-    echo "Error: Kernel ${KERNEL_CURRENT_VERSION} not supported, please update to ${KERNEL_VERSION_LIMIT}"
-    exit
-  fi
+    KERNEL_VERSION_LIMIT=3.1
+    KERNEL_CURRENT_VERSION=$(uname -r | cut -c1-3)
+    if (($(echo "${KERNEL_CURRENT_VERSION} >= ${KERNEL_VERSION_LIMIT}" | bc -l))); then
+      echo "Correct: Kernel ${KERNEL_CURRENT_VERSION} supported." >>/dev/null
+    else
+      echo "Error: Kernel ${KERNEL_CURRENT_VERSION} not supported, please update to ${KERNEL_VERSION_LIMIT}"
+      exit
+    fi
   fi
 }
 
@@ -685,7 +685,10 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
       done
       case ${AUTOMATIC_UPDATES_SETTINGS} in
       1)
-        crontab -l | { cat; echo "0 0 * * * $(realpath "$0") --update"; } | crontab -
+        crontab -l | {
+          cat
+          echo "0 0 * * * $(realpath "$0") --update"
+        } | crontab -
         if pgrep systemd-journal; then
           systemctl enable cron
           systemctl restart cron
@@ -734,7 +737,10 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
         if [ -z "${TWILIO_TO_NUMBER}" ]; then
           TWILIO_TO_NUMBER="$(openssl rand -hex 10)"
         fi
-        crontab -l | { cat; echo "* * * * * $(realpath "$0") --notification"; } | crontab -
+        crontab -l | {
+          cat
+          echo "* * * * * $(realpath "$0") --notification"
+        } | crontab -
         if pgrep systemd-journal; then
           systemctl enable cron
           systemctl restart cron
