@@ -77,6 +77,7 @@ virt-check
 
 # Check for docker stuff
 function docker-check() {
+  if { [ "${DISTRO}" == "ubuntu" ] || [ "${DISTRO}" == "debian" ] || [ "${DISTRO}" == "raspbian" ] || [ "${DISTRO}" == "pop" ] || [ "${DISTRO}" == "kali" ] || [ "${DISTRO}" == "linuxmint" ] || [ "${DISTRO}" == "fedora" ] || [ "${DISTRO}" == "centos" ] || [ "${DISTRO}" == "rhel" ] || [ "${DISTRO}" == "arch" ] || [ "${DISTRO}" == "archarm" ] || [ "${DISTRO}" == "manjaro" ] || [ "${DISTRO}" == "alpine" ] || [ "${DISTRO}" == "freebsd" ]; }; then
   if [ -f /.dockerenv ]; then
     DOCKER_KERNEL_VERSION_LIMIT=5.6
     DOCKER_KERNEL_CURRENT_VERSION=$(uname -r | cut -c1-3)
@@ -87,6 +88,7 @@ function docker-check() {
       exit
     fi
   fi
+  fi
 }
 
 # Docker Check
@@ -94,6 +96,7 @@ docker-check
 
 # Lets check the kernel version
 function kernel-check() {
+  if { [ "${DISTRO}" == "ubuntu" ] || [ "${DISTRO}" == "debian" ] || [ "${DISTRO}" == "raspbian" ] || [ "${DISTRO}" == "pop" ] || [ "${DISTRO}" == "kali" ] || [ "${DISTRO}" == "linuxmint" ] || [ "${DISTRO}" == "fedora" ] || [ "${DISTRO}" == "centos" ] || [ "${DISTRO}" == "rhel" ] || [ "${DISTRO}" == "arch" ] || [ "${DISTRO}" == "archarm" ] || [ "${DISTRO}" == "manjaro" ] || [ "${DISTRO}" == "alpine" ] || [ "${DISTRO}" == "freebsd" ]; }; then
   KERNEL_VERSION_LIMIT=3.1
   KERNEL_CURRENT_VERSION=$(uname -r | cut -c1-3)
   if (($(echo "${KERNEL_CURRENT_VERSION} >= ${KERNEL_VERSION_LIMIT}" | bc -l))); then
@@ -101,6 +104,7 @@ function kernel-check() {
   else
     echo "Error: Kernel ${KERNEL_CURRENT_VERSION} not supported, please update to ${KERNEL_VERSION_LIMIT}"
     exit
+  fi
   fi
 }
 
@@ -956,6 +960,8 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
         elif [ "${DISTRO}" == "freebsd" ]; then
           pkg update
           pkg install wireguard libqrencode
+        elif [ "${DISTRO}" == "darwin" ]; then
+          brew install wireguard-tools
         fi
       fi
     fi
