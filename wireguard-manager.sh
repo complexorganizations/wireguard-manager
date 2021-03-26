@@ -966,7 +966,7 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
 					pkg update
 					pkg install wireguard libqrencode
 				elif [ "${DISTRO}" == "darwin" ]; then
-					brew install wireguard-tools
+					brew install wireguard-tools qrencode
 				fi
 			fi
 		fi
@@ -1013,6 +1013,8 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
 						apk add unbound
 					elif [ "${DISTRO}" == "freebsd" ]; then
 						pkg install unbound
+					elif [ "${DISTRO}" == "darwin" ]; then
+						brew install unbound
 					fi
 					if [ -f "${UNBOUND_ANCHOR}" ]; then
 						rm -f ${UNBOUND_ANCHOR}
