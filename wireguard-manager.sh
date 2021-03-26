@@ -207,7 +207,6 @@ function usage-guide() {
 		echo "  --backup      Backup WireGuard"
 		echo "  --restore     Restore WireGuard"
 		echo "  --help        Show Usage Guide"
-		exit
 	fi
 }
 
