@@ -193,21 +193,21 @@ interface-or-peer
 # Usage Guide
 function usage-guide() {
 	if [ -f "${WIREGUARD_INTERFACE}" ]; then
-		echo "usage: ./$(basename "$0") <command>"
-		echo "  --install     Install WireGuard"
-		echo "  --start       Start WireGuard"
-		echo "  --stop        Stop WireGuard"
-		echo "  --restart     Restart WireGuard"
-		echo "  --list        Show WireGuard"
-		echo "  --add         Add WireGuard Peer"
-		echo "  --remove      Remove WireGuard Peer"
-		echo "  --reinstall   Reinstall WireGuard"
-		echo "  --uninstall   Uninstall WireGuard"
-		echo "  --update      Update WireGuard Manager"
-		echo "  --backup      Backup WireGuard"
-		echo "  --restore     Restore WireGuard"
-		echo "  --help        Show Usage Guide"
-	fi
+    echo "usage: ./$(basename "$0") <command>"
+    echo "  --install     Install WireGuard"
+    echo "  --start       Start WireGuard"
+    echo "  --stop        Stop WireGuard"
+    echo "  --restart     Restart WireGuard"
+    echo "  --list        Show WireGuard"
+    echo "  --add         Add WireGuard Peer"
+    echo "  --remove      Remove WireGuard Peer"
+    echo "  --reinstall   Reinstall WireGuard"
+    echo "  --uninstall   Uninstall WireGuard"
+    echo "  --update      Update WireGuard Manager"
+    echo "  --backup      Backup WireGuard"
+    echo "  --restore     Restore WireGuard"
+    echo "  --help        Show Usage Guide"
+  fi
 }
 
 # The usage of the script
