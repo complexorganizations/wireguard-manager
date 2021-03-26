@@ -19,7 +19,8 @@ function dist-check() {
 		source /etc/os-release
 		DISTRO=${ID}
 		DISTRO_VERSION=${VERSION_ID}
-	elif [ "${OSTYPE}" == "darwin20" ]; then
+	fi
+	if [ "${OSTYPE}" == "darwin20" ]; then
 		DISTRO="darwin"
 	fi
 }
