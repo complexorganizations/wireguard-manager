@@ -66,12 +66,16 @@ function virt-check() {
 # Virtualization Check
 virt-check
 
+# Utility function to compare versions
+function version_greater_equal()
+{
+    printf '%s\n' "$1" "$2" | sort --check=quiet --version-sort
+}
+
 # Check for docker stuff
 function docker-check() {
   if [ -f /.dockerenv ]; then
-    DOCKER_KERNEL_VERSION_LIMIT=5.6
-    DOCKER_KERNEL_CURRENT_VERSION=$(uname -r | cut -c1-3)
-    if (($(echo "${KERNEL_CURRENT_VERSION} >= ${KERNEL_VERSION_LIMIT}" | bc -l))); then
+    if version_greater_equal "5.6" "$(uname -r)"; then
       echo "Correct: Kernel ${KERNEL_CURRENT_VERSION} supported." >>/dev/null
     else
       echo "Error: Kernel ${DOCKER_KERNEL_CURRENT_VERSION} not supported, please update to ${DOCKER_KERNEL_VERSION_LIMIT}"
@@ -85,9 +89,7 @@ docker-check
 
 # Lets check the kernel version
 function kernel-check() {
-  KERNEL_VERSION_LIMIT=3.1
-  KERNEL_CURRENT_VERSION=$(uname -r | cut -c1-3)
-  if (($(echo "${KERNEL_CURRENT_VERSION} >= ${KERNEL_VERSION_LIMIT}" | bc -l))); then
+  if version_greater_equal "3.1" "$(uname -r)" ; then
     echo "Correct: Kernel ${KERNEL_CURRENT_VERSION} supported." >>/dev/null
   else
     echo "Error: Kernel ${KERNEL_CURRENT_VERSION} not supported, please update to ${KERNEL_VERSION_LIMIT}"
@@ -837,10 +839,8 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
 
   # Lets check the kernel version and check if headers are required
   function install-kernel-headers() {
-    if { [ -f "${WIREGUARD_INTERFACE}" ] || [ -f "${WIREGUARD_PEER}" ]; }; then
-      KERNEL_VERSION_LIMIT=5.6
-      KERNEL_CURRENT_VERSION=$(uname -r | cut -c1-3)
-      if (($(echo "${KERNEL_CURRENT_VERSION} <= ${KERNEL_VERSION_LIMIT}" | bc -l))); then
+    if { [ -f "${WIREGUARD_INTERFACE}" ] || [ -f "${WIREGUARD_PEER}" ]; }; then     
+      if ! version_greater_equal "5.6" "$(uname -r)"; then
         if { [ "${DISTRO}" == "ubuntu" ] || [ "${DISTRO}" == "debian" ] || [ "${DISTRO}" == "pop" ] || [ "${DISTRO}" == "kali" ] || [ "${DISTRO}" == "linuxmint" ]; }; then
           apt-get update
           apt-get install linux-headers-"$(uname -r)" -y
