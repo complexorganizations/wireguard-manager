@@ -70,8 +70,13 @@ virt-check
 function docker-check() {
   if [ -f /.dockerenv ]; then
     DOCKER_KERNEL_VERSION_LIMIT=5.6
-    DOCKER_KERNEL_CURRENT_VERSION=$(uname -r | cut -c1-3)
-    if (($(echo "${DOCKER_KERNEL_CURRENT_VERSION} >= ${DOCKER_KERNEL_VERSION_LIMIT}" | bc -l))); then
+    DOCKER_KERNEL_CURRENT_VERSION=$(uname -r)
+    DOCKER_KERNEL_CURRENT_VERSION=${DOCKER_KERNEL_CURRENT_VERSION%%-*}
+    DOCKER_KERNEL_CURRENT_VERSION=${DOCKER_KERNEL_CURRENT_VERSION%.*}
+
+    function version { echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'; }
+
+    if [ $(version $DOCKER_KERNEL_CURRENT_VERSION) -ge $(version $DOCKER_KERNEL_VERSION_LIMIT) ]; then
       echo "Correct: Kernel ${DOCKER_KERNEL_CURRENT_VERSION} supported." >>/dev/null
     else
       echo "Error: Kernel ${DOCKER_KERNEL_CURRENT_VERSION} not supported, please update to ${DOCKER_KERNEL_VERSION_LIMIT}"
