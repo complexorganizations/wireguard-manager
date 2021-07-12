@@ -1248,8 +1248,10 @@ else
       echo "   10) Backup WireGuard"
       echo "   11) Restore WireGuard"
       echo "   12) Check WireGuard Status"
-      until [[ "${WIREGUARD_OPTIONS}" =~ ^[0-9]+$ ]] && [ "${WIREGUARD_OPTIONS}" -ge 1 ] && [ "${WIREGUARD_OPTIONS}" -le 12 ]; do
-        read -rp "Select an Option [1-12]: " -e -i 1 WIREGUARD_OPTIONS
+      echo "   13) Update Interface IP"
+      echo "   14) Update Interface Port"
+      until [[ "${WIREGUARD_OPTIONS}" =~ ^[0-9]+$ ]] && [ "${WIREGUARD_OPTIONS}" -ge 1 ] && [ "${WIREGUARD_OPTIONS}" -le 14 ]; do
+        read -rp "Select an Option [1-14]: " -e -i 1 WIREGUARD_OPTIONS
       done
       case ${WIREGUARD_OPTIONS} in
       1) # WG Show
@@ -1605,6 +1607,30 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
               fi
             fi
           fi
+        fi
+        ;;
+      13)
+        if [ -f "${WIREGUARD_INTERFACE}" ]; then
+          SERVER_HOST=$(head -n1 ${WIREGUARD_CONFIG} | awk '{print $4}')
+          SERVER_HOST_V4="$(curl -4 -s 'https://api.ipengine.dev' | jq -r '.network.ip')"
+          if [ -z "${SERVER_HOST_V4}" ]; then
+            echo "Error: While attempting to locate your IP address, an error occurred."
+            exit
+          fi
+          sed -i "s/${SERVER_HOST}/${SERVER_HOST_V4}/g" ${WIREGUARD_CONFIG}
+        fi
+        ;;
+      14)
+        if [ -f "${WIREGUARD_INTERFACE}" ]; then
+          # Find the server port and than change it.
+          until [[ "${SERVER_PORT_NEW}" =~ ^[0-9]+$ ]] && [ "${SERVER_PORT_NEW}" -ge 1 ] && [ "${SERVER_PORT_NEW}" -le 65535 ]; do
+            read -rp "Custom port [1-65535]: " -e -i 51820 SERVER_PORT_NEW
+          done
+          if [ "$(lsof -i UDP:"${SERVER_PORT_NEW}")" ]; then
+            echo "Error: The port ${SERVER_PORT_NEW} is already used by a different application, please use a different port."
+            exit
+          fi
+          sed -i "s/${SERVER_PORT}/${SERVER_PORT_NEW}/g" ${WIREGUARD_CONFIG}
         fi
         ;;
       esac
