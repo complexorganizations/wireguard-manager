@@ -124,10 +124,10 @@ usage: ./wireguard-manager.sh <command>
 * `DISABLE_HOST` - Determine whether or not IPv4 or IPv6 should be disabled.
 * `CLIENT_ALLOWED_IP` - Using an IP range, choose what should be sent to the VPN.
 * `NAT_CHOICE` - Determine whether or not to use the vpn tunnel's keep alive feature.
-* `INSTALL_UNBOUND` - Whether or not to install unbound is up to you.
-* `UNINSTALL_UNBOUND` - If you need to remove Unbound for whatever reason, you can do so.
+* `INSTALL_COREDNS` - Whether or not to install coredns is up to you.
+* `UNINSTALL_COREDNS` - If you need to remove coredns for whatever reason, you can do so.
 * `REMOVE_WIREGUARD` - It is entirely up to you whether or not to remove wireguard altogether.
-* `DNS_CHOICE` - You'll have to utilize another DNS if you don't have Unbound.
+* `DNS_CHOICE` - You'll have to utilize external DNS service if you don't have coredns.
 * `CLIENT_NAME` - The wireguard peer's name.
 * `MTU_CHOICE` - The wireguard peers will utilize this MTU.
 

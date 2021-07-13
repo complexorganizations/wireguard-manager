@@ -116,15 +116,13 @@ WIREGUARD_BACKUP_PASSWORD_PATH="${HOME}/.wireguard-manager"
 WIREGUARD_IP_FORWARDING_CONFIG="/etc/sysctl.d/wireguard.conf"
 RESOLV_CONFIG="/etc/resolv.conf"
 RESOLV_CONFIG_OLD="${RESOLV_CONFIG}.old"
-UNBOUND_ROOT="/etc/unbound"
-UNBOUND_MANAGER="${UNBOUND_ROOT}/wireguard-manager"
-UNBOUND_CONFIG="${UNBOUND_ROOT}/unbound.conf"
-UNBOUND_ROOT_HINTS="${UNBOUND_ROOT}/root.hints"
-UNBOUND_ANCHOR="/var/lib/unbound/root.key"
-UNBOUND_ROOT_SERVER_CONFIG_URL="https://www.internic.net/domain/named.cache"
-UNBOUND_CONFIG_HOST_URL="https://raw.githubusercontent.com/complexorganizations/content-blocker/main/configs/hosts"
-UNBOUND_CONFIG_HOST="${UNBOUND_ROOT}/unbound.conf.d/hosts.conf"
-UNBOUND_CONFIG_HOST_TMP="/tmp/hosts"
+COREDNS_ROOT="/etc/coredns"
+COREDNS_BUILD="${COREDNS_ROOT}/coredns"
+COREDNS_CONFIG="${COREDNS_ROOT}/Corefile"
+COREDNS_HOSTFILE="${COREDNS_ROOT}/hosts"
+COREDNS_MANAGER="${COREDNS_ROOT}/wireguard-manager"
+COREDNS_SERVICE_FILE="/etc/systemd/system/coredns.service"
+CONTENT_BLOCKER_URL="https://raw.githubusercontent.com/complexorganizations/content-blocker/main/configs/hosts"
 
 # Verify that it is an old installation or another installer
 function previous-wireguard-installation() {
@@ -814,19 +812,19 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
   # real time notifications updates
   real-time-notifications
 
-  # Would you like to install Unbound.
+  # Would you like to install coredns.
   function ask-install-dns() {
     if [ -f "${WIREGUARD_INTERFACE}" ]; then
       echo "Which DNS provider would you like to use?"
-      echo "  1) Unbound (Recommended)"
+      echo "  1) Coredns (Recommended)"
       echo "  2) Custom (Advanced)"
       until [[ "${DNS_PROVIDER_SETTINGS}" =~ ^[1-2]$ ]]; do
         read -rp "DNS provider [1-2]: " -e -i 1 DNS_PROVIDER_SETTINGS
       done
       case ${DNS_PROVIDER_SETTINGS} in
       1)
-        INSTALL_UNBOUND="y"
-        if [ "${INSTALL_UNBOUND}" = "y" ]; then
+        INSTALL_COREDNS="y"
+        if [ "${INSTALL_COREDNS}" = "y" ]; then
           read -rp "Do you want to prevent advertisements, tracking, malware, and phishing using the content-blocker? (y/n):" INSTALL_BLOCK_LIST
         fi
         ;;
@@ -1028,97 +1026,75 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
   # Install WireGuard Server
   install-wireguard-server
 
-  # Install WireGuard manager config
-  function install-wireguard-manager-file() {
-    if [ -d "${WIREGUARD_PATH}" ]; then
-      if [ ! -f "${WIREGUARD_MANAGER}" ]; then
-        echo "WireGuard: true" >>${WIREGUARD_MANAGER}
-      fi
-    fi
-  }
-
-  # WireGuard manager config
-  install-wireguard-manager-file
-
-  # Function to install Unbound
-  function install-unbound() {
+  function install-coredns-server() {
     if [ -f "${WIREGUARD_INTERFACE}" ]; then
-      if [ "${INSTALL_UNBOUND}" = "y" ]; then
-        if [ ! -x "$(command -v unbound)" ]; then
-          if [ "${DISTRO}" == "ubuntu" ]; then
-            apt-get install unbound unbound-host e2fsprogs -y
+      if [ "${INSTALL_COREDNS}" = "y" ]; then
+        if [ ! -x "$(command -v coredns)" ]; then
+          # Download Coredns
+          mkdir -P ${COREDNS_ROOT}
+          # Coredns Config
+          if [ "${INSTALL_BLOCK_LIST}" = "y" ]; then
+            echo ". {
+    bind 127.0.0.1 ::1
+    acl {
+        allow net 127.0.0.1 ${IPV4_SUBNET} ${IPV6_SUBNET}
+        block
+    }
+    hosts ${COREDNS_HOSTFILE} {
+        fallthrough
+    }
+    forward . tls://1.1.1.1 tls://1.0.0.1 {
+        tls_servername cloudflare-dns.com
+        health_check 5s
+    }
+    any
+    errors
+    loop
+    cache
+    minimal
+    reload
+}" >>${COREDNS_CONFIG}
+            curl -o ${COREDNS_HOSTFILE} ${CONTENT_BLOCKER_URL}
+            sed -i -e "s/^/0.0.0.0 /" ${COREDNS_HOSTFILE}
+          else
+            echo ". {
+    bind 127.0.0.1 ::1
+    acl {
+        allow net 127.0.0.1 ${IPV4_SUBNET} ${IPV6_SUBNET}
+        block
+    }
+    forward . tls://1.1.1.1 tls://1.0.0.1 {
+        tls_servername cloudflare-dns.com
+        health_check 5s
+    }
+    any
+    errors
+    loop
+    cache
+    minimal
+    reload
+}" >>${COREDNS_CONFIG}
+          fi
+          if [ ! -f "${COREDNS_SERVICE_FILE}" ]; then
+            echo "[Unit]
+Description=CoreDNS DNS server
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=${COREDNS_BUILD} -conf=${COREDNS_CONFIG}
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target" >>${COREDNS_SERVICE_FILE}
+            systemctl daemon-reload
             if pgrep systemd-journal; then
-              systemctl stop systemd-resolved
-              systemctl disable systemd-resolved
+              systemctl enable coredns
+              systemctl start coredns
             else
-              service systemd-resolved stop
-              service systemd-resolved disable
+              service coredns enable
+              service coredns start
             fi
-          elif { [ "${DISTRO}" == "debian" ] || [ "${DISTRO}" == "raspbian" ] || [ "${DISTRO}" == "pop" ] || [ "${DISTRO}" == "kali" ] || [ "${DISTRO}" == "linuxmint" ] || [ "${DISTRO}" == "neon" ]; }; then
-            apt-get install unbound unbound-host e2fsprogs -y
-          elif { [ "${DISTRO}" == "centos" ] || [ "${DISTRO}" == "rhel" ]; }; then
-            yum install unbound unbound-libs -y
-          elif [ "${DISTRO}" == "fedora" ]; then
-            dnf install unbound -y
-          elif { [ "${DISTRO}" == "arch" ] || [ "${DISTRO}" == "archarm" ] || [ "${DISTRO}" == "manjaro" ]; }; then
-            pacman -Syu --noconfirm unbound
-          elif [ "${DISTRO}" == "alpine" ]; then
-            apk add unbound
-          elif [ "${DISTRO}" == "freebsd" ]; then
-            pkg install unbound
-          fi
-          if [ -f "${UNBOUND_ANCHOR}" ]; then
-            rm -f ${UNBOUND_ANCHOR}
-          fi
-          if [ -f "${UNBOUND_CONFIG}" ]; then
-            rm -f ${UNBOUND_CONFIG}
-          fi
-          if [ -f "${UNBOUND_ROOT_HINTS}" ]; then
-            rm -f ${UNBOUND_ROOT_HINTS}
-          fi
-          if [ -d "${UNBOUND_ROOT}" ]; then
-            unbound-anchor -a ${UNBOUND_ANCHOR}
-            curl ${UNBOUND_ROOT_SERVER_CONFIG_URL} --create-dirs -o ${UNBOUND_ROOT_HINTS}
-            NPROC=$(nproc)
-            echo "server:
-    num-threads: ${NPROC}
-    verbosity: 1
-    root-hints: ${UNBOUND_ROOT_HINTS}
-    auto-trust-anchor-file: ${UNBOUND_ANCHOR}
-    interface: 0.0.0.0
-    interface: ::0
-    max-udp-size: 3072
-    access-control: 0.0.0.0/0                 refuse
-    access-control: ::0                       refuse
-    access-control: ${PRIVATE_SUBNET_V4}               allow
-    access-control: ${PRIVATE_SUBNET_V6}          allow
-    access-control: 127.0.0.1                 allow
-    private-address: ${PRIVATE_SUBNET_V4}
-    private-address: ${PRIVATE_SUBNET_V6}
-    private-address: 10.0.0.0/8
-    private-address: 127.0.0.0/8
-    private-address: 169.254.0.0/16
-    private-address: 169.254.0.0/16
-    private-address: 192.168.0.0/16
-    private-address: fd00::/8
-    private-address: fe80::/10
-    private-address: ::ffff:0:0/96
-    do-tcp: no
-    hide-identity: yes
-    hide-version: yes
-    harden-glue: yes
-    harden-dnssec-stripped: yes
-    harden-referral-path: yes
-    unwanted-reply-threshold: 10000000
-    val-log-level: 1
-    cache-min-ttl: 1800
-    cache-max-ttl: 14400
-    prefetch: yes
-    qname-minimisation: yes
-    prefetch-key: yes" >>${UNBOUND_CONFIG}
-          fi
-          if [ -f "${RESOLV_CONFIG_OLD}" ]; then
-            rm -f ${RESOLV_CONFIG_OLD}
           fi
           if [ -f "${RESOLV_CONFIG}" ]; then
             chattr -i ${RESOLV_CONFIG}
@@ -1130,30 +1106,23 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
             echo "nameserver 127.0.0.1" >>${RESOLV_CONFIG}
             echo "nameserver ::1" >>${RESOLV_CONFIG}
           fi
-          echo "Unbound: true" >>${UNBOUND_MANAGER}
-          if [[ ${INSTALL_BLOCK_LIST} =~ ^[Yy]$ ]]; then
-            echo "include: ${UNBOUND_CONFIG_HOST}" >>${UNBOUND_CONFIG}
-            curl "${UNBOUND_CONFIG_HOST_URL}" -o ${UNBOUND_CONFIG_HOST_TMP}
-            sed -i -e "s_.*_0.0.0.0 &_" ${UNBOUND_CONFIG_HOST_TMP}
-            grep "^0\.0\.0\.0" "${UNBOUND_CONFIG_HOST_TMP}" | awk '{print "local-data: \""$2" IN A 0.0.0.0\""}' >"${UNBOUND_CONFIG_HOST}"
-            rm -f ${UNBOUND_CONFIG_HOST_TMP}
-          fi
-          # restart unbound
-          if pgrep systemd-journal; then
-            systemctl reenable unbound
-            systemctl restart unbound
-          else
-            service unbound enable
-            service unbound restart
-          fi
+          echo "Coredns: true" >>${COREDNS_MANAGER}
         fi
-        CLIENT_DNS="${GATEWAY_ADDRESS_V4},${GATEWAY_ADDRESS_V6}"
       fi
     fi
   }
 
-  # Running Install Unbound
-  install-unbound
+  # Install WireGuard manager config
+  function install-wireguard-manager-file() {
+    if [ -d "${WIREGUARD_PATH}" ]; then
+      if [ ! -f "${WIREGUARD_MANAGER}" ]; then
+        echo "WireGuard: true" >>${WIREGUARD_MANAGER}
+      fi
+    fi
+  }
+
+  # WireGuard manager config
+  install-wireguard-manager-file
 
   # WireGuard Set Config
   function wireguard-setconf() {
@@ -1168,7 +1137,7 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
       PEER_PORT=$(shuf -i1024-65535 -n1)
       mkdir -p ${WIREGUARD_CLIENT_PATH}
       touch ${WIREGUARD_CONFIG} && chmod 600 ${WIREGUARD_CONFIG}
-      if [ -f "${UNBOUND_MANAGER}" ]; then
+      if [ -f "${COREDNS_MANAGER}" ]; then
         IPTABLES_POSTUP="iptables -A FORWARD -i ${WIREGUARD_PUB_NIC} -j ACCEPT; iptables -t nat -A POSTROUTING -o ${SERVER_PUB_NIC} -j MASQUERADE; ip6tables -A FORWARD -i ${WIREGUARD_PUB_NIC} -j ACCEPT; ip6tables -t nat -A POSTROUTING -o ${SERVER_PUB_NIC} -j MASQUERADE; iptables -A INPUT -s ${PRIVATE_SUBNET_V4} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT; ip6tables -A INPUT -s ${PRIVATE_SUBNET_V6} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT"
         IPTABLES_POSTDOWN="iptables -D FORWARD -i ${WIREGUARD_PUB_NIC} -j ACCEPT; iptables -t nat -D POSTROUTING -o ${SERVER_PUB_NIC} -j MASQUERADE; ip6tables -D FORWARD -i ${WIREGUARD_PUB_NIC} -j ACCEPT; ip6tables -t nat -D POSTROUTING -o ${SERVER_PUB_NIC} -j MASQUERADE; iptables -D INPUT -s ${PRIVATE_SUBNET_V4} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT; ip6tables -D INPUT -s ${PRIVATE_SUBNET_V6} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT"
       else
@@ -1462,49 +1431,6 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
             fi
           fi
         fi
-        # Uninstall Unbound
-        if [ -f "${UNBOUND_MANAGER}" ]; then
-          if [ -x "$(command -v unbound)" ]; then
-            if pgrep systemd-journal; then
-              systemctl disable unbound
-              systemctl stop unbound
-            else
-              service unbound disable
-              service unbound stop
-            fi
-            if [ -f "${RESOLV_CONFIG_OLD}" ]; then
-              chattr -i ${RESOLV_CONFIG}
-              rm -f ${RESOLV_CONFIG}
-              mv ${RESOLV_CONFIG_OLD} ${RESOLV_CONFIG}
-              chattr +i ${RESOLV_CONFIG}
-            fi
-            if { [ "${DISTRO}" == "centos" ] || [ "${DISTRO}" == "rhel" ]; }; then
-              yum remove unbound unbound-host -y
-            elif { [ "${DISTRO}" == "debian" ] || [ "${DISTRO}" == "pop" ] || [ "${DISTRO}" == "ubuntu" ] || [ "${DISTRO}" == "raspbian" ] || [ "${DISTRO}" == "kali" ] || [ "${DISTRO}" == "linuxmint" ] || [ "${DISTRO}" == "neon" ]; }; then
-              apt-get remove --purge unbound unbound-host -y
-            elif { [ "${DISTRO}" == "arch" ] || [ "${DISTRO}" == "archarm" ] || [ "${DISTRO}" == "manjaro" ]; }; then
-              pacman -Rs --noconfirm unbound unbound-host
-            elif [ "${DISTRO}" == "fedora" ]; then
-              dnf remove unbound -y
-            elif [ "${DISTRO}" == "alpine" ]; then
-              apk del unbound
-            elif [ "${DISTRO}" == "freebsd" ]; then
-              pkg delete unbound
-            fi
-            if [ -d "${UNBOUND_ROOT}" ]; then
-              rm -rf ${UNBOUND_ROOT}
-            fi
-            if [ -f "${UNBOUND_ANCHOR}" ]; then
-              rm -f ${UNBOUND_ANCHOR}
-            fi
-            if [ -f "${UNBOUND_ROOT_HINTS}" ]; then
-              rm -f ${UNBOUND_ROOT_HINTS}
-            fi
-            if [ -f "${UNBOUND_CONFIG}" ]; then
-              rm -f ${UNBOUND_CONFIG}
-            fi
-          fi
-        fi
         # Delete WireGuard backup
         if [ -f "${WIREGUARD_CONFIG_BACKUP}" ]; then
           read -rp "Are you sure you want to remove WireGuard backup? (y/n): " -n 1 -r
@@ -1521,6 +1447,14 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
         if [ -x "$(command -v cron)" ]; then
           crontab -r
         fi
+        # Completely remove coredns and the service.
+        if [ -d "${COREDNS_ROOT}" ]; then
+          rm -rf ${COREDNS_ROOT}
+          # Remove the coredns service from your system.
+          if [ -f "${COREDNS_SERVICE_FILE}" ]; then
+            rm -f ${COREDNS_SERVICE_FILE}
+          fi
+        fi
         ;;
       9) # Update the script
         if [ -x "$(command -v wg)" ]; then
@@ -1530,27 +1464,11 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
             chmod +x "${CURRENT_FILE_PATH}" || exit
           fi
         fi
-        # Update the unbound configs
-        if [ -f "${UNBOUND_MANAGER}" ]; then
-          if [ -x "$(command -v unbound)" ]; then
-            # Refresh the root hints
-            if [ -f "${UNBOUND_ROOT_HINTS}" ]; then
-              curl -o ${UNBOUND_ROOT_HINTS} ${UNBOUND_ROOT_SERVER_CONFIG_URL}
-            fi
-          fi
-          # The block list should be updated.
-          if [ -f "${UNBOUND_CONFIG_HOST}" ]; then
-            rm -f ${UNBOUND_CONFIG_HOST}
-            curl "${UNBOUND_CONFIG_HOST_URL}" -o ${UNBOUND_CONFIG_HOST_TMP}
-            sed -i -e "s_.*_0.0.0.0 &_" ${UNBOUND_CONFIG_HOST_TMP}
-            grep "^0\.0\.0\.0" "${UNBOUND_CONFIG_HOST_TMP}" | awk '{print "local-data: \""$2" IN A 0.0.0.0\""}' >"${UNBOUND_CONFIG_HOST}"
-            rm -f ${UNBOUND_CONFIG_HOST_TMP}
-          fi
-          if pgrep systemd-journal; then
-            systemctl restart unbound
-          else
-            service unbound restart
-          fi
+        # The block list should be updated.
+        if [ -f "${COREDNS_HOSTFILE}" ]; then
+          rm -f ${COREDNS_HOSTFILE}
+          curl -o ${COREDNS_HOSTFILE} ${CONTENT_BLOCKER_URL}
+          sed -i -e "s/^/0.0.0.0 /" ${COREDNS_HOSTFILE}
         fi
         ;;
       10) # Backup WireGuard Config
