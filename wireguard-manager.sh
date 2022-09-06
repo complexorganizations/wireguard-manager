@@ -140,7 +140,7 @@ if { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] |
 fi
 UNBOUND_CONFIG_DIRECTORY="${UNBOUND_ROOT}/unbound.conf.d"
 UNBOUND_CONFIG_HOST="${UNBOUND_CONFIG_DIRECTORY}/hosts.conf"
-case $(shuf --input-range=1-4 --head-count=1) in
+case $(shuf --input-range=1-5 --head-count=1) in
 1)
   UNBOUND_ROOT_SERVER_CONFIG_URL="https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/named.cache"
   ;;
@@ -153,8 +153,11 @@ case $(shuf --input-range=1-4 --head-count=1) in
 4)
   UNBOUND_ROOT_SERVER_CONFIG_URL="https://www.internic.net/domain/named.cache"
   ;;
+5)
+  UNBOUND_ROOT_SERVER_CONFIG_URL="https://complexorganizations.github.io/wireguard-manager/assets/named.cache"
+  ;;
 esac
-case $(shuf --input-range=1-4 --head-count=1) in
+case $(shuf --input-range=1-5 --head-count=1) in
 1)
   UNBOUND_CONFIG_HOST_URL="https://raw.githubusercontent.com/complexorganizations/content-blocker/main/assets/hosts"
   ;;
@@ -167,8 +170,11 @@ case $(shuf --input-range=1-4 --head-count=1) in
 4)
   UNBOUND_CONFIG_HOST_URL="https://combinatronics.io/complexorganizations/content-blocker/main/assets/hosts"
   ;;
+5)
+  UNBOUND_CONFIG_HOST_URL="https://complexorganizations.github.io/wireguard-manager/assets/hosts"
+  ;;
 esac
-case $(shuf --input-range=1-4 --head-count=1) in
+case $(shuf --input-range=1-5 --head-count=1) in
 1)
   WIREGUARD_MANAGER_UPDATE="https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh"
   ;;
@@ -180,6 +186,9 @@ case $(shuf --input-range=1-4 --head-count=1) in
   ;;
 4)
   WIREGUARD_MANAGER_UPDATE="https://combinatronics.io/complexorganizations/wireguard-manager/main/wireguard-manager.sh"
+  ;;
+5)
+  WIREGUARD_MANAGER_UPDATE="https://complexorganizations.github.io/wireguard-manager/wireguard-manager.sh"
   ;;
 esac
 if { [ "${CURRENT_DISTRO}" == "fedora" ] || [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "rhel" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ]; }; then
