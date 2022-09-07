@@ -29,10 +29,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          paths: |
-            "assets/hosts"
-            "assets/named.cache"
-            "wireguard-manager.sh"
+          paths:
+            "."
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
