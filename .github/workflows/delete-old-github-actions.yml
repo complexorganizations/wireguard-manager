@@ -1,7 +1,7 @@
 name: Delete old github workflows
 on:
-  push:
-    branches: ["main"]
+  schedule:
+    - cron: "0 0 1 * *"
 jobs:
   del_runs:
     runs-on: ubuntu-latest
