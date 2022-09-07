@@ -29,7 +29,7 @@ jobs:
           git config user.email github-actions@github.com
           if [[ "$(git status)" == *"${{ env.CONTENT_BLOCKER_PATH }}"* ]]; then
             git add "${{ env.CONTENT_BLOCKER_PATH }}"
-            git commit -m "Updated named.cache $(date)"
+            git commit -m "Updated hosts $(date)"
             git push
           else
             exit 0
