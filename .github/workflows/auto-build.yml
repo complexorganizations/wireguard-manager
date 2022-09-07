@@ -6,6 +6,7 @@ on:
   pull_request:
     paths:
       - "**.sh"
+  workflow_dispatch:
 jobs:
   build:
     name: Build on ubuntu
