@@ -1,27 +1,21 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
-
+name: Deploy files to github pages
 on:
-  # Runs on pushes targeting the default branch
   push:
-    branches: ["main"]
-
-  # Allows you to run this workflow manually from the Actions tab
+    branches:
+      - "main"
+    paths:
+      - "assets/hosts"
+      - "assets/named.cache"
+      - "wireguard-manager.sh"
   workflow_dispatch:
-
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
-
-# Allow one concurrent deployment
 concurrency:
   group: "pages"
   cancel-in-progress: true
-
 jobs:
-  # Single deploy job since we're just deploying
   deploy:
     environment:
       name: github-pages
@@ -35,8 +29,10 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          # Upload entire repository
-          path: '.'
+          paths: |
+            "assets/hosts"
+            "assets/named.cache"
+            "wireguard-manager.sh"
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
