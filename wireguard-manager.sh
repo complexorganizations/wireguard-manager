@@ -334,6 +334,9 @@ headless-install
 # Set up the wireguard, if config it isn't already there.
 if [ ! -f "${WIREGUARD_CONFIG}" ]; then
 
+  # Variables
+  get-network-information
+
   # Custom IPv4 subnet
   function set-ipv4-subnet() {
     echo "What IPv4 subnet do you want to use?"
@@ -399,7 +402,6 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     until [[ "${SERVER_HOST_V4_SETTINGS}" =~ ^[1-2]$ ]]; do
       read -rp "IPv4 Choice [1-2]:" -e -i 1 SERVER_HOST_V4_SETTINGS
     done
-    get-network-information
     case ${SERVER_HOST_V4_SETTINGS} in
     1)
       SERVER_HOST_V4=${DEFAULT_INTERFACE_IPV4}
