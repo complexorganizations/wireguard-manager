@@ -334,9 +334,6 @@ headless-install
 # Set up the wireguard, if config it isn't already there.
 if [ ! -f "${WIREGUARD_CONFIG}" ]; then
 
-  # Variables
-  get-network-information
-
   # Custom IPv4 subnet
   function set-ipv4-subnet() {
     echo "What IPv4 subnet do you want to use?"
@@ -393,6 +390,8 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
   PRIVATE_SUBNET_MASK_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter="/" --fields=2)
   # IPv6 Getaway
   GATEWAY_ADDRESS_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter=":" --fields=1-3)::1
+  # Get the networking data
+  get-network-information
 
   # Get the IPv4
   function test-connectivity-v4() {
