@@ -387,6 +387,8 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
   PRIVATE_SUBNET_MASK_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter="/" --fields=2)
   # IPv6 Getaway
   GATEWAY_ADDRESS_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter=":" --fields=1-3)::1
+  # Get the networking data
+  get-network-information
 
   # Get the IPv4
   function test-connectivity-v4() {
@@ -396,7 +398,6 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     until [[ "${SERVER_HOST_V4_SETTINGS}" =~ ^[1-2]$ ]]; do
       read -rp "IPv4 Choice [1-2]:" -e -i 1 SERVER_HOST_V4_SETTINGS
     done
-    get-network-information
     case ${SERVER_HOST_V4_SETTINGS} in
     1)
       SERVER_HOST_V4=${DEFAULT_INTERFACE_IPV4}
