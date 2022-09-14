@@ -69,7 +69,7 @@ installing-system-requirements
 function virt-check() {
   CURRENT_SYSTEM_VIRTUALIZATION=$(systemd-detect-virt)
   case ${CURRENT_SYSTEM_VIRTUALIZATION} in
-  "kvm" | "none" | "qemu" | "lxc" | "microsoft" | "vmware" | "xen") ;;
+  "kvm" | "none" | "qemu" | "lxc" | "microsoft" | "vmware" | "xen" | "amazon") ;;
   *)
     echo "${CURRENT_SYSTEM_VIRTUALIZATION} virtualization is not supported (yet)."
     exit
