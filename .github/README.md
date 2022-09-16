@@ -277,15 +277,6 @@ bash -x /root/wireguard-manager/wireguard-manager.sh >>/root/wireguard-manager/w
 ### ⛑️ Support
 Give a ⭐️ and 🍴 if this project helped you!
 
-<p align="center">
-	<a href="https://github.com/sponsors/Prajwal-Koirala">
-		<img alt="Sponsors" src="https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub" target="_blank" />
-	</a>
-</p>
-
-- Ethereum : `0xd3c5449C298433cEd4aC0E57D1F750d89A3FECC7`
-- USD Coin : `0xF1f09037b85766F014DF2D028f76Cce47541Fb53`
-
 ---
 ### ❤️ Credits
 Open Source Community
