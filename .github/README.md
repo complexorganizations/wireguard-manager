@@ -263,7 +263,7 @@ https://user-images.githubusercontent.com/16564273/125283630-9845d180-e2e6-11eb-
 ### 🤝 Developing
 Developing the code without having to clone the repository
 
-[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/complexorganizations/wireguard-manager)
+[![Open in Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white)](https://open.vscode.dev/complexorganizations/wireguard-manager)
 
 ### 🐛 Debugging
 After cloning the repo, Then start debugging the code.
