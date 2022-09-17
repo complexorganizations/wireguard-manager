@@ -1478,6 +1478,16 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
       if [ "${OLD_SERVER_HOST}" != "${NEW_SERVER_HOST}" ]; then
         sed --in-place "1s/${OLD_SERVER_HOST}/${NEW_SERVER_HOST}/" ${WIREGUARD_CONFIG}
       fi
+      COMPLETE_CLIENT_LIST=$(grep start ${WIREGUARD_CONFIG} | cut --delimiter=" " --fields=2)
+      for CLIENT_LIST_ARRAY in ${COMPLETE_CLIENT_LIST}; do
+        USER_LIST[ADD_CONTENT]=${CLIENT_LIST_ARRAY}
+        ADD_CONTENT=$(("${ADD_CONTENT}" + 1))
+      done
+      for CLIENT_NAME in "${USER_LIST[@]}"; do
+        if [ -f "${WIREGUARD_CLIENT_PATH}/${CLIENT_NAME}-${WIREGUARD_PUB_NIC}.conf" ]; then
+          sed --in-place "1s/${OLD_SERVER_HOST}/${NEW_SERVER_HOST}/" ${WIREGUARD_CLIENT_PATH}/${CLIENT_NAME}-${WIREGUARD_PUB_NIC}.conf
+        fi
+      done
       ;;
     13) # Change the wireguard interface's port number.
       OLD_SERVER_PORT=$(head --lines=1 ${WIREGUARD_CONFIG} | cut --delimiter=" " --fields=4 | cut --delimiter=":" --fields=2)
