@@ -1542,11 +1542,9 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
       if [ -x "$(command -v unbound)" ]; then
         if [[ "$(unbound-checkconf ${UNBOUND_CONFIG})" != *"no errors"* ]]; then
           echo "We found an error on your unbound config file located at ${UNBOUND_CONFIG}"
-          exit
         fi
         if [[ "$(unbound-host -C ${UNBOUND_CONFIG} -v api.ipengine.dev)" != *"secure"* ]]; then
           echo "We found an error on your unbound DNS-SEC config file loacted at ${UNBOUND_CONFIG}"
-          exit
         fi
       fi
       ;;
