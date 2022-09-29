@@ -117,6 +117,18 @@ function check-current-init-system() {
 # Check if the current init system is supported
 check-current-init-system
 
+# Check if there are enough space to continue with the installation.
+function check-disk-space() {
+  FREE_SPACE_ON_DRIVE_IN_MB=$(df -m / | tr --squeeze-repeats " " | tail -n1 | cut --delimiter=" " --fields=4)
+  if [ "${FREE_SPACE_ON_DRIVE}" -le 1024 ]; then
+    echo "Error: You need more than one GB of free space to install everything required"
+    exit
+  fi
+}
+
+# Check if there is enough disk space
+check-disk-space
+
 # Global variables
 CURRENT_FILE_PATH=$(realpath "${0}")
 WIREGUARD_WEBSITE_URL="https://www.wireguard.com"
