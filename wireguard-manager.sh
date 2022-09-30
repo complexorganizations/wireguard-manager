@@ -121,7 +121,7 @@ check-current-init-system
 function check-disk-space() {
   FREE_SPACE_ON_DRIVE_IN_MB=$(df -m / | tr --squeeze-repeats " " | tail -n1 | cut --delimiter=" " --fields=4)
   if [ "${FREE_SPACE_ON_DRIVE}" -le 1024 ]; then
-    echo "Error: You need more than one GB of free space to install everything required"
+    echo "Error: More than 1 GB of free space is needed to install everything."
     exit
   fi
 }
