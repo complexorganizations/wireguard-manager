@@ -66,7 +66,7 @@ installing-system-requirements
 function virt-check() {
   CURRENT_SYSTEM_VIRTUALIZATION=$(systemd-detect-virt)
   case ${CURRENT_SYSTEM_VIRTUALIZATION} in
-  "kvm" | "none" | "qemu" | "lxc" | "microsoft" | "vmware" | "xen") ;;
+  "kvm" | "none" | "qemu" | "lxc" | "microsoft" | "vmware" | "xen" | "amazon") ;;
   *)
     echo "${CURRENT_SYSTEM_VIRTUALIZATION} virtualization is not supported (yet)."
     exit
@@ -113,6 +113,18 @@ function check-current-init-system() {
 
 # Check if the current init system is supported
 check-current-init-system
+
+# Check if there are enough space to continue with the installation.
+function check-disk-space() {
+  FREE_SPACE_ON_DRIVE_IN_MB=$(df -m / | tr --squeeze-repeats " " | tail -n1 | cut --delimiter=" " --fields=4)
+  if [ "${FREE_SPACE_ON_DRIVE}" -le 1024 ]; then
+    echo "Error: More than 1 GB of free space is needed to install everything."
+    exit
+  fi
+}
+
+# Check if there is enough disk space
+check-disk-space
 
 # Global variables
 CURRENT_FILE_PATH=$(realpath "${0}")
@@ -1437,8 +1449,8 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
         service wg-quick@${WIREGUARD_PUB_NIC} restart
       fi
       ;;
-    12) get-network-information
-      # Change the IP address of your wireguard interface.
+    12) # Change the IP address of your wireguard interface.
+      get-network-information
       CURRENT_IP_METHORD=$(head --lines=1 ${WIREGUARD_CONFIG} | cut --delimiter=" " --fields=4)
       if [[ ${CURRENT_IP_METHORD} != *"["* ]]; then
         OLD_SERVER_HOST=$(head --lines=1 ${WIREGUARD_CONFIG} | cut --delimiter=" " --fields=4 | cut --delimiter=":" --fields=1)
@@ -1451,6 +1463,16 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
       if [ "${OLD_SERVER_HOST}" != "${NEW_SERVER_HOST}" ]; then
         sed --in-place "1s/${OLD_SERVER_HOST}/${NEW_SERVER_HOST}/" ${WIREGUARD_CONFIG}
       fi
+      COMPLETE_CLIENT_LIST=$(grep start ${WIREGUARD_CONFIG} | cut --delimiter=" " --fields=2)
+      for CLIENT_LIST_ARRAY in ${COMPLETE_CLIENT_LIST}; do
+        USER_LIST[ADD_CONTENT]=${CLIENT_LIST_ARRAY}
+        ADD_CONTENT=$(("${ADD_CONTENT}" + 1))
+      done
+      for CLIENT_NAME in "${USER_LIST[@]}"; do
+        if [ -f "${WIREGUARD_CLIENT_PATH}/${CLIENT_NAME}-${WIREGUARD_PUB_NIC}.conf" ]; then
+          sed --in-place "s/${OLD_SERVER_HOST}/${NEW_SERVER_HOST}/" "${WIREGUARD_CLIENT_PATH}/${CLIENT_NAME}-${WIREGUARD_PUB_NIC}.conf"
+        fi
+      done
       ;;
     13) # Change the wireguard interface's port number.
       OLD_SERVER_PORT=$(head --lines=1 ${WIREGUARD_CONFIG} | cut --delimiter=" " --fields=4 | cut --delimiter=":" --fields=2)
@@ -1464,6 +1486,16 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
       if [ "${OLD_SERVER_PORT}" != "${NEW_SERVER_PORT}" ]; then
         sed --in-place "s/${OLD_SERVER_PORT}/${NEW_SERVER_PORT}/g" ${WIREGUARD_CONFIG}
       fi
+      COMPLETE_CLIENT_LIST=$(grep start ${WIREGUARD_CONFIG} | cut --delimiter=" " --fields=2)
+      for CLIENT_LIST_ARRAY in ${COMPLETE_CLIENT_LIST}; do
+        USER_LIST[ADD_CONTENT]=${CLIENT_LIST_ARRAY}
+        ADD_CONTENT=$(("${ADD_CONTENT}" + 1))
+      done
+      for CLIENT_NAME in "${USER_LIST[@]}"; do
+        if [ -f "${WIREGUARD_CLIENT_PATH}/${CLIENT_NAME}-${WIREGUARD_PUB_NIC}.conf" ]; then
+          sed --in-place "s/${OLD_SERVER_PORT}/${NEW_SERVER_PORT}/" "${WIREGUARD_CLIENT_PATH}/${CLIENT_NAME}-${WIREGUARD_PUB_NIC}.conf"
+        fi
+      done
       ;;
     14) # All wireguard peers should be removed from your interface
       COMPLETE_CLIENT_LIST=$(grep start ${WIREGUARD_CONFIG} | cut --delimiter=" " --fields=2)
@@ -1495,11 +1527,9 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
       if [ -x "$(command -v unbound)" ]; then
         if [[ "$(unbound-checkconf ${UNBOUND_CONFIG})" != *"no errors"* ]]; then
           echo "We found an error on your unbound config file located at ${UNBOUND_CONFIG}"
-          exit
         fi
         if [[ "$(unbound-host -C ${UNBOUND_CONFIG} -v api.ipengine.dev)" != *"secure"* ]]; then
           echo "We found an error on your unbound DNS-SEC config file loacted at ${UNBOUND_CONFIG}"
-          exit
         fi
       fi
       ;;

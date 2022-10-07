@@ -263,7 +263,7 @@ https://user-images.githubusercontent.com/16564273/125283630-9845d180-e2e6-11eb-
 ### 🤝 Developing
 Developing the code without having to clone the repository
 
-[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/complexorganizations/wireguard-manager)
+[![Open in Visual Studio Code](https://img.shields.io/badge/preview%20in-vscode.dev-blue)](https://open.vscode.dev/complexorganizations/wireguard-manager)
 
 ### 🐛 Debugging
 After cloning the repo, Then start debugging the code.
@@ -276,15 +276,6 @@ bash -x /root/wireguard-manager/wireguard-manager.sh >>/root/wireguard-manager/w
 ---
 ### ⛑️ Support
 Give a ⭐️ and 🍴 if this project helped you!
-
-<p align="center">
-	<a href="https://github.com/sponsors/Prajwal-Koirala">
-		<img alt="Sponsors" src="https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub" target="_blank" />
-	</a>
-</p>
-
-- Ethereum : `0xd3c5449C298433cEd4aC0E57D1F750d89A3FECC7`
-- USD Coin : `0xF1f09037b85766F014DF2D028f76Cce47541Fb53`
 
 ---
 ### ❤️ Credits
