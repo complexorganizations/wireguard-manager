@@ -1,5 +1,6 @@
 <h1 align="center">WireGuard-Manager 👋</h1>
 <h5 align="center">Your privacy is the default settings here.</h5>
+<h5 align="center">Give a ⭐️ and 🍴 if this project helped you!</h5>
 <p align="center">
 	<a href="https://github.com/complexorganizations/wireguard-manager/releases">
 		<img alt="Release" src="https://img.shields.io/github/v/release/complexorganizations/wireguard-manager" target="_blank" />
@@ -272,10 +273,6 @@ After cloning the repo, Then start debugging the code.
 git clone https://github.com/complexorganizations/wireguard-manager /root/
 bash -x /root/wireguard-manager/wireguard-manager.sh >>/root/wireguard-manager/wireguard-manager.log
 ```
-
----
-### ⛑️ Support
-Give a ⭐️ and 🍴 if this project helped you!
 
 ---
 ### ❤️ Credits
