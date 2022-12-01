@@ -1,0 +1,17 @@
+name: ShellCheck
+on:
+  push:
+    paths:
+      - "**.sh"
+  pull_request:
+    paths:
+      - "**.sh"
+  workflow_dispatch:
+jobs:
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v3
+    - name: shellcheck
+      uses: ludeeus/action-shellcheck@master
