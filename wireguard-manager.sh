@@ -957,7 +957,7 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
         elif [ "${CURRENT_DISTRO}" == "fedora" ]; then
           dnf install unbound unbound-host unbound-anchor -y
         elif { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ]; }; then
-          pacman -S --noconfirm --needed unbound unbound-host unbound-anchor
+          pacman -S --noconfirm --needed unbound
         elif [ "${CURRENT_DISTRO}" == "alpine" ]; then
           apk add unbound unbound-host unbound-anchor
         elif [ "${CURRENT_DISTRO}" == "freebsd" ]; then
