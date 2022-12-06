@@ -43,6 +43,7 @@ function installing-system-requirements() {
         fi
         yum install curl coreutils jq iproute lsof cronie gawk procps-ng grep qrencode sed zip unzip openssl nftables NetworkManager e2fsprogs gnupg systemd -y
       elif { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ]; }; then
+        pacman -Sy
         pacman -Sy --noconfirm archlinux-keyring
         pacman -Su --noconfirm --needed curl coreutils jq iproute2 lsof cronie gawk procps-ng grep qrencode sed zip unzip openssl nftables ifupdown e2fsprogs gnupg systemd
       elif [ "${CURRENT_DISTRO}" == "alpine" ]; then
@@ -849,7 +850,6 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
         apt-get update
         apt-get install raspberrypi-kernel-headers -y
       elif { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ]; }; then
-        pacman -Sy --noconfirm archlinux-keyring
         pacman -Su --noconfirm --needed linux-headers
       elif { [ "${CURRENT_DISTRO}" == "fedora" ] || [ "${CURRENT_DISTRO}" == "ol" ]; }; then
         yum check-update
@@ -877,7 +877,6 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
       elif { [ "${CURRENT_DISTRO}" == "fedora" ] || [ "${CURRENT_DISTRO}" == "ol" ]; }; then
         yum install openresolv -y
       elif { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ]; }; then
-        pacman -Sy --noconfirm archlinux-keyring
         pacman -Su --noconfirm --needed resolvconf
       elif [ "${CURRENT_DISTRO}" == "alpine" ]; then
         apk add resolvconf
@@ -903,7 +902,6 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
         fi
         apt-get install wireguard -y
       elif { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ]; }; then
-        pacman -Sy --noconfirm archlinux-keyring
         pacman -Su --noconfirm --needed wireguard-tools
       elif [ "${CURRENT_DISTRO}" = "fedora" ]; then
         dnf check-update
@@ -958,7 +956,6 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
         elif [ "${CURRENT_DISTRO}" == "fedora" ]; then
           dnf install unbound unbound-host unbound-anchor -y
         elif { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ]; }; then
-          pacman -Sy --noconfirm archlinux-keyring
           pacman -Su --noconfirm --needed unbound
         elif [ "${CURRENT_DISTRO}" == "alpine" ]; then
           apk add unbound unbound-host unbound-anchor
@@ -1317,7 +1314,6 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
       elif { [ "${CURRENT_DISTRO}" == "fedora" ] || [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "rhel" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ]; }; then
         yum reinstall wireguard-tools -y
       elif { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ]; }; then
-        pacman -Sy --noconfirm archlinux-keyring
         pacman -Su --noconfirm wireguard-tools
       elif [ "${CURRENT_DISTRO}" == "alpine" ]; then
         apk fix wireguard-tools
