@@ -583,67 +583,90 @@ function test-connectivity-v6() {
 test-connectivity-v6 # Call a function to get the IPv6 address
 
 
-  # Determine public NIC
-  function server-pub-nic() {
-    echo "How would you like to detect NIC?"
-    echo "  1) IP (Recommended)"
-    echo "  2) Custom (Advanced)"
-    until [[ "${SERVER_PUB_NIC_SETTINGS}" =~ ^[1-2]$ ]]; do
-      read -rp "Nic Choice [1-2]:" -e -i 1 SERVER_PUB_NIC_SETTINGS
-    done
-    case ${SERVER_PUB_NIC_SETTINGS} in
-    1)
+# Define a function to determine the public NIC.
+function server-pub-nic() {
+  # Ask the user how to detect the NIC.
+  echo "How would you like to detect NIC?"
+  echo "  1) IP (Recommended)"
+  echo "  2) Custom (Advanced)"
+  
+  # Wait until the user inputs 1 or 2.
+  until [[ "${SERVER_PUB_NIC_SETTINGS}" =~ ^[1-2]$ ]]; do
+    read -rp "Nic Choice [1-2]:" -e -i 1 SERVER_PUB_NIC_SETTINGS
+  done
+  
+  # Execute a case statement to check the user's choice.
+  case ${SERVER_PUB_NIC_SETTINGS} in
+  1)
+    # Use the IP route to determine the NIC.
+    SERVER_PUB_NIC="$(ip route | grep default | head --lines=1 | cut --delimiter=" " --fields=5)"
+    
+    # If no NIC is found, exit with an error.
+    if [ -z "${SERVER_PUB_NIC}" ]; then
+      echo "Error: Your server's public network interface could not be found."
+      exit
+    fi
+    ;;
+  2)
+    # Ask the user to input a custom NAT.
+    read -rp "Custom NAT:" SERVER_PUB_NIC
+    
+    # If the user input is empty, use the IP route to determine the NIC.
+    if [ -z "${SERVER_PUB_NIC}" ]; then
       SERVER_PUB_NIC="$(ip route | grep default | head --lines=1 | cut --delimiter=" " --fields=5)"
-      if [ -z "${SERVER_PUB_NIC}" ]; then
-        echo "Error: Your server's public network interface could not be found."
-        exit
-      fi
-      ;;
-    2)
-      read -rp "Custom NAT:" SERVER_PUB_NIC
-      if [ -z "${SERVER_PUB_NIC}" ]; then
-        SERVER_PUB_NIC="$(ip route | grep default | head --lines=1 | cut --delimiter=" " --fields=5)"
-      fi
-      ;;
-    esac
-  }
+    fi
+    ;;
+  esac
+}
 
-  # Determine public NIC
-  server-pub-nic
+# Execute the function to determine the public NIC.
+server-pub-nic
 
-  # Determine host port
-  function set-port() {
-    echo "What port do you want WireGuard server to listen to?"
-    echo "  1) 51820 (Recommended)"
-    echo "  2) Custom (Advanced)"
-    until [[ "${SERVER_PORT_SETTINGS}" =~ ^[1-2]$ ]]; do
-      read -rp "Port Choice [1-2]:" -e -i 1 SERVER_PORT_SETTINGS
+
+# Define a function to set the WireGuard server port
+function set-port() {
+  # Display message to ask for user input regarding the port to listen on
+  echo "What port do you want WireGuard server to listen to?"
+  # Display options for the user to select
+  echo "  1) 51820 (Recommended)"
+  echo "  2) Custom (Advanced)"
+  
+  # Loop until a valid port setting is selected (either 1 or 2)
+  until [[ "${SERVER_PORT_SETTINGS}" =~ ^[1-2]$ ]]; do
+    # Prompt user for port choice and allow them to edit (-e) with the default value of 1 (-i 1)
+    read -rp "Port Choice [1-2]:" -e -i 1 SERVER_PORT_SETTINGS
+  done
+  
+  # Check which option was selected and set the SERVER_PORT variable accordingly
+  case ${SERVER_PORT_SETTINGS} in
+  1)
+    SERVER_PORT="51820"
+    # Check if the selected port is already in use by another application and exit if it is
+    if [ "$(lsof -i UDP:"${SERVER_PORT}")" ]; then
+      echo "Error: Please use a different port because ${SERVER_PORT} is already in use."
+      exit
+    fi
+    ;;
+  2)
+    # Loop until a valid custom port number between 1 and 65535 is entered
+    until [[ "${SERVER_PORT}" =~ ^[0-9]+$ ]] && [ "${SERVER_PORT}" -ge 1 ] && [ "${SERVER_PORT}" -le 65535 ]; do
+      read -rp "Custom port [1-65535]:" SERVER_PORT
     done
-    case ${SERVER_PORT_SETTINGS} in
-    1)
+    # If no custom port is entered, set the SERVER_PORT variable to the default of 51820
+    if [ -z "${SERVER_PORT}" ]; then
       SERVER_PORT="51820"
-      if [ "$(lsof -i UDP:"${SERVER_PORT}")" ]; then
-        echo "Error: Please use a different port because ${SERVER_PORT} is already in use."
-        exit
-      fi
-      ;;
-    2)
-      until [[ "${SERVER_PORT}" =~ ^[0-9]+$ ]] && [ "${SERVER_PORT}" -ge 1 ] && [ "${SERVER_PORT}" -le 65535 ]; do
-        read -rp "Custom port [1-65535]:" SERVER_PORT
-      done
-      if [ -z "${SERVER_PORT}" ]; then
-        SERVER_PORT="51820"
-      fi
-      if [ "$(lsof -i UDP:"${SERVER_PORT}")" ]; then
-        echo "Error: The port ${SERVER_PORT} is already used by a different application, please use a different port."
-        exit
-      fi
-      ;;
-    esac
-  }
+    fi
+    # Check if the selected port is already in use by another application and exit if it is
+    if [ "$(lsof -i UDP:"${SERVER_PORT}")" ]; then
+      echo "Error: The port ${SERVER_PORT} is already used by a different application, please use a different port."
+      exit
+    fi
+    ;;
+  esac
+}
 
-  # Set port
-  set-port
+# Call the set-port function to set the WireGuard server port
+set-port
 
   # Determine Keepalive interval.
   function nat-keepalive() {
