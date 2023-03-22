@@ -954,40 +954,45 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
   # use custom dns
   custom-dns
 
-  # What would you like to name your first WireGuard peer?
+  # A function that prompts the user to enter a name for the WireGuard peer if CLIENT_NAME variable is empty,
+  # otherwise it generates a random name or uses the name entered by the user.
   function client-name() {
-    # If the CLIENT_NAME variable is empty, then prompt the user for a name.
-    # If the user doesn't enter a name, then generate a random name for them.
-    # If the user enters a name, then use that name.
+    # Check if CLIENT_NAME variable is empty
     if [ -z "${CLIENT_NAME}" ]; then
+      # Prompt the user to enter a name for the WireGuard peer
       echo "Let's name the WireGuard Peer. Use one word only, no special characters, no spaces."
       read -rp "Client name:" -e -i "$(openssl rand -hex 50)" CLIENT_NAME
     fi
+    # Check if CLIENT_NAME variable is still empty after user input
     if [ -z "${CLIENT_NAME}" ]; then
+      # If CLIENT_NAME is still empty, generate a random name
       CLIENT_NAME="$(openssl rand -hex 50)"
     fi
   }
 
-  # Client Name
+  # Call the client-name function to prompt user for input and generate or use a name for the WireGuard peer
   client-name
 
-  # Automatically remove wireguard peers after a period of time.
+  # A function that asks the user if they would like to automatically remove the WireGuard peer configuration after a certain period of time
+  # and enables the cron service if the user chooses to automatically remove the configuration.
   function auto-remove-confg() {
-    # Ask the user if they would like to expire the peer after a certain period of time.
-    # If the user chooses to expire the peer after a certain period of time, it will enable the cron service.
-    # If the user chooses not to expire the peer after a certain period of time, it will not enable the cron service.
+    # Ask the user if they would like to expire the peer after a certain period of time
     echo "Would you like to expire the peer after a certain period of time?"
     echo "  1) Every Year (Recommended)"
     echo "  2) No"
+    # Loop until a valid input is received
     until [[ "${AUTOMATIC_CONFIG_REMOVER}" =~ ^[1-2]$ ]]; do
       read -rp "Automatic config expire [1-2]:" -e -i 1 AUTOMATIC_CONFIG_REMOVER
     done
+    # Based on user input, enable or disable the automatic WireGuard peer expiration via cron job
     case ${AUTOMATIC_CONFIG_REMOVER} in
     1)
       AUTOMATIC_WIREGUARD_EXPIRATION=true
       if [[ "${CURRENT_INIT_SYSTEM}" == *"systemd"* ]]; then
+        # Enable and start the cron service using systemctl
         systemctl enable --now ${SYSTEM_CRON_NAME}
       elif [[ "${CURRENT_INIT_SYSTEM}" == *"init"* ]]; then
+        # Start the cron service using the init system
         service ${SYSTEM_CRON_NAME} start
       fi
       ;;
@@ -997,21 +1002,22 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     esac
   }
 
-  # Automatic Remove Config
+  # Call the auto-remove-confg function to ask the user if they would like to automatically remove the WireGuard peer configuration after a certain period of time
+  # and enable the cron service if the user chooses to automatically remove the configuration.
   auto-remove-confg
 
-  # Lets check the kernel version and check if headers are required
+  # A function that checks the current kernel version and installs the kernel headers for the current kernel version if required.
   function install-kernel-headers() {
-    # Checks the current kernel version.
-    # Checks if the current kernel version is older than the allowed kernel version.
-    # Checks the current Linux distribution.
-    # Installs the kernel headers for the current kernel version.
+    # Set the allowed kernel version
     ALLOWED_KERNEL_VERSION="5.6"
+    # Extract the major and minor version numbers from the allowed kernel version
     ALLOWED_KERNEL_MAJOR_VERSION=$(echo ${ALLOWED_KERNEL_VERSION} | cut --delimiter="." --fields=1)
     ALLOWED_KERNEL_MINOR_VERSION=$(echo ${ALLOWED_KERNEL_VERSION} | cut --delimiter="." --fields=2)
+    # Check if the current kernel version is older than the allowed kernel version and set INSTALL_LINUX_HEADERS to true if it is
     if [ "${CURRENT_KERNEL_MAJOR_VERSION}" -le "${ALLOWED_KERNEL_MAJOR_VERSION}" ]; then
       INSTALL_LINUX_HEADERS=true
     fi
+    # Check if the current kernel version is the same as the allowed kernel version and set INSTALL_LINUX_HEADERS to true or false depending on the minor version number
     if [ "${CURRENT_KERNEL_MAJOR_VERSION}" == "${ALLOWED_KERNEL_MAJOR_VERSION}" ]; then
       if [ "${CURRENT_KERNEL_MINOR_VERSION}" -lt "${ALLOWED_KERNEL_MINOR_VERSION}" ]; then
         INSTALL_LINUX_HEADERS=true
@@ -1020,6 +1026,7 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
         INSTALL_LINUX_HEADERS=false
       fi
     fi
+    # If INSTALL_LINUX_HEADERS is true, install the kernel headers for the current kernel version based on the current Linux distribution
     if [ "${INSTALL_LINUX_HEADERS}" == true ]; then
       if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
         apt-get update
@@ -1039,20 +1046,19 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     fi
   }
 
-  # Kernel Version
+  # Call the install-kernel-headers function to check the current kernel version and install the kernel headers if required.
   install-kernel-headers
 
-  # Install resolvconf OR openresolv
+  # A function that checks if resolvconf is already installed and installs it if it's not installed based on the current Linux distribution.
   function install-resolvconf-or-openresolv() {
-    # It checks if resolvconf is already installed.
-    # If resolvconf is not installed, it will check what distribution you are running, and install the appropriate package.
-    # If your distribution is not listed, it will not install resolvconf.
-    # If you want to have resolvconf installed, you will have to install it manually.
+    # Check if resolvconf is not already installed
     if [ ! -x "$(command -v resolvconf)" ]; then
+      # If resolvconf is not installed, install the appropriate package based on the current Linux distribution
       if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
         apt-get install resolvconf -y
       elif { [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "rhel" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ]; }; then
         if [ "${CURRENT_DISTRO}" == "centos" ] && [ "${CURRENT_DISTRO_MAJOR_VERSION}" == 7 ]; then
+          # Enable a COPR repository for openresolv and install it
           yum copr enable macieks/openresolv -y
         fi
         yum install openresolv -y
@@ -1068,7 +1074,7 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     fi
   }
 
-  # Install resolvconf OR openresolv
+  # Call the install-resolvconf-or-openresolv function to check if resolvconf is installed and install it if it's not installed.
   install-resolvconf-or-openresolv
 
   # Install WireGuard Server
