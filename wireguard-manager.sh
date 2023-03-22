@@ -1077,11 +1077,14 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
   # Call the install-resolvconf-or-openresolv function to check if resolvconf is installed and install it if it's not installed.
   install-resolvconf-or-openresolv
 
-  # Install WireGuard Server
+  # A function that installs the WireGuard server based on the current Linux distribution.
   function install-wireguard-server() {
+    # Check if the 'wg' command is not already installed
     if [ ! -x "$(command -v wg)" ]; then
+      # If 'wg' command is not installed, install it based on the current Linux distribution
       if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
         apt-get update
+        # Add buster-backports repository for Debian and update the package lists
         if [ ! -f "/etc/apt/sources.list.d/backports.list" ]; then
           echo "deb http://deb.debian.org/debian buster-backports main" >>/etc/apt/sources.list.d/backports.list
           apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138
