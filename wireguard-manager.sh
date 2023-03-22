@@ -300,14 +300,20 @@ else
   SYSTEM_CRON_NAME="cron"
 fi
 
-# Get the network information
+# This is a Bash function named "get-network-information" that retrieves network information.
 function get-network-information() {
-  # This function will return the IPv4 address of the default interface
+  # This variable will store the IPv4 address of the default network interface by querying the "ipengine" API using "curl" command and extracting it using "jq" command.
   DEFAULT_INTERFACE_IPV4="$(curl --ipv4 --connect-timeout 5 --tlsv1.3 --silent 'https://api.ipengine.dev' | jq -r '.network.ip')"
+
+  # If the IPv4 address is empty, try getting it from another API.
   if [ -z "${DEFAULT_INTERFACE_IPV4}" ]; then
     DEFAULT_INTERFACE_IPV4="$(curl --ipv4 --connect-timeout 5 --tlsv1.3 --silent 'https://icanhazip.com')"
   fi
+
+  # This variable will store the IPv6 address of the default network interface by querying the "ipengine" API using "curl" command and extracting it using "jq" command.
   DEFAULT_INTERFACE_IPV6="$(curl --ipv6 --connect-timeout 5 --tlsv1.3 --silent 'https://api.ipengine.dev' | jq -r '.network.ip')"
+
+  # If the IPv6 address is empty, try getting it from another API.
   if [ -z "${DEFAULT_INTERFACE_IPV6}" ]; then
     DEFAULT_INTERFACE_IPV6="$(curl --ipv6 --connect-timeout 5 --tlsv1.3 --silent 'https://icanhazip.com')"
   fi
@@ -333,71 +339,73 @@ function usage-guide() {
   echo "  --help        Show Usage Guide"
 }
 
-# The usage of the script
+# Define a function that takes command line arguments as input
 function usage() {
+  # Check if there are any command line arguments left
   while [ $# -ne 0 ]; do
+    # Use a switch-case statement to check the value of the first argument
     case ${1} in
-    --install)
+    --install) # If it's "--install", set the variable HEADLESS_INSTALL to "true"
       shift
       HEADLESS_INSTALL=${HEADLESS_INSTALL=true}
       ;;
-    --start)
+    --start) # If it's "--start", set the variable WIREGUARD_OPTIONS to 2
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=2}
       ;;
-    --stop)
+    --stop) # If it's "--stop", set the variable WIREGUARD_OPTIONS to 3
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=3}
       ;;
-    --restart)
+    --restart) # If it's "--restart", set the variable WIREGUARD_OPTIONS to 4
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=4}
       ;;
-    --list)
+    --list) # If it's "--list", set the variable WIREGUARD_OPTIONS to 1
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=1}
       ;;
-    --add)
+    --add) # If it's "--add", set the variable WIREGUARD_OPTIONS to 5
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=5}
       ;;
-    --remove)
+    --remove) # If it's "--remove", set the variable WIREGUARD_OPTIONS to 6
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=6}
       ;;
-    --reinstall)
+    --reinstall) # If it's "--reinstall", set the variable WIREGUARD_OPTIONS to 7
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=7}
       ;;
-    --uninstall)
+    --uninstall) # If it's "--uninstall", set the variable WIREGUARD_OPTIONS to 8
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=8}
       ;;
-    --update)
+    --update) # If it's "--update", set the variable WIREGUARD_OPTIONS to 9
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=9}
       ;;
-    --backup)
+    --backup) # If it's "--backup", set the variable WIREGUARD_OPTIONS to 10
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=10}
       ;;
-    --restore)
+    --restore) # If it's "--restore", set the variable WIREGUARD_OPTIONS to 11
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=11}
       ;;
-    --ddns)
+    --ddns) # If it's "--ddns", set the variable WIREGUARD_OPTIONS to 12
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=12}
       ;;
-    --purge)
+    --purge) # If it's "--purge", set the variable WIREGUARD_OPTIONS to 14
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=14}
       ;;
-    --help)
+    --help) # If it's "--help", call the function usage-guide
       shift
       usage-guide
       ;;
-    *)
+    *) # If it's anything else, print an error message and call the function usage-guide, then exit
       echo "Invalid argument: ${1}"
       usage-guide
       exit
@@ -406,83 +414,101 @@ function usage() {
   done
 }
 
+# Call the function usage with all the command line arguments
 usage "$@"
 
-# All questions are skipped, and wireguard is installed and a configuration is generated.
+# The function defines default values for configuration variables when installing WireGuard in headless mode.
+# These variables include private subnet settings, server host settings, NAT choice, MTU choice, client allowed IP settings, automatic updates, automatic backup, DNS provider settings, content blocker settings, client name, and automatic config remover.
 function headless-install() {
+  # If headless installation is specified, set default values for configuration variables.
   if [ "${HEADLESS_INSTALL}" == true ]; then
-    PRIVATE_SUBNET_V4_SETTINGS=${PRIVATE_SUBNET_V4_SETTINGS=1}
-    PRIVATE_SUBNET_V6_SETTINGS=${PRIVATE_SUBNET_V6_SETTINGS=1}
-    SERVER_HOST_V4_SETTINGS=${SERVER_HOST_V4_SETTINGS=1}
-    SERVER_HOST_V6_SETTINGS=${SERVER_HOST_V6_SETTINGS=1}
-    SERVER_PUB_NIC_SETTINGS=${SERVER_PUB_NIC_SETTINGS=1}
-    SERVER_PORT_SETTINGS=${SERVER_PORT_SETTINGS=1}
-    NAT_CHOICE_SETTINGS=${NAT_CHOICE_SETTINGS=1}
-    MTU_CHOICE_SETTINGS=${MTU_CHOICE_SETTINGS=1}
-    SERVER_HOST_SETTINGS=${SERVER_HOST_SETTINGS=1}
-    CLIENT_ALLOWED_IP_SETTINGS=${CLIENT_ALLOWED_IP_SETTINGS=1}
-    AUTOMATIC_UPDATES_SETTINGS=${AUTOMATIC_UPDATES_SETTINGS=1}
-    AUTOMATIC_BACKUP_SETTINGS=${AUTOMATIC_BACKUP_SETTINGS=1}
-    DNS_PROVIDER_SETTINGS=${DNS_PROVIDER_SETTINGS=1}
-    CONTENT_BLOCKER_SETTINGS=${CONTENT_BLOCKER_SETTINGS=1}
-    CLIENT_NAME=${CLIENT_NAME=$(openssl rand -hex 50)}
-    AUTOMATIC_CONFIG_REMOVER=${AUTOMATIC_CONFIG_REMOVER=1}
+    PRIVATE_SUBNET_V4_SETTINGS=${PRIVATE_SUBNET_V4_SETTINGS=1} # Default to 1 if not specified
+    PRIVATE_SUBNET_V6_SETTINGS=${PRIVATE_SUBNET_V6_SETTINGS=1} # Default to 1 if not specified
+    SERVER_HOST_V4_SETTINGS=${SERVER_HOST_V4_SETTINGS=1} # Default to 1 if not specified
+    SERVER_HOST_V6_SETTINGS=${SERVER_HOST_V6_SETTINGS=1} # Default to 1 if not specified
+    SERVER_PUB_NIC_SETTINGS=${SERVER_PUB_NIC_SETTINGS=1} # Default to 1 if not specified
+    SERVER_PORT_SETTINGS=${SERVER_PORT_SETTINGS=1} # Default to 1 if not specified
+    NAT_CHOICE_SETTINGS=${NAT_CHOICE_SETTINGS=1} # Default to 1 if not specified
+    MTU_CHOICE_SETTINGS=${MTU_CHOICE_SETTINGS=1} # Default to 1 if not specified
+    SERVER_HOST_SETTINGS=${SERVER_HOST_SETTINGS=1} # Default to 1 if not specified
+    CLIENT_ALLOWED_IP_SETTINGS=${CLIENT_ALLOWED_IP_SETTINGS=1} # Default to 1 if not specified
+    AUTOMATIC_UPDATES_SETTINGS=${AUTOMATIC_UPDATES_SETTINGS=1} # Default to 1 if not specified
+    AUTOMATIC_BACKUP_SETTINGS=${AUTOMATIC_BACKUP_SETTINGS=1} # Default to 1 if not specified
+    DNS_PROVIDER_SETTINGS=${DNS_PROVIDER_SETTINGS=1} # Default to 1 if not specified
+    CONTENT_BLOCKER_SETTINGS=${CONTENT_BLOCKER_SETTINGS=1} # Default to 1 if not specified
+    CLIENT_NAME=${CLIENT_NAME=$(openssl rand -hex 50)} # Generate a random client name if not specified
+    AUTOMATIC_CONFIG_REMOVER=${AUTOMATIC_CONFIG_REMOVER=1} # Default to 1 if not specified
   fi
 }
 
-# No GUI
+# Call the headless-install function to set default values for configuration variables in headless mode.
 headless-install
 
 # Set up the wireguard, if config it isn't already there.
 if [ ! -f "${WIREGUARD_CONFIG}" ]; then
 
-  # Custom IPv4 subnet
-  function set-ipv4-subnet() {
-    echo "What IPv4 subnet do you want to use?"
-    echo "  1) 10.0.0.0/8 (Recommended)"
-    echo "  2) Custom (Advanced)"
-    until [[ "${PRIVATE_SUBNET_V4_SETTINGS}" =~ ^[1-2]$ ]]; do
-      read -rp "Subnet Choice [1-2]:" -e -i 1 PRIVATE_SUBNET_V4_SETTINGS
-    done
-    case ${PRIVATE_SUBNET_V4_SETTINGS} in
-    1)
+# Define a function to set a custom IPv4 subnet
+function set-ipv4-subnet() {
+  # Prompt the user for the desired IPv4 subnet
+  echo "What IPv4 subnet do you want to use?"
+  echo "  1) 10.0.0.0/8 (Recommended)"
+  echo "  2) Custom (Advanced)"
+  
+  # Keep prompting the user until they enter a valid subnet choice
+  until [[ "${PRIVATE_SUBNET_V4_SETTINGS}" =~ ^[1-2]$ ]]; do
+    read -rp "Subnet Choice [1-2]:" -e -i 1 PRIVATE_SUBNET_V4_SETTINGS
+  done
+  
+  # Based on the user's choice, set the private IPv4 subnet
+  case ${PRIVATE_SUBNET_V4_SETTINGS} in
+  1)
+    PRIVATE_SUBNET_V4="10.0.0.0/8" # Set a default IPv4 subnet
+    ;;
+  2)
+    read -rp "Custom IPv4 Subnet:" PRIVATE_SUBNET_V4 # Prompt user for custom subnet
+    if [ -z "${PRIVATE_SUBNET_V4}" ]; then # If the user did not enter a subnet, set default
       PRIVATE_SUBNET_V4="10.0.0.0/8"
-      ;;
-    2)
-      read -rp "Custom IPv4 Subnet:" PRIVATE_SUBNET_V4
-      if [ -z "${PRIVATE_SUBNET_V4}" ]; then
-        PRIVATE_SUBNET_V4="10.0.0.0/8"
-      fi
-      ;;
-    esac
-  }
+    fi
+    ;;
+  esac
+}
 
-  # Custom IPv4 Subnet
-  set-ipv4-subnet
+# Call the function to set the custom IPv4 subnet
+set-ipv4-subnet
 
-  # Custom IPv6 subnet
-  function set-ipv6-subnet() {
-    echo "What IPv6 subnet do you want to use?"
-    echo "  1) fd00:00:00::0/8 (Recommended)"
-    echo "  2) Custom (Advanced)"
-    until [[ "${PRIVATE_SUBNET_V6_SETTINGS}" =~ ^[1-2]$ ]]; do
-      read -rp "Subnet Choice [1-2]:" -e -i 1 PRIVATE_SUBNET_V6_SETTINGS
-    done
-    case ${PRIVATE_SUBNET_V6_SETTINGS} in
+
+# Define a function to set a custom IPv6 subnet
+function set-ipv6-subnet() {
+  # Ask the user which IPv6 subnet they want to use
+  echo "What IPv6 subnet do you want to use?"
+  echo "  1) fd00:00:00::0/8 (Recommended)"
+  echo "  2) Custom (Advanced)"
+  
+  # Use a loop to ensure the user inputs a valid option
+  until [[ "${PRIVATE_SUBNET_V6_SETTINGS}" =~ ^[1-2]$ ]]; do
+    read -rp "Subnet Choice [1-2]:" -e -i 1 PRIVATE_SUBNET_V6_SETTINGS
+  done
+  
+  # Use a case statement to set the IPv6 subnet based on the user's choice
+  case ${PRIVATE_SUBNET_V6_SETTINGS} in
     1)
+      # Use the recommended IPv6 subnet if the user chooses option 1
       PRIVATE_SUBNET_V6="fd00:00:00::0/8"
       ;;
     2)
+      # Ask the user for a custom IPv6 subnet if they choose option 2
       read -rp "Custom IPv6 Subnet:" PRIVATE_SUBNET_V6
+      
+      # If the user does not input a subnet, use the recommended one
       if [ -z "${PRIVATE_SUBNET_V6}" ]; then
         PRIVATE_SUBNET_V6="fd00:00:00::0/8"
       fi
       ;;
-    esac
-  }
+  esac
+}
 
-  # Custom IPv6 Subnet
-  set-ipv6-subnet
+# Call the set-ipv6-subnet function to set the custom IPv6 subnet
+set-ipv6-subnet
 
   # Private Subnet Mask IPv4
   PRIVATE_SUBNET_MASK_V4=$(echo "${PRIVATE_SUBNET_V4}" | cut --delimiter="/" --fields=2)
