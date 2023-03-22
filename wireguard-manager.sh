@@ -1,18 +1,29 @@
 #!/usr/bin/env bash
+# This line sets the interpreter for the script as the Bash shell.
+
 # https://github.com/complexorganizations/wireguard-manager
+# This line provides a link to the GitHub repository for the WireGuard manager project.
 
 # Require script to be run as root
+# This comment explains that the script requires root privileges.
+
 function super-user-check() {
-  # This code checks to see if the script is running with root privileges.
-  # If it is not, it will exit with an error message.
+  # This function checks if the script is running as the root user.
+  
   if [ "${EUID}" -ne 0 ]; then
+    # If the effective user ID is not 0 (root), display an error message and exit.
+    
     echo "Error: You need to run this script as administrator."
     exit
   fi
 }
 
 # Check for root
+# This comment explains that the script checks if the user is the root user.
+
 super-user-check
+# Calls the super-user-check function.
+
 
 # Get the current system information
 function system-information() {
