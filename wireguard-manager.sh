@@ -9,10 +9,10 @@
 
 function super-user-check() {
   # This function checks if the script is running as the root user.
-  
+
   if [ "${EUID}" -ne 0 ]; then
     # If the effective user ID is not 0 (root), display an error message and exit.
-    
+
     echo "Error: You need to run this script as administrator."
     exit
   fi
@@ -34,8 +34,8 @@ function system-information() {
     # Check if the /etc/os-release file exists, and if so, source it to get the system information.
 
     source /etc/os-release
-    CURRENT_DISTRO=${ID} # CURRENT_DISTRO is the ID of the current system
-    CURRENT_DISTRO_VERSION=${VERSION_ID} # CURRENT_DISTRO_VERSION is the VERSION_ID of the current system
+    CURRENT_DISTRO=${ID}                                                                              # CURRENT_DISTRO is the ID of the current system
+    CURRENT_DISTRO_VERSION=${VERSION_ID}                                                              # CURRENT_DISTRO_VERSION is the VERSION_ID of the current system
     CURRENT_DISTRO_MAJOR_VERSION=$(echo "${CURRENT_DISTRO_VERSION}" | cut --delimiter="." --fields=1) # CURRENT_DISTRO_MAJOR_VERSION is the major version of the current system (e.g. "16" for Ubuntu 16.04)
   fi
 }
@@ -94,12 +94,12 @@ function virt-check() {
   # It returns the name of the virtualization if it is supported, or "none" if
   # it is not supported. This code is used to check if the system is running in
   # a virtual machine, and if so, if it is running in a supported virtualization.
-  
+
   # systemd-detect-virt is a utility that detects the type of virtualization
   # that the system is running on. It returns a string that indicates the name
   # of the virtualization, such as "kvm" or "vmware".
   CURRENT_SYSTEM_VIRTUALIZATION=$(systemd-detect-virt)
-  
+
   # This case statement checks if the virtualization that the system is running
   # on is supported. If it is not supported, the script will print an error
   # message and exit.
@@ -169,23 +169,23 @@ kernel-check
 function check-current-init-system() {
   # This function checks if the current init system is systemd or sysvinit.
   # If it is neither, the script exits.
-  
+
   CURRENT_INIT_SYSTEM=$(ps --no-headers -o comm 1)
   # This line retrieves the current init system by checking the process name of PID 1.
-  
+
   case ${CURRENT_INIT_SYSTEM} in
-    # The case statement checks if the retrieved init system is one of the allowed options.
-    
-    *"systemd"* | *"init"*)
-      # If the init system is systemd or sysvinit (init), continue with the script.
-      ;;
-      
-    *)
-      # If the init system is not one of the allowed options, display an error message and exit.
-      
-      echo "${CURRENT_INIT_SYSTEM} init is not supported (yet)."
-      exit
-      ;;
+  # The case statement checks if the retrieved init system is one of the allowed options.
+
+  *"systemd"* | *"init"*)
+    # If the init system is systemd or sysvinit (init), continue with the script.
+    ;;
+
+  *)
+    # If the init system is not one of the allowed options, display an error message and exit.
+
+    echo "${CURRENT_INIT_SYSTEM} init is not supported (yet)."
+    exit
+    ;;
   esac
 }
 
@@ -206,7 +206,7 @@ function check-disk-space() {
 
   if [ "${FREE_SPACE_ON_DRIVE_IN_MB}" -le 1024 ]; then
     # If the available free space is less than or equal to 1024 MB (1 GB), display an error message and exit.
-    
+
     echo "Error: More than 1 GB of free space is needed to install everything."
     exit
   fi
@@ -424,20 +424,20 @@ function headless-install() {
   if [ "${HEADLESS_INSTALL}" == true ]; then
     PRIVATE_SUBNET_V4_SETTINGS=${PRIVATE_SUBNET_V4_SETTINGS=1} # Default to 1 if not specified
     PRIVATE_SUBNET_V6_SETTINGS=${PRIVATE_SUBNET_V6_SETTINGS=1} # Default to 1 if not specified
-    SERVER_HOST_V4_SETTINGS=${SERVER_HOST_V4_SETTINGS=1} # Default to 1 if not specified
-    SERVER_HOST_V6_SETTINGS=${SERVER_HOST_V6_SETTINGS=1} # Default to 1 if not specified
-    SERVER_PUB_NIC_SETTINGS=${SERVER_PUB_NIC_SETTINGS=1} # Default to 1 if not specified
-    SERVER_PORT_SETTINGS=${SERVER_PORT_SETTINGS=1} # Default to 1 if not specified
-    NAT_CHOICE_SETTINGS=${NAT_CHOICE_SETTINGS=1} # Default to 1 if not specified
-    MTU_CHOICE_SETTINGS=${MTU_CHOICE_SETTINGS=1} # Default to 1 if not specified
-    SERVER_HOST_SETTINGS=${SERVER_HOST_SETTINGS=1} # Default to 1 if not specified
+    SERVER_HOST_V4_SETTINGS=${SERVER_HOST_V4_SETTINGS=1}       # Default to 1 if not specified
+    SERVER_HOST_V6_SETTINGS=${SERVER_HOST_V6_SETTINGS=1}       # Default to 1 if not specified
+    SERVER_PUB_NIC_SETTINGS=${SERVER_PUB_NIC_SETTINGS=1}       # Default to 1 if not specified
+    SERVER_PORT_SETTINGS=${SERVER_PORT_SETTINGS=1}             # Default to 1 if not specified
+    NAT_CHOICE_SETTINGS=${NAT_CHOICE_SETTINGS=1}               # Default to 1 if not specified
+    MTU_CHOICE_SETTINGS=${MTU_CHOICE_SETTINGS=1}               # Default to 1 if not specified
+    SERVER_HOST_SETTINGS=${SERVER_HOST_SETTINGS=1}             # Default to 1 if not specified
     CLIENT_ALLOWED_IP_SETTINGS=${CLIENT_ALLOWED_IP_SETTINGS=1} # Default to 1 if not specified
     AUTOMATIC_UPDATES_SETTINGS=${AUTOMATIC_UPDATES_SETTINGS=1} # Default to 1 if not specified
-    AUTOMATIC_BACKUP_SETTINGS=${AUTOMATIC_BACKUP_SETTINGS=1} # Default to 1 if not specified
-    DNS_PROVIDER_SETTINGS=${DNS_PROVIDER_SETTINGS=1} # Default to 1 if not specified
-    CONTENT_BLOCKER_SETTINGS=${CONTENT_BLOCKER_SETTINGS=1} # Default to 1 if not specified
-    CLIENT_NAME=${CLIENT_NAME=$(openssl rand -hex 50)} # Generate a random client name if not specified
-    AUTOMATIC_CONFIG_REMOVER=${AUTOMATIC_CONFIG_REMOVER=1} # Default to 1 if not specified
+    AUTOMATIC_BACKUP_SETTINGS=${AUTOMATIC_BACKUP_SETTINGS=1}   # Default to 1 if not specified
+    DNS_PROVIDER_SETTINGS=${DNS_PROVIDER_SETTINGS=1}           # Default to 1 if not specified
+    CONTENT_BLOCKER_SETTINGS=${CONTENT_BLOCKER_SETTINGS=1}     # Default to 1 if not specified
+    CLIENT_NAME=${CLIENT_NAME=$(openssl rand -hex 50)}         # Generate a random client name if not specified
+    AUTOMATIC_CONFIG_REMOVER=${AUTOMATIC_CONFIG_REMOVER=1}     # Default to 1 if not specified
   fi
 }
 
@@ -447,50 +447,49 @@ headless-install
 # Set up the wireguard, if config it isn't already there.
 if [ ! -f "${WIREGUARD_CONFIG}" ]; then
 
-# Define a function to set a custom IPv4 subnet
-function set-ipv4-subnet() {
-  # Prompt the user for the desired IPv4 subnet
-  echo "What IPv4 subnet do you want to use?"
-  echo "  1) 10.0.0.0/8 (Recommended)"
-  echo "  2) Custom (Advanced)"
-  
-  # Keep prompting the user until they enter a valid subnet choice
-  until [[ "${PRIVATE_SUBNET_V4_SETTINGS}" =~ ^[1-2]$ ]]; do
-    read -rp "Subnet Choice [1-2]:" -e -i 1 PRIVATE_SUBNET_V4_SETTINGS
-  done
-  
-  # Based on the user's choice, set the private IPv4 subnet
-  case ${PRIVATE_SUBNET_V4_SETTINGS} in
-  1)
-    PRIVATE_SUBNET_V4="10.0.0.0/8" # Set a default IPv4 subnet
-    ;;
-  2)
-    read -rp "Custom IPv4 Subnet:" PRIVATE_SUBNET_V4 # Prompt user for custom subnet
-    if [ -z "${PRIVATE_SUBNET_V4}" ]; then # If the user did not enter a subnet, set default
-      PRIVATE_SUBNET_V4="10.0.0.0/8"
-    fi
-    ;;
-  esac
-}
+  # Define a function to set a custom IPv4 subnet
+  function set-ipv4-subnet() {
+    # Prompt the user for the desired IPv4 subnet
+    echo "What IPv4 subnet do you want to use?"
+    echo "  1) 10.0.0.0/8 (Recommended)"
+    echo "  2) Custom (Advanced)"
 
-# Call the function to set the custom IPv4 subnet
-set-ipv4-subnet
+    # Keep prompting the user until they enter a valid subnet choice
+    until [[ "${PRIVATE_SUBNET_V4_SETTINGS}" =~ ^[1-2]$ ]]; do
+      read -rp "Subnet Choice [1-2]:" -e -i 1 PRIVATE_SUBNET_V4_SETTINGS
+    done
 
+    # Based on the user's choice, set the private IPv4 subnet
+    case ${PRIVATE_SUBNET_V4_SETTINGS} in
+    1)
+      PRIVATE_SUBNET_V4="10.0.0.0/8" # Set a default IPv4 subnet
+      ;;
+    2)
+      read -rp "Custom IPv4 Subnet:" PRIVATE_SUBNET_V4 # Prompt user for custom subnet
+      if [ -z "${PRIVATE_SUBNET_V4}" ]; then           # If the user did not enter a subnet, set default
+        PRIVATE_SUBNET_V4="10.0.0.0/8"
+      fi
+      ;;
+    esac
+  }
 
-# Define a function to set a custom IPv6 subnet
-function set-ipv6-subnet() {
-  # Ask the user which IPv6 subnet they want to use
-  echo "What IPv6 subnet do you want to use?"
-  echo "  1) fd00:00:00::0/8 (Recommended)"
-  echo "  2) Custom (Advanced)"
-  
-  # Use a loop to ensure the user inputs a valid option
-  until [[ "${PRIVATE_SUBNET_V6_SETTINGS}" =~ ^[1-2]$ ]]; do
-    read -rp "Subnet Choice [1-2]:" -e -i 1 PRIVATE_SUBNET_V6_SETTINGS
-  done
-  
-  # Use a case statement to set the IPv6 subnet based on the user's choice
-  case ${PRIVATE_SUBNET_V6_SETTINGS} in
+  # Call the function to set the custom IPv4 subnet
+  set-ipv4-subnet
+
+  # Define a function to set a custom IPv6 subnet
+  function set-ipv6-subnet() {
+    # Ask the user which IPv6 subnet they want to use
+    echo "What IPv6 subnet do you want to use?"
+    echo "  1) fd00:00:00::0/8 (Recommended)"
+    echo "  2) Custom (Advanced)"
+
+    # Use a loop to ensure the user inputs a valid option
+    until [[ "${PRIVATE_SUBNET_V6_SETTINGS}" =~ ^[1-2]$ ]]; do
+      read -rp "Subnet Choice [1-2]:" -e -i 1 PRIVATE_SUBNET_V6_SETTINGS
+    done
+
+    # Use a case statement to set the IPv6 subnet based on the user's choice
+    case ${PRIVATE_SUBNET_V6_SETTINGS} in
     1)
       # Use the recommended IPv6 subnet if the user chooses option 1
       PRIVATE_SUBNET_V6="fd00:00:00::0/8"
@@ -498,175 +497,172 @@ function set-ipv6-subnet() {
     2)
       # Ask the user for a custom IPv6 subnet if they choose option 2
       read -rp "Custom IPv6 Subnet:" PRIVATE_SUBNET_V6
-      
+
       # If the user does not input a subnet, use the recommended one
       if [ -z "${PRIVATE_SUBNET_V6}" ]; then
         PRIVATE_SUBNET_V6="fd00:00:00::0/8"
       fi
       ;;
-  esac
-}
+    esac
+  }
 
-# Call the set-ipv6-subnet function to set the custom IPv6 subnet
-set-ipv6-subnet
+  # Call the set-ipv6-subnet function to set the custom IPv6 subnet
+  set-ipv6-subnet
 
-# Private Subnet Mask IPv4
-PRIVATE_SUBNET_MASK_V4=$(echo "${PRIVATE_SUBNET_V4}" | cut --delimiter="/" --fields=2) # Get the subnet mask of IPv4
+  # Private Subnet Mask IPv4
+  PRIVATE_SUBNET_MASK_V4=$(echo "${PRIVATE_SUBNET_V4}" | cut --delimiter="/" --fields=2) # Get the subnet mask of IPv4
 
-# IPv4 Gateway
-GATEWAY_ADDRESS_V4=$(echo "${PRIVATE_SUBNET_V4}" | cut --delimiter="." --fields=1-3).1 # Get the gateway address of IPv4
+  # IPv4 Gateway
+  GATEWAY_ADDRESS_V4=$(echo "${PRIVATE_SUBNET_V4}" | cut --delimiter="." --fields=1-3).1 # Get the gateway address of IPv4
 
-# Private Subnet Mask IPv6
-PRIVATE_SUBNET_MASK_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter="/" --fields=2) # Get the subnet mask of IPv6
+  # Private Subnet Mask IPv6
+  PRIVATE_SUBNET_MASK_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter="/" --fields=2) # Get the subnet mask of IPv6
 
-# IPv6 Gateway
-GATEWAY_ADDRESS_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter=":" --fields=1-3)::1 # Get the gateway address of IPv6
+  # IPv6 Gateway
+  GATEWAY_ADDRESS_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter=":" --fields=1-3)::1 # Get the gateway address of IPv6
 
-# Get the networking data
-get-network-information # Call a function to get the networking data
+  # Get the networking data
+  get-network-information # Call a function to get the networking data
 
-# Get the IPv4
-function test-connectivity-v4() {
-  echo "How would you like to detect IPv4?"
-  echo "  1) Curl (Recommended)"
-  echo "  2) Custom (Advanced)"
+  # Get the IPv4
+  function test-connectivity-v4() {
+    echo "How would you like to detect IPv4?"
+    echo "  1) Curl (Recommended)"
+    echo "  2) Custom (Advanced)"
 
-  # Loop until input is valid
-  until [[ "${SERVER_HOST_V4_SETTINGS}" =~ ^[1-2]$ ]]; do
-    read -rp "IPv4 Choice [1-2]:" -e -i 1 SERVER_HOST_V4_SETTINGS
-  done
-
-  case ${SERVER_HOST_V4_SETTINGS} in
-  1)
-    SERVER_HOST_V4=${DEFAULT_INTERFACE_IPV4} # Use the default IPv4 address
-    ;;
-  2)
-    read -rp "Custom IPv4:" SERVER_HOST_V4
-    # If input is empty, use default IPv4
-    if [ -z "${SERVER_HOST_V4}" ]; then
-      SERVER_HOST_V4=${DEFAULT_INTERFACE_IPV4}
-    fi
-    ;;
-  esac
-}
-
-# Call the function to get the IPv4
-test-connectivity-v4 # Call a function to get the IPv4 address
-
-
-# Determine IPv6
-function test-connectivity-v6() {
-  echo "How would you like to detect IPv6?"
-  echo "  1) Curl (Recommended)"
-  echo "  2) Custom (Advanced)"
-
-  # Loop until input is valid
-  until [[ "${SERVER_HOST_V6_SETTINGS}" =~ ^[1-2]$ ]]; do
-    read -rp "IPv6 Choice [1-2]:" -e -i 1 SERVER_HOST_V6_SETTINGS
-  done
-
-  case ${SERVER_HOST_V6_SETTINGS} in
-  1)
-    SERVER_HOST_V6=${DEFAULT_INTERFACE_IPV6} # Use the default IPv6 address
-    ;;
-  2)
-    read -rp "Custom IPv6:" SERVER_HOST_V6
-    # If input is empty, use default IPv6
-    if [ -z "${SERVER_HOST_V6}" ]; then
-      SERVER_HOST_V6=${DEFAULT_INTERFACE_IPV6}
-    fi
-    ;;
-  esac
-}
-
-# Call the function to get the IPv6
-test-connectivity-v6 # Call a function to get the IPv6 address
-
-
-# Define a function to determine the public NIC.
-function server-pub-nic() {
-  # Ask the user how to detect the NIC.
-  echo "How would you like to detect NIC?"
-  echo "  1) IP (Recommended)"
-  echo "  2) Custom (Advanced)"
-  
-  # Wait until the user inputs 1 or 2.
-  until [[ "${SERVER_PUB_NIC_SETTINGS}" =~ ^[1-2]$ ]]; do
-    read -rp "Nic Choice [1-2]:" -e -i 1 SERVER_PUB_NIC_SETTINGS
-  done
-  
-  # Execute a case statement to check the user's choice.
-  case ${SERVER_PUB_NIC_SETTINGS} in
-  1)
-    # Use the IP route to determine the NIC.
-    SERVER_PUB_NIC="$(ip route | grep default | head --lines=1 | cut --delimiter=" " --fields=5)"
-    
-    # If no NIC is found, exit with an error.
-    if [ -z "${SERVER_PUB_NIC}" ]; then
-      echo "Error: Your server's public network interface could not be found."
-      exit
-    fi
-    ;;
-  2)
-    # Ask the user to input a custom NAT.
-    read -rp "Custom NAT:" SERVER_PUB_NIC
-    
-    # If the user input is empty, use the IP route to determine the NIC.
-    if [ -z "${SERVER_PUB_NIC}" ]; then
-      SERVER_PUB_NIC="$(ip route | grep default | head --lines=1 | cut --delimiter=" " --fields=5)"
-    fi
-    ;;
-  esac
-}
-
-# Execute the function to determine the public NIC.
-server-pub-nic
-
-
-# Define a function to set the WireGuard server port
-function set-port() {
-  # Display message to ask for user input regarding the port to listen on
-  echo "What port do you want WireGuard server to listen to?"
-  # Display options for the user to select
-  echo "  1) 51820 (Recommended)"
-  echo "  2) Custom (Advanced)"
-  
-  # Loop until a valid port setting is selected (either 1 or 2)
-  until [[ "${SERVER_PORT_SETTINGS}" =~ ^[1-2]$ ]]; do
-    # Prompt user for port choice and allow them to edit (-e) with the default value of 1 (-i 1)
-    read -rp "Port Choice [1-2]:" -e -i 1 SERVER_PORT_SETTINGS
-  done
-  
-  # Check which option was selected and set the SERVER_PORT variable accordingly
-  case ${SERVER_PORT_SETTINGS} in
-  1)
-    SERVER_PORT="51820"
-    # Check if the selected port is already in use by another application and exit if it is
-    if [ "$(lsof -i UDP:"${SERVER_PORT}")" ]; then
-      echo "Error: Please use a different port because ${SERVER_PORT} is already in use."
-      exit
-    fi
-    ;;
-  2)
-    # Loop until a valid custom port number between 1 and 65535 is entered
-    until [[ "${SERVER_PORT}" =~ ^[0-9]+$ ]] && [ "${SERVER_PORT}" -ge 1 ] && [ "${SERVER_PORT}" -le 65535 ]; do
-      read -rp "Custom port [1-65535]:" SERVER_PORT
+    # Loop until input is valid
+    until [[ "${SERVER_HOST_V4_SETTINGS}" =~ ^[1-2]$ ]]; do
+      read -rp "IPv4 Choice [1-2]:" -e -i 1 SERVER_HOST_V4_SETTINGS
     done
-    # If no custom port is entered, set the SERVER_PORT variable to the default of 51820
-    if [ -z "${SERVER_PORT}" ]; then
-      SERVER_PORT="51820"
-    fi
-    # Check if the selected port is already in use by another application and exit if it is
-    if [ "$(lsof -i UDP:"${SERVER_PORT}")" ]; then
-      echo "Error: The port ${SERVER_PORT} is already used by a different application, please use a different port."
-      exit
-    fi
-    ;;
-  esac
-}
 
-# Call the set-port function to set the WireGuard server port
-set-port
+    case ${SERVER_HOST_V4_SETTINGS} in
+    1)
+      SERVER_HOST_V4=${DEFAULT_INTERFACE_IPV4} # Use the default IPv4 address
+      ;;
+    2)
+      read -rp "Custom IPv4:" SERVER_HOST_V4
+      # If input is empty, use default IPv4
+      if [ -z "${SERVER_HOST_V4}" ]; then
+        SERVER_HOST_V4=${DEFAULT_INTERFACE_IPV4}
+      fi
+      ;;
+    esac
+  }
+
+  # Call the function to get the IPv4
+  test-connectivity-v4 # Call a function to get the IPv4 address
+
+  # Determine IPv6
+  function test-connectivity-v6() {
+    echo "How would you like to detect IPv6?"
+    echo "  1) Curl (Recommended)"
+    echo "  2) Custom (Advanced)"
+
+    # Loop until input is valid
+    until [[ "${SERVER_HOST_V6_SETTINGS}" =~ ^[1-2]$ ]]; do
+      read -rp "IPv6 Choice [1-2]:" -e -i 1 SERVER_HOST_V6_SETTINGS
+    done
+
+    case ${SERVER_HOST_V6_SETTINGS} in
+    1)
+      SERVER_HOST_V6=${DEFAULT_INTERFACE_IPV6} # Use the default IPv6 address
+      ;;
+    2)
+      read -rp "Custom IPv6:" SERVER_HOST_V6
+      # If input is empty, use default IPv6
+      if [ -z "${SERVER_HOST_V6}" ]; then
+        SERVER_HOST_V6=${DEFAULT_INTERFACE_IPV6}
+      fi
+      ;;
+    esac
+  }
+
+  # Call the function to get the IPv6
+  test-connectivity-v6 # Call a function to get the IPv6 address
+
+  # Define a function to determine the public NIC.
+  function server-pub-nic() {
+    # Ask the user how to detect the NIC.
+    echo "How would you like to detect NIC?"
+    echo "  1) IP (Recommended)"
+    echo "  2) Custom (Advanced)"
+
+    # Wait until the user inputs 1 or 2.
+    until [[ "${SERVER_PUB_NIC_SETTINGS}" =~ ^[1-2]$ ]]; do
+      read -rp "Nic Choice [1-2]:" -e -i 1 SERVER_PUB_NIC_SETTINGS
+    done
+
+    # Execute a case statement to check the user's choice.
+    case ${SERVER_PUB_NIC_SETTINGS} in
+    1)
+      # Use the IP route to determine the NIC.
+      SERVER_PUB_NIC="$(ip route | grep default | head --lines=1 | cut --delimiter=" " --fields=5)"
+
+      # If no NIC is found, exit with an error.
+      if [ -z "${SERVER_PUB_NIC}" ]; then
+        echo "Error: Your server's public network interface could not be found."
+        exit
+      fi
+      ;;
+    2)
+      # Ask the user to input a custom NAT.
+      read -rp "Custom NAT:" SERVER_PUB_NIC
+
+      # If the user input is empty, use the IP route to determine the NIC.
+      if [ -z "${SERVER_PUB_NIC}" ]; then
+        SERVER_PUB_NIC="$(ip route | grep default | head --lines=1 | cut --delimiter=" " --fields=5)"
+      fi
+      ;;
+    esac
+  }
+
+  # Execute the function to determine the public NIC.
+  server-pub-nic
+
+  # Define a function to set the WireGuard server port
+  function set-port() {
+    # Display message to ask for user input regarding the port to listen on
+    echo "What port do you want WireGuard server to listen to?"
+    # Display options for the user to select
+    echo "  1) 51820 (Recommended)"
+    echo "  2) Custom (Advanced)"
+
+    # Loop until a valid port setting is selected (either 1 or 2)
+    until [[ "${SERVER_PORT_SETTINGS}" =~ ^[1-2]$ ]]; do
+      # Prompt user for port choice and allow them to edit (-e) with the default value of 1 (-i 1)
+      read -rp "Port Choice [1-2]:" -e -i 1 SERVER_PORT_SETTINGS
+    done
+
+    # Check which option was selected and set the SERVER_PORT variable accordingly
+    case ${SERVER_PORT_SETTINGS} in
+    1)
+      SERVER_PORT="51820"
+      # Check if the selected port is already in use by another application and exit if it is
+      if [ "$(lsof -i UDP:"${SERVER_PORT}")" ]; then
+        echo "Error: Please use a different port because ${SERVER_PORT} is already in use."
+        exit
+      fi
+      ;;
+    2)
+      # Loop until a valid custom port number between 1 and 65535 is entered
+      until [[ "${SERVER_PORT}" =~ ^[0-9]+$ ]] && [ "${SERVER_PORT}" -ge 1 ] && [ "${SERVER_PORT}" -le 65535 ]; do
+        read -rp "Custom port [1-65535]:" SERVER_PORT
+      done
+      # If no custom port is entered, set the SERVER_PORT variable to the default of 51820
+      if [ -z "${SERVER_PORT}" ]; then
+        SERVER_PORT="51820"
+      fi
+      # Check if the selected port is already in use by another application and exit if it is
+      if [ "$(lsof -i UDP:"${SERVER_PORT}")" ]; then
+        echo "Error: The port ${SERVER_PORT} is already used by a different application, please use a different port."
+        exit
+      fi
+      ;;
+    esac
+  }
+
+  # Call the set-port function to set the WireGuard server port
+  set-port
 
   # Determine Keepalive interval.
   function nat-keepalive() {
@@ -959,7 +955,7 @@ set-port
   function auto-remove-confg() {
     # Ask the user if they would like to expire the peer after a certain period of time.
     # If the user chooses to expire the peer after a certain period of time, it will enable the cron service.
-    # If the user chooses not to expire the peer after a certain period of time, it will not enable the cron service. 
+    # If the user chooses not to expire the peer after a certain period of time, it will not enable the cron service.
     echo "Would you like to expire the peer after a certain period of time?"
     echo "  1) Every Year (Recommended)"
     echo "  2) No"
