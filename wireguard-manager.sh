@@ -1226,17 +1226,22 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
   # Running Install Unbound
   install-unbound
 
-  # WireGuard Set Config
+  # Define shell function to set up a WireGuard configuration
   function wireguard-setconf() {
+    # Generate keys for the server and client
     SERVER_PRIVKEY=$(wg genkey)
     SERVER_PUBKEY=$(echo "${SERVER_PRIVKEY}" | wg pubkey)
     CLIENT_PRIVKEY=$(wg genkey)
     CLIENT_PUBKEY=$(echo "${CLIENT_PRIVKEY}" | wg pubkey)
+    # Calculate IP addresses for the client
     CLIENT_ADDRESS_V4=$(echo "${PRIVATE_SUBNET_V4}" | cut --delimiter="." --fields=1-3).2
     CLIENT_ADDRESS_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter=":" --fields=1-4):2
+    # Generate a preshared key and a random peer port
     PRESHARED_KEY=$(wg genpsk)
     PEER_PORT=$(shuf --input-range=1024-65535 --head-count=1)
+    # Create a directory for the WireGuard client configuration
     mkdir --parents ${WIREGUARD_CLIENT_PATH}
+    # Configure NAT if Unbound is installed
     if [ "${INSTALL_UNBOUND}" == true ]; then
       NFTABLES_POSTUP="sysctl --write net.ipv4.ip_forward=1; sysctl --write net.ipv6.conf.all.forwarding=1; nft add table inet wireguard-${WIREGUARD_PUB_NIC}; nft add chain inet wireguard-${WIREGUARD_PUB_NIC} wireguard_chain {type nat hook postrouting priority srcnat\;}; nft add rule inet wireguard-${WIREGUARD_PUB_NIC} wireguard_chain oifname ${SERVER_PUB_NIC} masquerade"
       NFTABLES_POSTDOWN="sysctl --write net.ipv4.ip_forward=0; sysctl --write net.ipv6.conf.all.forwarding=0; nft delete table inet wireguard-${WIREGUARD_PUB_NIC}"
@@ -1244,7 +1249,7 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
       NFTABLES_POSTUP="sysctl --write net.ipv4.ip_forward=1; sysctl --write net.ipv6.conf.all.forwarding=1; nft add table inet wireguard-${WIREGUARD_PUB_NIC}; nft add chain inet wireguard-${WIREGUARD_PUB_NIC} PREROUTING {type nat hook prerouting priority 0\;}; nft add chain inet wireguard-${WIREGUARD_PUB_NIC} POSTROUTING {type nat hook postrouting priority 100\;}; nft add rule inet wireguard-${WIREGUARD_PUB_NIC} POSTROUTING ip saddr ${PRIVATE_SUBNET_V4} oifname ${SERVER_PUB_NIC} masquerade; nft add rule inet wireguard-${WIREGUARD_PUB_NIC} POSTROUTING ip6 saddr ${PRIVATE_SUBNET_V6} oifname ${SERVER_PUB_NIC} masquerade"
       NFTABLES_POSTDOWN="sysctl --write net.ipv4.ip_forward=0; sysctl --write net.ipv6.conf.all.forwarding=0; nft delete table inet wireguard-${WIREGUARD_PUB_NIC}"
     fi
-    # Set WireGuard settings for this host and first peer.
+    # Configure WireGuard settings for this host and the first peer
     echo "# ${PRIVATE_SUBNET_V4} ${PRIVATE_SUBNET_V6} ${SERVER_HOST}:${SERVER_PORT} ${SERVER_PUBKEY} ${CLIENT_DNS} ${PEER_MTU_CHOICE} ${NAT_CHOICE} ${CLIENT_ALLOWED_IP}
 [Interface]
 Address = ${GATEWAY_ADDRESS_V4}/${PRIVATE_SUBNET_MASK_V4},${GATEWAY_ADDRESS_V6}/${PRIVATE_SUBNET_MASK_V6}
@@ -1274,33 +1279,41 @@ Endpoint = ${SERVER_HOST}:${SERVER_PORT}
 PersistentKeepalive = ${NAT_CHOICE}
 PresharedKey = ${PRESHARED_KEY}
 PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${CLIENT_NAME}"-${WIREGUARD_PUB_NIC}.conf
+    # Change the owner of the specified directory and all its contents recursively to root user and root group.
     chown --recursive root:root ${WIREGUARD_PATH}
-    if [ "${AUTOMATIC_WIREGUARD_EXPIRATION}" == true ]; then
-      crontab -l | {
-        cat
-        echo "$(date +%M) $(date +%H) $(date +%d) $(date +%m) * echo -e \"${CLIENT_NAME}\" | ${CURRENT_FILE_PATH} --remove"
-      } | crontab -
-    fi
+    # If AUTOMATIC_WIREGUARD_EXPIRATION variable is true, add a crontab entry to remove WireGuard client.
+    crontab -l | {
+      cat
+      # Add a new crontab entry to remove the WireGuard client.
+      echo "$(date +%M) $(date +%H) $(date +%d) $(date +%m) * echo -e \"${CLIENT_NAME}\" | ${CURRENT_FILE_PATH} --remove"
+    } | crontab -
+    # If the current init system contains "systemd", enable and start the necessary services and applications.
     if [[ "${CURRENT_INIT_SYSTEM}" == *"systemd"* ]]; then
-      systemctl enable --now nftables
-      systemctl enable --now wg-quick@${WIREGUARD_PUB_NIC}
+      systemctl enable --now nftables                      # Enable and start the nftables service.
+      systemctl enable --now wg-quick@${WIREGUARD_PUB_NIC} # Enable and start the WireGuard service.
+      # If INSTALL_UNBOUND variable is true, enable and start the unbound service.
       if [ "${INSTALL_UNBOUND}" == true ]; then
         systemctl enable --now unbound
         systemctl restart unbound
       fi
+    # If the current init system contains "init", start the necessary services and applications.
     elif [[ "${CURRENT_INIT_SYSTEM}" == *"init"* ]]; then
-      service nftables start
-      service wg-quick@${WIREGUARD_PUB_NIC} start
+      service nftables start                      # Start the nftables service.
+      service wg-quick@${WIREGUARD_PUB_NIC} start # Start the WireGuard service.
+      # If INSTALL_UNBOUND variable is true, restart the unbound service.
       if [ "${INSTALL_UNBOUND}" == true ]; then
         service unbound restart
       fi
     fi
+    # Generate a QR code of the WireGuard client configuration file in the terminal.
     qrencode -t ansiutf8 <${WIREGUARD_CLIENT_PATH}/"${CLIENT_NAME}"-${WIREGUARD_PUB_NIC}.conf
+    # Display the contents of the WireGuard client configuration file.
     cat ${WIREGUARD_CLIENT_PATH}/"${CLIENT_NAME}"-${WIREGUARD_PUB_NIC}.conf
+    # Display the path of the WireGuard client configuration file.
     echo "Client Config --> ${WIREGUARD_CLIENT_PATH}/${CLIENT_NAME}-${WIREGUARD_PUB_NIC}.conf"
   }
 
-  # Setting Up WireGuard Config
+  # Call the wireguard-setconf function to set up the WireGuard configuration.
   wireguard-setconf
 
 # After WireGuard Install
@@ -1482,20 +1495,25 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
       echo "Client config --> ${WIREGUARD_CLIENT_PATH}/${NEW_CLIENT_NAME}-${WIREGUARD_PUB_NIC}.conf"
       ;;
     6) # Remove WireGuard Peer
-      # It lists all the WireGuard clients that you can remove
-      # It asks you to select a WireGuard client that you would like to remove
-      # It removes the client from WireGuard
-      # It removes the client's config file from your server
+      # Prompt the user to enter the name of the WireGuard peer to remove.
       echo "Which WireGuard peer would you like to remove?"
+      # Extract the name of the peer from the WireGuard configuration file.
       grep start ${WIREGUARD_CONFIG} | cut --delimiter=" " --fields=2
+      # Read the user input for the name of the peer to remove.
       read -rp "Peer's name:" REMOVECLIENT
+      # Extract the public key of the peer from the WireGuard configuration file using the name.
       CLIENTKEY=$(sed -n "/\# ${REMOVECLIENT} start/,/\# ${REMOVECLIENT} end/p" ${WIREGUARD_CONFIG} | grep PublicKey | cut --delimiter=" " --fields=3)
+      # Remove the peer from the WireGuard interface using the public key.
       wg set ${WIREGUARD_PUB_NIC} peer "${CLIENTKEY}" remove
+      # Remove the configuration block of the peer from the WireGuard configuration file using the name.
       sed --in-place "/\# ${REMOVECLIENT} start/,/\# ${REMOVECLIENT} end/d" ${WIREGUARD_CONFIG}
+      # Remove the configuration file for the peer, if it exists.
       if [ -f "${WIREGUARD_CLIENT_PATH}/${REMOVECLIENT}-${WIREGUARD_PUB_NIC}.conf" ]; then
         rm --force ${WIREGUARD_CLIENT_PATH}/"${REMOVECLIENT}"-${WIREGUARD_PUB_NIC}.conf
       fi
+      # Add the WireGuard configuration to the interface and reload it.
       wg addconf ${WIREGUARD_PUB_NIC} <(wg-quick strip ${WIREGUARD_PUB_NIC})
+      # Remove any cron jobs associated with the peer.
       crontab -l | grep --invert-match "${REMOVECLIENT}" | crontab -
       ;;
     7) # Reinstall WireGuard
