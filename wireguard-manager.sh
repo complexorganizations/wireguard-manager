@@ -24,28 +24,35 @@ function super-user-check() {
 super-user-check
 # Calls the super-user-check function.
 
-
 # Get the current system information
+# This comment explains that the following function retrieves the current system information.
+
 function system-information() {
-  # CURRENT_DISTRO is the ID of the current system
-  # CURRENT_DISTRO_VERSION is the VERSION_ID of the current system
-  # CURRENT_DISTRO_MAJOR_VERSION is the major version of the current system (e.g. "16" for Ubuntu 16.04)
+  # This function retrieves the ID, version, and major version of the current system.
+
   if [ -f /etc/os-release ]; then
-    # shellcheck source=/dev/null
+    # Check if the /etc/os-release file exists, and if so, source it to get the system information.
+
     source /etc/os-release
-    CURRENT_DISTRO=${ID}
-    CURRENT_DISTRO_VERSION=${VERSION_ID}
-    CURRENT_DISTRO_MAJOR_VERSION=$(echo "${CURRENT_DISTRO_VERSION}" | cut --delimiter="." --fields=1)
+    CURRENT_DISTRO=${ID} # CURRENT_DISTRO is the ID of the current system
+    CURRENT_DISTRO_VERSION=${VERSION_ID} # CURRENT_DISTRO_VERSION is the VERSION_ID of the current system
+    CURRENT_DISTRO_MAJOR_VERSION=$(echo "${CURRENT_DISTRO_VERSION}" | cut --delimiter="." --fields=1) # CURRENT_DISTRO_MAJOR_VERSION is the major version of the current system (e.g. "16" for Ubuntu 16.04)
   fi
 }
 
 # Get the current system information
-system-information
+# This comment indicates that the system-information function is being called.
 
-# Pre-Checks system requirements
+system-information
+# Calls the system-information function.
+
+# Define a function to check system requirements
 function installing-system-requirements() {
+  # Check if the current Linux distribution is supported
   if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ] || [ "${CURRENT_DISTRO}" == "fedora" ] || [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "rhel" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ] || [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ] || [ "${CURRENT_DISTRO}" == "alpine" ] || [ "${CURRENT_DISTRO}" == "freebsd" ] || [ "${CURRENT_DISTRO}" == "ol" ]; }; then
+    # Check if required packages are already installed
     if { [ ! -x "$(command -v curl)" ] || [ ! -x "$(command -v cut)" ] || [ ! -x "$(command -v jq)" ] || [ ! -x "$(command -v ip)" ] || [ ! -x "$(command -v lsof)" ] || [ ! -x "$(command -v cron)" ] || [ ! -x "$(command -v awk)" ] || [ ! -x "$(command -v ps)" ] || [ ! -x "$(command -v grep)" ] || [ ! -x "$(command -v qrencode)" ] || [ ! -x "$(command -v sed)" ] || [ ! -x "$(command -v zip)" ] || [ ! -x "$(command -v unzip)" ] || [ ! -x "$(command -v openssl)" ] || [ ! -x "$(command -v nft)" ] || [ ! -x "$(command -v ifup)" ] || [ ! -x "$(command -v chattr)" ] || [ ! -x "$(command -v gpg)" ] || [ ! -x "$(command -v systemd-detect-virt)" ]; }; then
+      # Install required packages depending on the Linux distribution
       if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
         apt-get update
         apt-get install curl coreutils jq iproute2 lsof cron gawk procps grep qrencode sed zip unzip openssl nftables ifupdown e2fsprogs gnupg systemd -y
@@ -78,7 +85,7 @@ function installing-system-requirements() {
   fi
 }
 
-# check for requirements
+# Call the function to check for system requirements and install necessary packages if needed
 installing-system-requirements
 
 # Checking For Virtualization
@@ -87,7 +94,15 @@ function virt-check() {
   # It returns the name of the virtualization if it is supported, or "none" if
   # it is not supported. This code is used to check if the system is running in
   # a virtual machine, and if so, if it is running in a supported virtualization.
+  
+  # systemd-detect-virt is a utility that detects the type of virtualization
+  # that the system is running on. It returns a string that indicates the name
+  # of the virtualization, such as "kvm" or "vmware".
   CURRENT_SYSTEM_VIRTUALIZATION=$(systemd-detect-virt)
+  
+  # This case statement checks if the virtualization that the system is running
+  # on is supported. If it is not supported, the script will print an error
+  # message and exit.
   case ${CURRENT_SYSTEM_VIRTUALIZATION} in
   "kvm" | "none" | "qemu" | "lxc" | "microsoft" | "vmware" | "xen" | "amazon") ;;
   *)
@@ -98,66 +113,110 @@ function virt-check() {
 }
 
 # Virtualization Check
+# Call the virt-check function to check for supported virtualization.
 virt-check
 
 # Lets check the kernel version
+# This comment indicates that the following function checks the kernel version.
+
 function kernel-check() {
   # Check that the kernel version is at least 3.1.0
-  # This is necessary because the kernel version is used to
-  # determine if the correct kernel modules are installed
-  # and the correct device name for the network interface
-  # is set.
+  # This comment explains the purpose of the function.
+
   CURRENT_KERNEL_VERSION=$(uname --kernel-release | cut --delimiter="." --fields=1-2)
+  # Get the current kernel version and extract the major and minor version numbers.
+
   CURRENT_KERNEL_MAJOR_VERSION=$(echo "${CURRENT_KERNEL_VERSION}" | cut --delimiter="." --fields=1)
+  # Extract the major version number from the current kernel version.
+
   CURRENT_KERNEL_MINOR_VERSION=$(echo "${CURRENT_KERNEL_VERSION}" | cut --delimiter="." --fields=2)
+  # Extract the minor version number from the current kernel version.
+
   ALLOWED_KERNEL_VERSION="3.1"
+  # Set the minimum allowed kernel version.
+
   ALLOWED_KERNEL_MAJOR_VERSION=$(echo ${ALLOWED_KERNEL_VERSION} | cut --delimiter="." --fields=1)
+  # Extract the major version number from the allowed kernel version.
+
   ALLOWED_KERNEL_MINOR_VERSION=$(echo ${ALLOWED_KERNEL_VERSION} | cut --delimiter="." --fields=2)
+  # Extract the minor version number from the allowed kernel version.
+
   if [ "${CURRENT_KERNEL_MAJOR_VERSION}" -lt "${ALLOWED_KERNEL_MAJOR_VERSION}" ]; then
+    # If the current major version is less than the allowed major version, show an error message and exit.
+
     echo "Error: Kernel ${CURRENT_KERNEL_VERSION} not supported, please update to ${ALLOWED_KERNEL_VERSION}."
     exit
   fi
+
   if [ "${CURRENT_KERNEL_MAJOR_VERSION}" == "${ALLOWED_KERNEL_MAJOR_VERSION}" ]; then
+    # If the current major version is equal to the allowed major version, check the minor version.
+
     if [ "${CURRENT_KERNEL_MINOR_VERSION}" -lt "${ALLOWED_KERNEL_MINOR_VERSION}" ]; then
+      # If the current minor version is less than the allowed minor version, show an error message and exit.
+
       echo "Error: Kernel ${CURRENT_KERNEL_VERSION} not supported, please update to ${ALLOWED_KERNEL_VERSION}."
       exit
     fi
   fi
 }
 
+# Call the kernel-check function to verify the kernel version.
 kernel-check
 
 # Only allow certain init systems
+# This comment explains that the following function checks if the current init system is one of the allowed options.
+
 function check-current-init-system() {
-  # This code checks if the current init system is systemd or sysvinit
-  # If it is neither, the script exits
+  # This function checks if the current init system is systemd or sysvinit.
+  # If it is neither, the script exits.
+  
   CURRENT_INIT_SYSTEM=$(ps --no-headers -o comm 1)
+  # This line retrieves the current init system by checking the process name of PID 1.
+  
   case ${CURRENT_INIT_SYSTEM} in
-  *"systemd"* | *"init"*) ;;
-  *)
-    echo "${CURRENT_INIT_SYSTEM} init is not supported (yet)."
-    exit
-    ;;
+    # The case statement checks if the retrieved init system is one of the allowed options.
+    
+    *"systemd"* | *"init"*)
+      # If the init system is systemd or sysvinit (init), continue with the script.
+      ;;
+      
+    *)
+      # If the init system is not one of the allowed options, display an error message and exit.
+      
+      echo "${CURRENT_INIT_SYSTEM} init is not supported (yet)."
+      exit
+      ;;
   esac
 }
 
 # Check if the current init system is supported
+# This comment indicates that the check-current-init-system function is being called.
+
 check-current-init-system
+# Calls the check-current-init-system function.
 
 # Check if there are enough space to continue with the installation.
+# This comment explains that the following function checks if there's enough disk space to proceed with the installation.
+
 function check-disk-space() {
-  # Checks to see if there is more than 1 GB of free space on the drive
-  # where the user is installing to. If there is not, it will exit the
-  # script.
+  # This function checks if there is more than 1 GB of free space on the drive.
+
   FREE_SPACE_ON_DRIVE_IN_MB=$(df -m / | tr --squeeze-repeats " " | tail -n1 | cut --delimiter=" " --fields=4)
+  # This line calculates the available free space on the root partition in MB.
+
   if [ "${FREE_SPACE_ON_DRIVE_IN_MB}" -le 1024 ]; then
+    # If the available free space is less than or equal to 1024 MB (1 GB), display an error message and exit.
+    
     echo "Error: More than 1 GB of free space is needed to install everything."
     exit
   fi
 }
 
 # Check if there is enough disk space
+# This comment indicates that the check-disk-space function is being called.
+
 check-disk-space
+# Calls the check-disk-space function.
 
 # Global variables
 CURRENT_FILE_PATH=$(realpath "${0}")
