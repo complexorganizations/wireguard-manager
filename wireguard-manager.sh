@@ -1,40 +1,58 @@
 #!/usr/bin/env bash
+# This line sets the interpreter for the script as the Bash shell.
+
 # https://github.com/complexorganizations/wireguard-manager
+# This line provides a link to the GitHub repository for the WireGuard manager project.
 
 # Require script to be run as root
+# This comment explains that the script requires root privileges.
+
 function super-user-check() {
-  # This code checks to see if the script is running with root privileges.
-  # If it is not, it will exit with an error message.
+  # This function checks if the script is running as the root user.
+
   if [ "${EUID}" -ne 0 ]; then
+    # If the effective user ID is not 0 (root), display an error message and exit.
+
     echo "Error: You need to run this script as administrator."
     exit
   fi
 }
 
 # Check for root
+# This comment explains that the script checks if the user is the root user.
+
 super-user-check
+# Calls the super-user-check function.
 
 # Get the current system information
+# This comment explains that the following function retrieves the current system information.
+
 function system-information() {
-  # CURRENT_DISTRO is the ID of the current system
-  # CURRENT_DISTRO_VERSION is the VERSION_ID of the current system
-  # CURRENT_DISTRO_MAJOR_VERSION is the major version of the current system (e.g. "16" for Ubuntu 16.04)
+  # This function retrieves the ID, version, and major version of the current system.
+
   if [ -f /etc/os-release ]; then
-    # shellcheck source=/dev/null
+    # Check if the /etc/os-release file exists, and if so, source it to get the system information.
+
     source /etc/os-release
-    CURRENT_DISTRO=${ID}
-    CURRENT_DISTRO_VERSION=${VERSION_ID}
-    CURRENT_DISTRO_MAJOR_VERSION=$(echo "${CURRENT_DISTRO_VERSION}" | cut --delimiter="." --fields=1)
+    CURRENT_DISTRO=${ID}                                                                              # CURRENT_DISTRO is the ID of the current system
+    CURRENT_DISTRO_VERSION=${VERSION_ID}                                                              # CURRENT_DISTRO_VERSION is the VERSION_ID of the current system
+    CURRENT_DISTRO_MAJOR_VERSION=$(echo "${CURRENT_DISTRO_VERSION}" | cut --delimiter="." --fields=1) # CURRENT_DISTRO_MAJOR_VERSION is the major version of the current system (e.g. "16" for Ubuntu 16.04)
   fi
 }
 
 # Get the current system information
-system-information
+# This comment indicates that the system-information function is being called.
 
-# Pre-Checks system requirements
+system-information
+# Calls the system-information function.
+
+# Define a function to check system requirements
 function installing-system-requirements() {
+  # Check if the current Linux distribution is supported
   if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ] || [ "${CURRENT_DISTRO}" == "fedora" ] || [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "rhel" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ] || [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ] || [ "${CURRENT_DISTRO}" == "alpine" ] || [ "${CURRENT_DISTRO}" == "freebsd" ] || [ "${CURRENT_DISTRO}" == "ol" ]; }; then
+    # Check if required packages are already installed
     if { [ ! -x "$(command -v curl)" ] || [ ! -x "$(command -v cut)" ] || [ ! -x "$(command -v jq)" ] || [ ! -x "$(command -v ip)" ] || [ ! -x "$(command -v lsof)" ] || [ ! -x "$(command -v cron)" ] || [ ! -x "$(command -v awk)" ] || [ ! -x "$(command -v ps)" ] || [ ! -x "$(command -v grep)" ] || [ ! -x "$(command -v qrencode)" ] || [ ! -x "$(command -v sed)" ] || [ ! -x "$(command -v zip)" ] || [ ! -x "$(command -v unzip)" ] || [ ! -x "$(command -v openssl)" ] || [ ! -x "$(command -v nft)" ] || [ ! -x "$(command -v ifup)" ] || [ ! -x "$(command -v chattr)" ] || [ ! -x "$(command -v gpg)" ] || [ ! -x "$(command -v systemd-detect-virt)" ]; }; then
+      # Install required packages depending on the Linux distribution
       if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
         apt-get update
         apt-get install curl coreutils jq iproute2 lsof cron gawk procps grep qrencode sed zip unzip openssl nftables ifupdown e2fsprogs gnupg systemd -y
@@ -67,7 +85,7 @@ function installing-system-requirements() {
   fi
 }
 
-# check for requirements
+# Call the function to check for system requirements and install necessary packages if needed
 installing-system-requirements
 
 # Checking For Virtualization
@@ -76,7 +94,15 @@ function virt-check() {
   # It returns the name of the virtualization if it is supported, or "none" if
   # it is not supported. This code is used to check if the system is running in
   # a virtual machine, and if so, if it is running in a supported virtualization.
+
+  # systemd-detect-virt is a utility that detects the type of virtualization
+  # that the system is running on. It returns a string that indicates the name
+  # of the virtualization, such as "kvm" or "vmware".
   CURRENT_SYSTEM_VIRTUALIZATION=$(systemd-detect-virt)
+
+  # This case statement checks if the virtualization that the system is running
+  # on is supported. If it is not supported, the script will print an error
+  # message and exit.
   case ${CURRENT_SYSTEM_VIRTUALIZATION} in
   "kvm" | "none" | "qemu" | "lxc" | "microsoft" | "vmware" | "xen" | "amazon") ;;
   *)
@@ -87,43 +113,76 @@ function virt-check() {
 }
 
 # Virtualization Check
+# Call the virt-check function to check for supported virtualization.
 virt-check
 
 # Lets check the kernel version
+# This comment indicates that the following function checks the kernel version.
+
 function kernel-check() {
   # Check that the kernel version is at least 3.1.0
-  # This is necessary because the kernel version is used to
-  # determine if the correct kernel modules are installed
-  # and the correct device name for the network interface
-  # is set.
+  # This comment explains the purpose of the function.
+
   CURRENT_KERNEL_VERSION=$(uname --kernel-release | cut --delimiter="." --fields=1-2)
+  # Get the current kernel version and extract the major and minor version numbers.
+
   CURRENT_KERNEL_MAJOR_VERSION=$(echo "${CURRENT_KERNEL_VERSION}" | cut --delimiter="." --fields=1)
+  # Extract the major version number from the current kernel version.
+
   CURRENT_KERNEL_MINOR_VERSION=$(echo "${CURRENT_KERNEL_VERSION}" | cut --delimiter="." --fields=2)
+  # Extract the minor version number from the current kernel version.
+
   ALLOWED_KERNEL_VERSION="3.1"
+  # Set the minimum allowed kernel version.
+
   ALLOWED_KERNEL_MAJOR_VERSION=$(echo ${ALLOWED_KERNEL_VERSION} | cut --delimiter="." --fields=1)
+  # Extract the major version number from the allowed kernel version.
+
   ALLOWED_KERNEL_MINOR_VERSION=$(echo ${ALLOWED_KERNEL_VERSION} | cut --delimiter="." --fields=2)
+  # Extract the minor version number from the allowed kernel version.
+
   if [ "${CURRENT_KERNEL_MAJOR_VERSION}" -lt "${ALLOWED_KERNEL_MAJOR_VERSION}" ]; then
+    # If the current major version is less than the allowed major version, show an error message and exit.
+
     echo "Error: Kernel ${CURRENT_KERNEL_VERSION} not supported, please update to ${ALLOWED_KERNEL_VERSION}."
     exit
   fi
+
   if [ "${CURRENT_KERNEL_MAJOR_VERSION}" == "${ALLOWED_KERNEL_MAJOR_VERSION}" ]; then
+    # If the current major version is equal to the allowed major version, check the minor version.
+
     if [ "${CURRENT_KERNEL_MINOR_VERSION}" -lt "${ALLOWED_KERNEL_MINOR_VERSION}" ]; then
+      # If the current minor version is less than the allowed minor version, show an error message and exit.
+
       echo "Error: Kernel ${CURRENT_KERNEL_VERSION} not supported, please update to ${ALLOWED_KERNEL_VERSION}."
       exit
     fi
   fi
 }
 
+# Call the kernel-check function to verify the kernel version.
 kernel-check
 
 # Only allow certain init systems
+# This comment explains that the following function checks if the current init system is one of the allowed options.
+
 function check-current-init-system() {
-  # This code checks if the current init system is systemd or sysvinit
-  # If it is neither, the script exits
+  # This function checks if the current init system is systemd or sysvinit.
+  # If it is neither, the script exits.
+
   CURRENT_INIT_SYSTEM=$(ps --no-headers -o comm 1)
+  # This line retrieves the current init system by checking the process name of PID 1.
+
   case ${CURRENT_INIT_SYSTEM} in
-  *"systemd"* | *"init"*) ;;
+  # The case statement checks if the retrieved init system is one of the allowed options.
+
+  *"systemd"* | *"init"*)
+    # If the init system is systemd or sysvinit (init), continue with the script.
+    ;;
+
   *)
+    # If the init system is not one of the allowed options, display an error message and exit.
+
     echo "${CURRENT_INIT_SYSTEM} init is not supported (yet)."
     exit
     ;;
@@ -131,22 +190,33 @@ function check-current-init-system() {
 }
 
 # Check if the current init system is supported
+# This comment indicates that the check-current-init-system function is being called.
+
 check-current-init-system
+# Calls the check-current-init-system function.
 
 # Check if there are enough space to continue with the installation.
+# This comment explains that the following function checks if there's enough disk space to proceed with the installation.
+
 function check-disk-space() {
-  # Checks to see if there is more than 1 GB of free space on the drive
-  # where the user is installing to. If there is not, it will exit the
-  # script.
+  # This function checks if there is more than 1 GB of free space on the drive.
+
   FREE_SPACE_ON_DRIVE_IN_MB=$(df -m / | tr --squeeze-repeats " " | tail -n1 | cut --delimiter=" " --fields=4)
+  # This line calculates the available free space on the root partition in MB.
+
   if [ "${FREE_SPACE_ON_DRIVE_IN_MB}" -le 1024 ]; then
+    # If the available free space is less than or equal to 1024 MB (1 GB), display an error message and exit.
+
     echo "Error: More than 1 GB of free space is needed to install everything."
     exit
   fi
 }
 
 # Check if there is enough disk space
+# This comment indicates that the check-disk-space function is being called.
+
 check-disk-space
+# Calls the check-disk-space function.
 
 # Global variables
 CURRENT_FILE_PATH=$(realpath "${0}")
@@ -230,14 +300,20 @@ else
   SYSTEM_CRON_NAME="cron"
 fi
 
-# Get the network information
+# This is a Bash function named "get-network-information" that retrieves network information.
 function get-network-information() {
-  # This function will return the IPv4 address of the default interface
+  # This variable will store the IPv4 address of the default network interface by querying the "ipengine" API using "curl" command and extracting it using "jq" command.
   DEFAULT_INTERFACE_IPV4="$(curl --ipv4 --connect-timeout 5 --tlsv1.3 --silent 'https://api.ipengine.dev' | jq -r '.network.ip')"
+
+  # If the IPv4 address is empty, try getting it from another API.
   if [ -z "${DEFAULT_INTERFACE_IPV4}" ]; then
     DEFAULT_INTERFACE_IPV4="$(curl --ipv4 --connect-timeout 5 --tlsv1.3 --silent 'https://icanhazip.com')"
   fi
+
+  # This variable will store the IPv6 address of the default network interface by querying the "ipengine" API using "curl" command and extracting it using "jq" command.
   DEFAULT_INTERFACE_IPV6="$(curl --ipv6 --connect-timeout 5 --tlsv1.3 --silent 'https://api.ipengine.dev' | jq -r '.network.ip')"
+
+  # If the IPv6 address is empty, try getting it from another API.
   if [ -z "${DEFAULT_INTERFACE_IPV6}" ]; then
     DEFAULT_INTERFACE_IPV6="$(curl --ipv6 --connect-timeout 5 --tlsv1.3 --silent 'https://icanhazip.com')"
   fi
@@ -263,71 +339,73 @@ function usage-guide() {
   echo "  --help        Show Usage Guide"
 }
 
-# The usage of the script
+# Define a function that takes command line arguments as input
 function usage() {
+  # Check if there are any command line arguments left
   while [ $# -ne 0 ]; do
+    # Use a switch-case statement to check the value of the first argument
     case ${1} in
-    --install)
+    --install) # If it's "--install", set the variable HEADLESS_INSTALL to "true"
       shift
       HEADLESS_INSTALL=${HEADLESS_INSTALL=true}
       ;;
-    --start)
+    --start) # If it's "--start", set the variable WIREGUARD_OPTIONS to 2
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=2}
       ;;
-    --stop)
+    --stop) # If it's "--stop", set the variable WIREGUARD_OPTIONS to 3
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=3}
       ;;
-    --restart)
+    --restart) # If it's "--restart", set the variable WIREGUARD_OPTIONS to 4
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=4}
       ;;
-    --list)
+    --list) # If it's "--list", set the variable WIREGUARD_OPTIONS to 1
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=1}
       ;;
-    --add)
+    --add) # If it's "--add", set the variable WIREGUARD_OPTIONS to 5
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=5}
       ;;
-    --remove)
+    --remove) # If it's "--remove", set the variable WIREGUARD_OPTIONS to 6
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=6}
       ;;
-    --reinstall)
+    --reinstall) # If it's "--reinstall", set the variable WIREGUARD_OPTIONS to 7
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=7}
       ;;
-    --uninstall)
+    --uninstall) # If it's "--uninstall", set the variable WIREGUARD_OPTIONS to 8
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=8}
       ;;
-    --update)
+    --update) # If it's "--update", set the variable WIREGUARD_OPTIONS to 9
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=9}
       ;;
-    --backup)
+    --backup) # If it's "--backup", set the variable WIREGUARD_OPTIONS to 10
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=10}
       ;;
-    --restore)
+    --restore) # If it's "--restore", set the variable WIREGUARD_OPTIONS to 11
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=11}
       ;;
-    --ddns)
+    --ddns) # If it's "--ddns", set the variable WIREGUARD_OPTIONS to 12
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=12}
       ;;
-    --purge)
+    --purge) # If it's "--purge", set the variable WIREGUARD_OPTIONS to 14
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=14}
       ;;
-    --help)
+    --help) # If it's "--help", call the function usage-guide
       shift
       usage-guide
       ;;
-    *)
+    *) # If it's anything else, print an error message and call the function usage-guide, then exit
       echo "Invalid argument: ${1}"
       usage-guide
       exit
@@ -336,74 +414,91 @@ function usage() {
   done
 }
 
+# Call the function usage with all the command line arguments
 usage "$@"
 
-# All questions are skipped, and wireguard is installed and a configuration is generated.
+# The function defines default values for configuration variables when installing WireGuard in headless mode.
+# These variables include private subnet settings, server host settings, NAT choice, MTU choice, client allowed IP settings, automatic updates, automatic backup, DNS provider settings, content blocker settings, client name, and automatic config remover.
 function headless-install() {
+  # If headless installation is specified, set default values for configuration variables.
   if [ "${HEADLESS_INSTALL}" == true ]; then
-    PRIVATE_SUBNET_V4_SETTINGS=${PRIVATE_SUBNET_V4_SETTINGS=1}
-    PRIVATE_SUBNET_V6_SETTINGS=${PRIVATE_SUBNET_V6_SETTINGS=1}
-    SERVER_HOST_V4_SETTINGS=${SERVER_HOST_V4_SETTINGS=1}
-    SERVER_HOST_V6_SETTINGS=${SERVER_HOST_V6_SETTINGS=1}
-    SERVER_PUB_NIC_SETTINGS=${SERVER_PUB_NIC_SETTINGS=1}
-    SERVER_PORT_SETTINGS=${SERVER_PORT_SETTINGS=1}
-    NAT_CHOICE_SETTINGS=${NAT_CHOICE_SETTINGS=1}
-    MTU_CHOICE_SETTINGS=${MTU_CHOICE_SETTINGS=1}
-    SERVER_HOST_SETTINGS=${SERVER_HOST_SETTINGS=1}
-    CLIENT_ALLOWED_IP_SETTINGS=${CLIENT_ALLOWED_IP_SETTINGS=1}
-    AUTOMATIC_UPDATES_SETTINGS=${AUTOMATIC_UPDATES_SETTINGS=1}
-    AUTOMATIC_BACKUP_SETTINGS=${AUTOMATIC_BACKUP_SETTINGS=1}
-    DNS_PROVIDER_SETTINGS=${DNS_PROVIDER_SETTINGS=1}
-    CONTENT_BLOCKER_SETTINGS=${CONTENT_BLOCKER_SETTINGS=1}
-    CLIENT_NAME=${CLIENT_NAME=$(openssl rand -hex 50)}
-    AUTOMATIC_CONFIG_REMOVER=${AUTOMATIC_CONFIG_REMOVER=1}
+    PRIVATE_SUBNET_V4_SETTINGS=${PRIVATE_SUBNET_V4_SETTINGS=1} # Default to 1 if not specified
+    PRIVATE_SUBNET_V6_SETTINGS=${PRIVATE_SUBNET_V6_SETTINGS=1} # Default to 1 if not specified
+    SERVER_HOST_V4_SETTINGS=${SERVER_HOST_V4_SETTINGS=1}       # Default to 1 if not specified
+    SERVER_HOST_V6_SETTINGS=${SERVER_HOST_V6_SETTINGS=1}       # Default to 1 if not specified
+    SERVER_PUB_NIC_SETTINGS=${SERVER_PUB_NIC_SETTINGS=1}       # Default to 1 if not specified
+    SERVER_PORT_SETTINGS=${SERVER_PORT_SETTINGS=1}             # Default to 1 if not specified
+    NAT_CHOICE_SETTINGS=${NAT_CHOICE_SETTINGS=1}               # Default to 1 if not specified
+    MTU_CHOICE_SETTINGS=${MTU_CHOICE_SETTINGS=1}               # Default to 1 if not specified
+    SERVER_HOST_SETTINGS=${SERVER_HOST_SETTINGS=1}             # Default to 1 if not specified
+    CLIENT_ALLOWED_IP_SETTINGS=${CLIENT_ALLOWED_IP_SETTINGS=1} # Default to 1 if not specified
+    AUTOMATIC_UPDATES_SETTINGS=${AUTOMATIC_UPDATES_SETTINGS=1} # Default to 1 if not specified
+    AUTOMATIC_BACKUP_SETTINGS=${AUTOMATIC_BACKUP_SETTINGS=1}   # Default to 1 if not specified
+    DNS_PROVIDER_SETTINGS=${DNS_PROVIDER_SETTINGS=1}           # Default to 1 if not specified
+    CONTENT_BLOCKER_SETTINGS=${CONTENT_BLOCKER_SETTINGS=1}     # Default to 1 if not specified
+    CLIENT_NAME=${CLIENT_NAME=$(openssl rand -hex 50)}         # Generate a random client name if not specified
+    AUTOMATIC_CONFIG_REMOVER=${AUTOMATIC_CONFIG_REMOVER=1}     # Default to 1 if not specified
   fi
 }
 
-# No GUI
+# Call the headless-install function to set default values for configuration variables in headless mode.
 headless-install
 
 # Set up the wireguard, if config it isn't already there.
 if [ ! -f "${WIREGUARD_CONFIG}" ]; then
 
-  # Custom IPv4 subnet
+  # Define a function to set a custom IPv4 subnet
   function set-ipv4-subnet() {
+    # Prompt the user for the desired IPv4 subnet
     echo "What IPv4 subnet do you want to use?"
     echo "  1) 10.0.0.0/8 (Recommended)"
     echo "  2) Custom (Advanced)"
+
+    # Keep prompting the user until they enter a valid subnet choice
     until [[ "${PRIVATE_SUBNET_V4_SETTINGS}" =~ ^[1-2]$ ]]; do
       read -rp "Subnet Choice [1-2]:" -e -i 1 PRIVATE_SUBNET_V4_SETTINGS
     done
+
+    # Based on the user's choice, set the private IPv4 subnet
     case ${PRIVATE_SUBNET_V4_SETTINGS} in
     1)
-      PRIVATE_SUBNET_V4="10.0.0.0/8"
+      PRIVATE_SUBNET_V4="10.0.0.0/8" # Set a default IPv4 subnet
       ;;
     2)
-      read -rp "Custom IPv4 Subnet:" PRIVATE_SUBNET_V4
-      if [ -z "${PRIVATE_SUBNET_V4}" ]; then
+      read -rp "Custom IPv4 Subnet:" PRIVATE_SUBNET_V4 # Prompt user for custom subnet
+      if [ -z "${PRIVATE_SUBNET_V4}" ]; then           # If the user did not enter a subnet, set default
         PRIVATE_SUBNET_V4="10.0.0.0/8"
       fi
       ;;
     esac
   }
 
-  # Custom IPv4 Subnet
+  # Call the function to set the custom IPv4 subnet
   set-ipv4-subnet
 
-  # Custom IPv6 subnet
+  # Define a function to set a custom IPv6 subnet
   function set-ipv6-subnet() {
+    # Ask the user which IPv6 subnet they want to use
     echo "What IPv6 subnet do you want to use?"
     echo "  1) fd00:00:00::0/8 (Recommended)"
     echo "  2) Custom (Advanced)"
+
+    # Use a loop to ensure the user inputs a valid option
     until [[ "${PRIVATE_SUBNET_V6_SETTINGS}" =~ ^[1-2]$ ]]; do
       read -rp "Subnet Choice [1-2]:" -e -i 1 PRIVATE_SUBNET_V6_SETTINGS
     done
+
+    # Use a case statement to set the IPv6 subnet based on the user's choice
     case ${PRIVATE_SUBNET_V6_SETTINGS} in
     1)
+      # Use the recommended IPv6 subnet if the user chooses option 1
       PRIVATE_SUBNET_V6="fd00:00:00::0/8"
       ;;
     2)
+      # Ask the user for a custom IPv6 subnet if they choose option 2
       read -rp "Custom IPv6 Subnet:" PRIVATE_SUBNET_V6
+
+      # If the user does not input a subnet, use the recommended one
       if [ -z "${PRIVATE_SUBNET_V6}" ]; then
         PRIVATE_SUBNET_V6="fd00:00:00::0/8"
       fi
@@ -411,34 +506,42 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     esac
   }
 
-  # Custom IPv6 Subnet
+  # Call the set-ipv6-subnet function to set the custom IPv6 subnet
   set-ipv6-subnet
 
   # Private Subnet Mask IPv4
-  PRIVATE_SUBNET_MASK_V4=$(echo "${PRIVATE_SUBNET_V4}" | cut --delimiter="/" --fields=2)
-  # IPv4 Getaway
-  GATEWAY_ADDRESS_V4=$(echo "${PRIVATE_SUBNET_V4}" | cut --delimiter="." --fields=1-3).1
+  PRIVATE_SUBNET_MASK_V4=$(echo "${PRIVATE_SUBNET_V4}" | cut --delimiter="/" --fields=2) # Get the subnet mask of IPv4
+
+  # IPv4 Gateway
+  GATEWAY_ADDRESS_V4=$(echo "${PRIVATE_SUBNET_V4}" | cut --delimiter="." --fields=1-3).1 # Get the gateway address of IPv4
+
   # Private Subnet Mask IPv6
-  PRIVATE_SUBNET_MASK_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter="/" --fields=2)
-  # IPv6 Getaway
-  GATEWAY_ADDRESS_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter=":" --fields=1-3)::1
+  PRIVATE_SUBNET_MASK_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter="/" --fields=2) # Get the subnet mask of IPv6
+
+  # IPv6 Gateway
+  GATEWAY_ADDRESS_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter=":" --fields=1-3)::1 # Get the gateway address of IPv6
+
   # Get the networking data
-  get-network-information
+  get-network-information # Call a function to get the networking data
 
   # Get the IPv4
   function test-connectivity-v4() {
     echo "How would you like to detect IPv4?"
     echo "  1) Curl (Recommended)"
     echo "  2) Custom (Advanced)"
+
+    # Loop until input is valid
     until [[ "${SERVER_HOST_V4_SETTINGS}" =~ ^[1-2]$ ]]; do
       read -rp "IPv4 Choice [1-2]:" -e -i 1 SERVER_HOST_V4_SETTINGS
     done
+
     case ${SERVER_HOST_V4_SETTINGS} in
     1)
-      SERVER_HOST_V4=${DEFAULT_INTERFACE_IPV4}
+      SERVER_HOST_V4=${DEFAULT_INTERFACE_IPV4} # Use the default IPv4 address
       ;;
     2)
       read -rp "Custom IPv4:" SERVER_HOST_V4
+      # If input is empty, use default IPv4
       if [ -z "${SERVER_HOST_V4}" ]; then
         SERVER_HOST_V4=${DEFAULT_INTERFACE_IPV4}
       fi
@@ -446,23 +549,27 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     esac
   }
 
-  # Get the IPv4
-  test-connectivity-v4
+  # Call the function to get the IPv4
+  test-connectivity-v4 # Call a function to get the IPv4 address
 
   # Determine IPv6
   function test-connectivity-v6() {
     echo "How would you like to detect IPv6?"
     echo "  1) Curl (Recommended)"
     echo "  2) Custom (Advanced)"
+
+    # Loop until input is valid
     until [[ "${SERVER_HOST_V6_SETTINGS}" =~ ^[1-2]$ ]]; do
       read -rp "IPv6 Choice [1-2]:" -e -i 1 SERVER_HOST_V6_SETTINGS
     done
+
     case ${SERVER_HOST_V6_SETTINGS} in
     1)
-      SERVER_HOST_V6=${DEFAULT_INTERFACE_IPV6}
+      SERVER_HOST_V6=${DEFAULT_INTERFACE_IPV6} # Use the default IPv6 address
       ;;
     2)
       read -rp "Custom IPv6:" SERVER_HOST_V6
+      # If input is empty, use default IPv6
       if [ -z "${SERVER_HOST_V6}" ]; then
         SERVER_HOST_V6=${DEFAULT_INTERFACE_IPV6}
       fi
@@ -470,27 +577,38 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     esac
   }
 
-  # Get the IPv6
-  test-connectivity-v6
+  # Call the function to get the IPv6
+  test-connectivity-v6 # Call a function to get the IPv6 address
 
-  # Determine public NIC
+  # Define a function to determine the public NIC.
   function server-pub-nic() {
+    # Ask the user how to detect the NIC.
     echo "How would you like to detect NIC?"
     echo "  1) IP (Recommended)"
     echo "  2) Custom (Advanced)"
+
+    # Wait until the user inputs 1 or 2.
     until [[ "${SERVER_PUB_NIC_SETTINGS}" =~ ^[1-2]$ ]]; do
       read -rp "Nic Choice [1-2]:" -e -i 1 SERVER_PUB_NIC_SETTINGS
     done
+
+    # Execute a case statement to check the user's choice.
     case ${SERVER_PUB_NIC_SETTINGS} in
     1)
+      # Use the IP route to determine the NIC.
       SERVER_PUB_NIC="$(ip route | grep default | head --lines=1 | cut --delimiter=" " --fields=5)"
+
+      # If no NIC is found, exit with an error.
       if [ -z "${SERVER_PUB_NIC}" ]; then
         echo "Error: Your server's public network interface could not be found."
         exit
       fi
       ;;
     2)
+      # Ask the user to input a custom NAT.
       read -rp "Custom NAT:" SERVER_PUB_NIC
+
+      # If the user input is empty, use the IP route to determine the NIC.
       if [ -z "${SERVER_PUB_NIC}" ]; then
         SERVER_PUB_NIC="$(ip route | grep default | head --lines=1 | cut --delimiter=" " --fields=5)"
       fi
@@ -498,32 +616,43 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     esac
   }
 
-  # Determine public NIC
+  # Execute the function to determine the public NIC.
   server-pub-nic
 
-  # Determine host port
+  # Define a function to set the WireGuard server port
   function set-port() {
+    # Display message to ask for user input regarding the port to listen on
     echo "What port do you want WireGuard server to listen to?"
+    # Display options for the user to select
     echo "  1) 51820 (Recommended)"
     echo "  2) Custom (Advanced)"
+
+    # Loop until a valid port setting is selected (either 1 or 2)
     until [[ "${SERVER_PORT_SETTINGS}" =~ ^[1-2]$ ]]; do
+      # Prompt user for port choice and allow them to edit (-e) with the default value of 1 (-i 1)
       read -rp "Port Choice [1-2]:" -e -i 1 SERVER_PORT_SETTINGS
     done
+
+    # Check which option was selected and set the SERVER_PORT variable accordingly
     case ${SERVER_PORT_SETTINGS} in
     1)
       SERVER_PORT="51820"
+      # Check if the selected port is already in use by another application and exit if it is
       if [ "$(lsof -i UDP:"${SERVER_PORT}")" ]; then
         echo "Error: Please use a different port because ${SERVER_PORT} is already in use."
         exit
       fi
       ;;
     2)
+      # Loop until a valid custom port number between 1 and 65535 is entered
       until [[ "${SERVER_PORT}" =~ ^[0-9]+$ ]] && [ "${SERVER_PORT}" -ge 1 ] && [ "${SERVER_PORT}" -le 65535 ]; do
         read -rp "Custom port [1-65535]:" SERVER_PORT
       done
+      # If no custom port is entered, set the SERVER_PORT variable to the default of 51820
       if [ -z "${SERVER_PORT}" ]; then
         SERVER_PORT="51820"
       fi
+      # Check if the selected port is already in use by another application and exit if it is
       if [ "$(lsof -i UDP:"${SERVER_PORT}")" ]; then
         echo "Error: The port ${SERVER_PORT} is already used by a different application, please use a different port."
         exit
@@ -532,196 +661,215 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     esac
   }
 
-  # Set port
+  # Call the set-port function to set the WireGuard server port
   set-port
 
   # Determine Keepalive interval.
-  function nat-keepalive() {
-    echo "What do you want your keepalive interval to be?"
-    echo "  1) 25 (Default)"
-    echo "  2) Custom (Advanced)"
-    until [[ "${NAT_CHOICE_SETTINGS}" =~ ^[1-2]$ ]]; do
-      read -rp "Keepalive Choice [1-2]:" -e -i 1 NAT_CHOICE_SETTINGS
+  function nat-keepalive() {                                         # Define a function called nat-keepalive
+    echo "What do you want your keepalive interval to be?"           # Prompt user for keepalive interval
+    echo "  1) 25 (Default)"                                         # Option 1: default interval of 25
+    echo "  2) Custom (Advanced)"                                    # Option 2: custom interval
+    until [[ "${NAT_CHOICE_SETTINGS}" =~ ^[1-2]$ ]]; do              # Loop until a valid choice (1 or 2) is made
+      read -rp "Keepalive Choice [1-2]:" -e -i 1 NAT_CHOICE_SETTINGS # Read user input
     done
-    case ${NAT_CHOICE_SETTINGS} in
-    1)
-      NAT_CHOICE="25"
+    case ${NAT_CHOICE_SETTINGS} in # Evaluate user choice
+    1)                             # If user chose option 1
+      NAT_CHOICE="25"              # Set NAT_CHOICE to default interval (25)
       ;;
-    2)
-      until [[ "${NAT_CHOICE}" =~ ^[0-9]+$ ]] && [ "${NAT_CHOICE}" -ge 1 ] && [ "${NAT_CHOICE}" -le 65535 ]; do
-        read -rp "Custom NAT [1-65535]:" NAT_CHOICE
+    2)                                                                                                          # If user chose option 2
+      until [[ "${NAT_CHOICE}" =~ ^[0-9]+$ ]] && [ "${NAT_CHOICE}" -ge 1 ] && [ "${NAT_CHOICE}" -le 65535 ]; do # Loop until a valid custom interval is entered
+        read -rp "Custom NAT [1-65535]:" NAT_CHOICE                                                             # Read user input for custom interval
       done
-      if [ -z "${NAT_CHOICE}" ]; then
-        NAT_CHOICE="25"
+      if [ -z "${NAT_CHOICE}" ]; then # If NAT_CHOICE is empty
+        NAT_CHOICE="25"               # Set NAT_CHOICE to default interval (25)
       fi
       ;;
     esac
   }
-
   # Keepalive interval
-  nat-keepalive
+  nat-keepalive # Call the nat-keepalive function
 
   # Custom MTU or default settings
-  function mtu-set() {
-    echo "What MTU do you want to use?"
-    echo "  1) 1420|1280 (Recommended)"
-    echo "  2) Custom (Advanced)"
-    until [[ "${MTU_CHOICE_SETTINGS}" =~ ^[1-2]$ ]]; do
-      read -rp "MTU Choice [1-2]:" -e -i 1 MTU_CHOICE_SETTINGS
+  function mtu-set() {                                         # Define a function called mtu-set
+    echo "What MTU do you want to use?"                        # Prompt user for MTU setting
+    echo "  1) 1420|1280 (Recommended)"                        # Option 1: recommended MTU settings
+    echo "  2) Custom (Advanced)"                              # Option 2: custom MTU settings
+    until [[ "${MTU_CHOICE_SETTINGS}" =~ ^[1-2]$ ]]; do        # Loop until a valid choice (1 or 2) is made
+      read -rp "MTU Choice [1-2]:" -e -i 1 MTU_CHOICE_SETTINGS # Read user input
     done
-    case ${MTU_CHOICE_SETTINGS} in
-    1)
-      INTERFACE_MTU_CHOICE="1420"
-      PEER_MTU_CHOICE="1280"
+    case ${MTU_CHOICE_SETTINGS} in # Evaluate user choice
+    1)                             # If user chose option 1
+      INTERFACE_MTU_CHOICE="1420"  # Set INTERFACE_MTU_CHOICE to recommended value (1420)
+      PEER_MTU_CHOICE="1280"       # Set PEER_MTU_CHOICE to recommended value (1280)
       ;;
-    2)
-      until [[ "${INTERFACE_MTU_CHOICE}" =~ ^[0-9]+$ ]] && [ "${INTERFACE_MTU_CHOICE}" -ge 1 ] && [ "${INTERFACE_MTU_CHOICE}" -le 65535 ]; do
-        read -rp "Custom Interface MTU [1-65535]:" INTERFACE_MTU_CHOICE
+    2)                                                                                                                                        # If user chose option 2
+      until [[ "${INTERFACE_MTU_CHOICE}" =~ ^[0-9]+$ ]] && [ "${INTERFACE_MTU_CHOICE}" -ge 1 ] && [ "${INTERFACE_MTU_CHOICE}" -le 65535 ]; do # Loop until a valid custom interface MTU is entered
+        read -rp "Custom Interface MTU [1-65535]:" INTERFACE_MTU_CHOICE                                                                       # Read user input for custom interface MTU
       done
-      if [ -z "${INTERFACE_MTU_CHOICE}" ]; then
-        INTERFACE_MTU_CHOICE="1420"
+      if [ -z "${INTERFACE_MTU_CHOICE}" ]; then # If INTERFACE_MTU_CHOICE is empty
+        INTERFACE_MTU_CHOICE="1420"             # Set INTERFACE_MTU_CHOICE to recommended value (1420)
       fi
-      until [[ "${PEER_MTU_CHOICE}" =~ ^[0-9]+$ ]] && [ "${PEER_MTU_CHOICE}" -ge 1 ] && [ "${PEER_MTU_CHOICE}" -le 65535 ]; do
-        read -rp "Custom Peer MTU [1-65535]:" PEER_MTU_CHOICE
+      until [[ "${PEER_MTU_CHOICE}" =~ ^[0-9]+$ ]] && [ "${PEER_MTU_CHOICE}" -ge 1 ] && [ "${PEER_MTU_CHOICE}" -le 65535 ]; do # Loop until a valid custom peer MTU is entered
+        read -rp "Custom Peer MTU [1-65535]:" PEER_MTU_CHOICE                                                                  # Read user input for custom peer MTU
       done
-      if [ -z "${PEER_MTU_CHOICE}" ]; then
-        PEER_MTU_CHOICE="1280"
+      if [ -z "${PEER_MTU_CHOICE}" ]; then # If PEER_MTU_CHOICE is empty
+        PEER_MTU_CHOICE="1280"             # Set PEER_MTU_CHOICE to recommended value (1280)
       fi
       ;;
     esac
   }
 
   # Set MTU
-  mtu-set
+  mtu-set # Call the mtu-set function
 
   # What IP version would you like to be available on this WireGuard server?
-  function ipvx-select() {
-    echo "What IPv do you want to use to connect to the WireGuard server?"
-    echo "  1) IPv4 (Recommended)"
-    echo "  2) IPv6"
-    until [[ "${SERVER_HOST_SETTINGS}" =~ ^[1-2]$ ]]; do
-      read -rp "IP Choice [1-2]:" -e -i 1 SERVER_HOST_SETTINGS
+  function ipvx-select() {                                                 # Define a function called ipvx-select
+    echo "What IPv do you want to use to connect to the WireGuard server?" # Prompt user for IP version to use
+    echo "  1) IPv4 (Recommended)"                                         # Option 1: recommended IPv4
+    echo "  2) IPv6"                                                       # Option 2: IPv6
+    until [[ "${SERVER_HOST_SETTINGS}" =~ ^[1-2]$ ]]; do                   # Loop until a valid choice (1 or 2) is made
+      read -rp "IP Choice [1-2]:" -e -i 1 SERVER_HOST_SETTINGS             # Read user input
     done
-    case ${SERVER_HOST_SETTINGS} in
-    1)
-      if [ -n "${DEFAULT_INTERFACE_IPV4}" ]; then
-        SERVER_HOST="${DEFAULT_INTERFACE_IPV4}"
+    case ${SERVER_HOST_SETTINGS} in               # Evaluate user choice
+    1)                                            # If user chose option 1
+      if [ -n "${DEFAULT_INTERFACE_IPV4}" ]; then # If DEFAULT_INTERFACE_IPV4 is not empty
+        SERVER_HOST="${DEFAULT_INTERFACE_IPV4}"   # Set SERVER_HOST to DEFAULT_INTERFACE_IPV4
       else
-        SERVER_HOST="[${DEFAULT_INTERFACE_IPV6}]"
+        SERVER_HOST="[${DEFAULT_INTERFACE_IPV6}]" # Set SERVER_HOST to DEFAULT_INTERFACE_IPV6 (surrounded by brackets to indicate IPv6 address)
       fi
       ;;
-    2)
-      if [ -n "${DEFAULT_INTERFACE_IPV6}" ]; then
-        SERVER_HOST="[${DEFAULT_INTERFACE_IPV6}]"
+    2)                                            # If user chose option 2
+      if [ -n "${DEFAULT_INTERFACE_IPV6}" ]; then # If DEFAULT_INTERFACE_IPV6 is not empty
+        SERVER_HOST="[${DEFAULT_INTERFACE_IPV6}]" # Set SERVER_HOST to DEFAULT_INTERFACE_IPV6 (surrounded by brackets to indicate IPv6 address)
       else
-        SERVER_HOST="${DEFAULT_INTERFACE_IPV4}"
+        SERVER_HOST="${DEFAULT_INTERFACE_IPV4}" # Set SERVER_HOST to DEFAULT_INTERFACE_IPV4
       fi
       ;;
     esac
   }
 
   # IPv4 or IPv6 Selector
-  ipvx-select
+  ipvx-select # Call the ipvx-select function
 
   # Would you like to allow connections to your LAN neighbors?
-  function client-allowed-ip() {
-    echo "What traffic do you want the client to forward through WireGuard?"
-    echo "  1) Everything (Recommended)"
-    echo "  2) Custom (Advanced)"
-    until [[ "${CLIENT_ALLOWED_IP_SETTINGS}" =~ ^[1-2]$ ]]; do
-      read -rp "Client Allowed IP Choice [1-2]:" -e -i 1 CLIENT_ALLOWED_IP_SETTINGS
+  function client-allowed-ip() {                                                    # Define a function called client-allowed-ip
+    echo "What traffic do you want the client to forward through WireGuard?"        # Prompt user for allowed traffic
+    echo "  1) Everything (Recommended)"                                            # Option 1: allow all traffic
+    echo "  2) Custom (Advanced)"                                                   # Option 2: allow custom traffic
+    until [[ "${CLIENT_ALLOWED_IP_SETTINGS}" =~ ^[1-2]$ ]]; do                      # Loop until a valid choice (1 or 2) is made
+      read -rp "Client Allowed IP Choice [1-2]:" -e -i 1 CLIENT_ALLOWED_IP_SETTINGS # Read user input
     done
-    case ${CLIENT_ALLOWED_IP_SETTINGS} in
-    1)
-      CLIENT_ALLOWED_IP="0.0.0.0/0,::/0"
+    case ${CLIENT_ALLOWED_IP_SETTINGS} in # Evaluate user choice
+    1)                                    # If user chose option 1
+      CLIENT_ALLOWED_IP="0.0.0.0/0,::/0"  # Set CLIENT_ALLOWED_IP to allow all traffic
       ;;
-    2)
-      read -rp "Custom IPs:" CLIENT_ALLOWED_IP
-      if [ -z "${CLIENT_ALLOWED_IP}" ]; then
-        CLIENT_ALLOWED_IP="0.0.0.0/0,::/0"
+    2)                                         # If user chose option 2
+      read -rp "Custom IPs:" CLIENT_ALLOWED_IP # Prompt user for custom allowed IPs
+      if [ -z "${CLIENT_ALLOWED_IP}" ]; then   # If CLIENT_ALLOWED_IP is empty
+        CLIENT_ALLOWED_IP="0.0.0.0/0,::/0"     # Set CLIENT_ALLOWED_IP to allow all traffic
       fi
       ;;
     esac
   }
 
   # Traffic Forwarding
-  client-allowed-ip
+  client-allowed-ip # Call the client-allowed-ip function
 
   # real-time updates
-  function enable-automatic-updates() {
-    echo "Would you like to setup real-time updates?"
-    echo "  1) Yes (Recommended)"
-    echo "  2) No (Advanced)"
-    until [[ "${AUTOMATIC_UPDATES_SETTINGS}" =~ ^[1-2]$ ]]; do
-      read -rp "Automatic Updates [1-2]:" -e -i 1 AUTOMATIC_UPDATES_SETTINGS
+  function enable-automatic-updates() {                                      # Define a function called enable-automatic-updates
+    echo "Would you like to setup real-time updates?"                        # Prompt user for real-time updates setting
+    echo "  1) Yes (Recommended)"                                            # Option 1: enable real-time updates
+    echo "  2) No (Advanced)"                                                # Option 2: disable real-time updates
+    until [[ "${AUTOMATIC_UPDATES_SETTINGS}" =~ ^[1-2]$ ]]; do               # Loop until a valid choice (1 or 2) is made
+      read -rp "Automatic Updates [1-2]:" -e -i 1 AUTOMATIC_UPDATES_SETTINGS # Read user input
     done
-    case ${AUTOMATIC_UPDATES_SETTINGS} in
-    1)
-      crontab -l | {
+    case ${AUTOMATIC_UPDATES_SETTINGS} in # Evaluate user choice
+    1)                                    # If user chose option 1
+      crontab -l | {                      # Append to existing crontab or create a new one if none exists
         cat
-        echo "0 0 * * * ${CURRENT_FILE_PATH} --update"
+        echo "0 0 * * * ${CURRENT_FILE_PATH} --update" # Add cron job to run the script with --update option every day at midnight
       } | crontab -
-      if [[ "${CURRENT_INIT_SYSTEM}" == *"systemd"* ]]; then
-        systemctl enable --now ${SYSTEM_CRON_NAME}
-      elif [[ "${CURRENT_INIT_SYSTEM}" == *"init"* ]]; then
-        service ${SYSTEM_CRON_NAME} start
+      if [[ "${CURRENT_INIT_SYSTEM}" == *"systemd"* ]]; then # If using systemd init system
+        systemctl enable --now ${SYSTEM_CRON_NAME}           # Enable and start the cron service
+      elif [[ "${CURRENT_INIT_SYSTEM}" == *"init"* ]]; then  # If using initd init system
+        service ${SYSTEM_CRON_NAME} start                    # Start the cron service
       fi
       ;;
-    2)
-      echo "Real-time Updates Disabled"
+    2)                                  # If user chose option 2
+      echo "Real-time Updates Disabled" # Display message indicating real-time updates are disabled
       ;;
     esac
   }
 
   # real-time updates
-  enable-automatic-updates
+  enable-automatic-updates # Call the enable-automatic-updates function
 
-  # real-time backup
+  # Define a function to enable automatic backup
   function enable-automatic-backup() {
+    # Ask the user if they want to setup real-time backup
     echo "Would you like to setup real-time backup?"
+    # Show two options
     echo "  1) Yes (Recommended)"
     echo "  2) No (Advanced)"
+    # Until the user inputs a valid option, keep asking
     until [[ "${AUTOMATIC_BACKUP_SETTINGS}" =~ ^[1-2]$ ]]; do
+      # Read user input and set it to AUTOMATIC_BACKUP_SETTINGS variable
       read -rp "Automatic Backup [1-2]:" -e -i 1 AUTOMATIC_BACKUP_SETTINGS
     done
+    # Based on user input, execute the appropriate block of code
     case ${AUTOMATIC_BACKUP_SETTINGS} in
+    # If user chooses option 1
     1)
+      # Append a cron job to backup current file path everyday at midnight
       crontab -l | {
         cat
         echo "0 0 * * * ${CURRENT_FILE_PATH} --backup"
       } | crontab -
+      # If current init system is systemd, enable and start the cron job
       if [[ "${CURRENT_INIT_SYSTEM}" == *"systemd"* ]]; then
         systemctl enable --now ${SYSTEM_CRON_NAME}
+      # Otherwise, if current init system is init, start the cron job
       elif [[ "${CURRENT_INIT_SYSTEM}" == *"init"* ]]; then
         service ${SYSTEM_CRON_NAME} start
       fi
       ;;
+    # If user chooses option 2
     2)
+      # Inform the user that real-time backup is disabled
       echo "Real-time Backup Disabled"
       ;;
     esac
   }
 
-  # real-time backup
+  # Call the function to enable automatic backup
   enable-automatic-backup
 
-  # Would you like to install unbound.
+  # Define a function to ask the user which DNS provider to use.
   function ask-install-dns() {
+    # Print out the available DNS provider options.
     echo "Which DNS provider would you like to use?"
     echo "  1) Unbound (Recommended)"
     echo "  2) Custom (Advanced)"
+    # Loop until the user inputs a valid option.
     until [[ "${DNS_PROVIDER_SETTINGS}" =~ ^[1-2]$ ]]; do
+      # Prompt the user for their choice and save it to DNS_PROVIDER_SETTINGS.
       read -rp "DNS provider [1-2]:" -e -i 1 DNS_PROVIDER_SETTINGS
     done
+    # Depending on the user's choice, set some variables.
     case ${DNS_PROVIDER_SETTINGS} in
     1)
+      # The user chose Unbound.
       INSTALL_UNBOUND=true
+      # Ask the user if they want to install a content-blocker.
       echo "Do you want to prevent advertisements, tracking, malware, and phishing using the content-blocker?"
       echo "  1) Yes (Recommended)"
       echo "  2) No"
+      # Loop until the user inputs a valid option.
       until [[ "${CONTENT_BLOCKER_SETTINGS}" =~ ^[1-2]$ ]]; do
+        # Prompt the user for their choice and save it to CONTENT_BLOCKER_SETTINGS.
         read -rp "Content Blocker Choice [1-2]:" -e -i 1 CONTENT_BLOCKER_SETTINGS
       done
+      # Depending on the user's choice, set INSTALL_BLOCK_LIST to true or false.
       case ${CONTENT_BLOCKER_SETTINGS} in
       1)
         INSTALL_BLOCK_LIST=true
@@ -732,12 +880,13 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
       esac
       ;;
     2)
+      # The user chose Custom.
       CUSTOM_DNS=true
       ;;
     esac
   }
 
-  # Ask To Install DNS
+  # Call the ask-install-dns function to start the DNS installation process.
   ask-install-dns
 
   # Let the users choose their custom dns provider.
@@ -805,40 +954,45 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
   # use custom dns
   custom-dns
 
-  # What would you like to name your first WireGuard peer?
+  # A function that prompts the user to enter a name for the WireGuard peer if CLIENT_NAME variable is empty,
+  # otherwise it generates a random name or uses the name entered by the user.
   function client-name() {
-    # If the CLIENT_NAME variable is empty, then prompt the user for a name.
-    # If the user doesn't enter a name, then generate a random name for them.
-    # If the user enters a name, then use that name.
+    # Check if CLIENT_NAME variable is empty
     if [ -z "${CLIENT_NAME}" ]; then
+      # Prompt the user to enter a name for the WireGuard peer
       echo "Let's name the WireGuard Peer. Use one word only, no special characters, no spaces."
       read -rp "Client name:" -e -i "$(openssl rand -hex 50)" CLIENT_NAME
     fi
+    # Check if CLIENT_NAME variable is still empty after user input
     if [ -z "${CLIENT_NAME}" ]; then
+      # If CLIENT_NAME is still empty, generate a random name
       CLIENT_NAME="$(openssl rand -hex 50)"
     fi
   }
 
-  # Client Name
+  # Call the client-name function to prompt user for input and generate or use a name for the WireGuard peer
   client-name
 
-  # Automatically remove wireguard peers after a period of time.
+  # A function that asks the user if they would like to automatically remove the WireGuard peer configuration after a certain period of time
+  # and enables the cron service if the user chooses to automatically remove the configuration.
   function auto-remove-confg() {
-    # Ask the user if they would like to expire the peer after a certain period of time.
-    # If the user chooses to expire the peer after a certain period of time, it will enable the cron service.
-    # If the user chooses not to expire the peer after a certain period of time, it will not enable the cron service. 
+    # Ask the user if they would like to expire the peer after a certain period of time
     echo "Would you like to expire the peer after a certain period of time?"
     echo "  1) Every Year (Recommended)"
     echo "  2) No"
+    # Loop until a valid input is received
     until [[ "${AUTOMATIC_CONFIG_REMOVER}" =~ ^[1-2]$ ]]; do
       read -rp "Automatic config expire [1-2]:" -e -i 1 AUTOMATIC_CONFIG_REMOVER
     done
+    # Based on user input, enable or disable the automatic WireGuard peer expiration via cron job
     case ${AUTOMATIC_CONFIG_REMOVER} in
     1)
       AUTOMATIC_WIREGUARD_EXPIRATION=true
       if [[ "${CURRENT_INIT_SYSTEM}" == *"systemd"* ]]; then
+        # Enable and start the cron service using systemctl
         systemctl enable --now ${SYSTEM_CRON_NAME}
       elif [[ "${CURRENT_INIT_SYSTEM}" == *"init"* ]]; then
+        # Start the cron service using the init system
         service ${SYSTEM_CRON_NAME} start
       fi
       ;;
@@ -848,21 +1002,22 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     esac
   }
 
-  # Automatic Remove Config
+  # Call the auto-remove-confg function to ask the user if they would like to automatically remove the WireGuard peer configuration after a certain period of time
+  # and enable the cron service if the user chooses to automatically remove the configuration.
   auto-remove-confg
 
-  # Lets check the kernel version and check if headers are required
+  # A function that checks the current kernel version and installs the kernel headers for the current kernel version if required.
   function install-kernel-headers() {
-    # Checks the current kernel version.
-    # Checks if the current kernel version is older than the allowed kernel version.
-    # Checks the current Linux distribution.
-    # Installs the kernel headers for the current kernel version.
+    # Set the allowed kernel version
     ALLOWED_KERNEL_VERSION="5.6"
+    # Extract the major and minor version numbers from the allowed kernel version
     ALLOWED_KERNEL_MAJOR_VERSION=$(echo ${ALLOWED_KERNEL_VERSION} | cut --delimiter="." --fields=1)
     ALLOWED_KERNEL_MINOR_VERSION=$(echo ${ALLOWED_KERNEL_VERSION} | cut --delimiter="." --fields=2)
+    # Check if the current kernel version is older than the allowed kernel version and set INSTALL_LINUX_HEADERS to true if it is
     if [ "${CURRENT_KERNEL_MAJOR_VERSION}" -le "${ALLOWED_KERNEL_MAJOR_VERSION}" ]; then
       INSTALL_LINUX_HEADERS=true
     fi
+    # Check if the current kernel version is the same as the allowed kernel version and set INSTALL_LINUX_HEADERS to true or false depending on the minor version number
     if [ "${CURRENT_KERNEL_MAJOR_VERSION}" == "${ALLOWED_KERNEL_MAJOR_VERSION}" ]; then
       if [ "${CURRENT_KERNEL_MINOR_VERSION}" -lt "${ALLOWED_KERNEL_MINOR_VERSION}" ]; then
         INSTALL_LINUX_HEADERS=true
@@ -871,6 +1026,7 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
         INSTALL_LINUX_HEADERS=false
       fi
     fi
+    # If INSTALL_LINUX_HEADERS is true, install the kernel headers for the current kernel version based on the current Linux distribution
     if [ "${INSTALL_LINUX_HEADERS}" == true ]; then
       if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
         apt-get update
@@ -890,20 +1046,19 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     fi
   }
 
-  # Kernel Version
+  # Call the install-kernel-headers function to check the current kernel version and install the kernel headers if required.
   install-kernel-headers
 
-  # Install resolvconf OR openresolv
+  # A function that checks if resolvconf is already installed and installs it if it's not installed based on the current Linux distribution.
   function install-resolvconf-or-openresolv() {
-    # It checks if resolvconf is already installed.
-    # If resolvconf is not installed, it will check what distribution you are running, and install the appropriate package.
-    # If your distribution is not listed, it will not install resolvconf.
-    # If you want to have resolvconf installed, you will have to install it manually.
+    # Check if resolvconf is not already installed
     if [ ! -x "$(command -v resolvconf)" ]; then
+      # If resolvconf is not installed, install the appropriate package based on the current Linux distribution
       if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
         apt-get install resolvconf -y
       elif { [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "rhel" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ]; }; then
         if [ "${CURRENT_DISTRO}" == "centos" ] && [ "${CURRENT_DISTRO_MAJOR_VERSION}" == 7 ]; then
+          # Enable a COPR repository for openresolv and install it
           yum copr enable macieks/openresolv -y
         fi
         yum install openresolv -y
@@ -919,14 +1074,17 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     fi
   }
 
-  # Install resolvconf OR openresolv
+  # Call the install-resolvconf-or-openresolv function to check if resolvconf is installed and install it if it's not installed.
   install-resolvconf-or-openresolv
 
-  # Install WireGuard Server
+  # A function that installs the WireGuard server based on the current Linux distribution.
   function install-wireguard-server() {
+    # Check if the 'wg' command is not already installed
     if [ ! -x "$(command -v wg)" ]; then
+      # If 'wg' command is not installed, install it based on the current Linux distribution
       if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
         apt-get update
+        # Add buster-backports repository for Debian and update the package lists
         if [ ! -f "/etc/apt/sources.list.d/backports.list" ]; then
           echo "deb http://deb.debian.org/debian buster-backports main" >>/etc/apt/sources.list.d/backports.list
           apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138
@@ -1068,17 +1226,22 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
   # Running Install Unbound
   install-unbound
 
-  # WireGuard Set Config
+  # Define shell function to set up a WireGuard configuration
   function wireguard-setconf() {
+    # Generate keys for the server and client
     SERVER_PRIVKEY=$(wg genkey)
     SERVER_PUBKEY=$(echo "${SERVER_PRIVKEY}" | wg pubkey)
     CLIENT_PRIVKEY=$(wg genkey)
     CLIENT_PUBKEY=$(echo "${CLIENT_PRIVKEY}" | wg pubkey)
+    # Calculate IP addresses for the client
     CLIENT_ADDRESS_V4=$(echo "${PRIVATE_SUBNET_V4}" | cut --delimiter="." --fields=1-3).2
     CLIENT_ADDRESS_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter=":" --fields=1-4):2
+    # Generate a preshared key and a random peer port
     PRESHARED_KEY=$(wg genpsk)
     PEER_PORT=$(shuf --input-range=1024-65535 --head-count=1)
+    # Create a directory for the WireGuard client configuration
     mkdir --parents ${WIREGUARD_CLIENT_PATH}
+    # Configure NAT if Unbound is installed
     if [ "${INSTALL_UNBOUND}" == true ]; then
       NFTABLES_POSTUP="sysctl --write net.ipv4.ip_forward=1; sysctl --write net.ipv6.conf.all.forwarding=1; nft add table inet wireguard-${WIREGUARD_PUB_NIC}; nft add chain inet wireguard-${WIREGUARD_PUB_NIC} wireguard_chain {type nat hook postrouting priority srcnat\;}; nft add rule inet wireguard-${WIREGUARD_PUB_NIC} wireguard_chain oifname ${SERVER_PUB_NIC} masquerade"
       NFTABLES_POSTDOWN="sysctl --write net.ipv4.ip_forward=0; sysctl --write net.ipv6.conf.all.forwarding=0; nft delete table inet wireguard-${WIREGUARD_PUB_NIC}"
@@ -1086,7 +1249,7 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
       NFTABLES_POSTUP="sysctl --write net.ipv4.ip_forward=1; sysctl --write net.ipv6.conf.all.forwarding=1; nft add table inet wireguard-${WIREGUARD_PUB_NIC}; nft add chain inet wireguard-${WIREGUARD_PUB_NIC} PREROUTING {type nat hook prerouting priority 0\;}; nft add chain inet wireguard-${WIREGUARD_PUB_NIC} POSTROUTING {type nat hook postrouting priority 100\;}; nft add rule inet wireguard-${WIREGUARD_PUB_NIC} POSTROUTING ip saddr ${PRIVATE_SUBNET_V4} oifname ${SERVER_PUB_NIC} masquerade; nft add rule inet wireguard-${WIREGUARD_PUB_NIC} POSTROUTING ip6 saddr ${PRIVATE_SUBNET_V6} oifname ${SERVER_PUB_NIC} masquerade"
       NFTABLES_POSTDOWN="sysctl --write net.ipv4.ip_forward=0; sysctl --write net.ipv6.conf.all.forwarding=0; nft delete table inet wireguard-${WIREGUARD_PUB_NIC}"
     fi
-    # Set WireGuard settings for this host and first peer.
+    # Configure WireGuard settings for this host and the first peer
     echo "# ${PRIVATE_SUBNET_V4} ${PRIVATE_SUBNET_V6} ${SERVER_HOST}:${SERVER_PORT} ${SERVER_PUBKEY} ${CLIENT_DNS} ${PEER_MTU_CHOICE} ${NAT_CHOICE} ${CLIENT_ALLOWED_IP}
 [Interface]
 Address = ${GATEWAY_ADDRESS_V4}/${PRIVATE_SUBNET_MASK_V4},${GATEWAY_ADDRESS_V6}/${PRIVATE_SUBNET_MASK_V6}
@@ -1116,33 +1279,41 @@ Endpoint = ${SERVER_HOST}:${SERVER_PORT}
 PersistentKeepalive = ${NAT_CHOICE}
 PresharedKey = ${PRESHARED_KEY}
 PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${CLIENT_NAME}"-${WIREGUARD_PUB_NIC}.conf
+    # Change the owner of the specified directory and all its contents recursively to root user and root group.
     chown --recursive root:root ${WIREGUARD_PATH}
-    if [ "${AUTOMATIC_WIREGUARD_EXPIRATION}" == true ]; then
-      crontab -l | {
-        cat
-        echo "$(date +%M) $(date +%H) $(date +%d) $(date +%m) * echo -e \"${CLIENT_NAME}\" | ${CURRENT_FILE_PATH} --remove"
-      } | crontab -
-    fi
+    # If AUTOMATIC_WIREGUARD_EXPIRATION variable is true, add a crontab entry to remove WireGuard client.
+    crontab -l | {
+      cat
+      # Add a new crontab entry to remove the WireGuard client.
+      echo "$(date +%M) $(date +%H) $(date +%d) $(date +%m) * echo -e \"${CLIENT_NAME}\" | ${CURRENT_FILE_PATH} --remove"
+    } | crontab -
+    # If the current init system contains "systemd", enable and start the necessary services and applications.
     if [[ "${CURRENT_INIT_SYSTEM}" == *"systemd"* ]]; then
-      systemctl enable --now nftables
-      systemctl enable --now wg-quick@${WIREGUARD_PUB_NIC}
+      systemctl enable --now nftables                      # Enable and start the nftables service.
+      systemctl enable --now wg-quick@${WIREGUARD_PUB_NIC} # Enable and start the WireGuard service.
+      # If INSTALL_UNBOUND variable is true, enable and start the unbound service.
       if [ "${INSTALL_UNBOUND}" == true ]; then
         systemctl enable --now unbound
         systemctl restart unbound
       fi
+    # If the current init system contains "init", start the necessary services and applications.
     elif [[ "${CURRENT_INIT_SYSTEM}" == *"init"* ]]; then
-      service nftables start
-      service wg-quick@${WIREGUARD_PUB_NIC} start
+      service nftables start                      # Start the nftables service.
+      service wg-quick@${WIREGUARD_PUB_NIC} start # Start the WireGuard service.
+      # If INSTALL_UNBOUND variable is true, restart the unbound service.
       if [ "${INSTALL_UNBOUND}" == true ]; then
         service unbound restart
       fi
     fi
+    # Generate a QR code of the WireGuard client configuration file in the terminal.
     qrencode -t ansiutf8 <${WIREGUARD_CLIENT_PATH}/"${CLIENT_NAME}"-${WIREGUARD_PUB_NIC}.conf
+    # Display the contents of the WireGuard client configuration file.
     cat ${WIREGUARD_CLIENT_PATH}/"${CLIENT_NAME}"-${WIREGUARD_PUB_NIC}.conf
+    # Display the path of the WireGuard client configuration file.
     echo "Client Config --> ${WIREGUARD_CLIENT_PATH}/${CLIENT_NAME}-${WIREGUARD_PUB_NIC}.conf"
   }
 
-  # Setting Up WireGuard Config
+  # Call the wireguard-setconf function to set up the WireGuard configuration.
   wireguard-setconf
 
 # After WireGuard Install
@@ -1324,20 +1495,25 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
       echo "Client config --> ${WIREGUARD_CLIENT_PATH}/${NEW_CLIENT_NAME}-${WIREGUARD_PUB_NIC}.conf"
       ;;
     6) # Remove WireGuard Peer
-      # It lists all the WireGuard clients that you can remove
-      # It asks you to select a WireGuard client that you would like to remove
-      # It removes the client from WireGuard
-      # It removes the client's config file from your server
+      # Prompt the user to enter the name of the WireGuard peer to remove.
       echo "Which WireGuard peer would you like to remove?"
+      # Extract the name of the peer from the WireGuard configuration file.
       grep start ${WIREGUARD_CONFIG} | cut --delimiter=" " --fields=2
+      # Read the user input for the name of the peer to remove.
       read -rp "Peer's name:" REMOVECLIENT
+      # Extract the public key of the peer from the WireGuard configuration file using the name.
       CLIENTKEY=$(sed -n "/\# ${REMOVECLIENT} start/,/\# ${REMOVECLIENT} end/p" ${WIREGUARD_CONFIG} | grep PublicKey | cut --delimiter=" " --fields=3)
+      # Remove the peer from the WireGuard interface using the public key.
       wg set ${WIREGUARD_PUB_NIC} peer "${CLIENTKEY}" remove
+      # Remove the configuration block of the peer from the WireGuard configuration file using the name.
       sed --in-place "/\# ${REMOVECLIENT} start/,/\# ${REMOVECLIENT} end/d" ${WIREGUARD_CONFIG}
+      # Remove the configuration file for the peer, if it exists.
       if [ -f "${WIREGUARD_CLIENT_PATH}/${REMOVECLIENT}-${WIREGUARD_PUB_NIC}.conf" ]; then
         rm --force ${WIREGUARD_CLIENT_PATH}/"${REMOVECLIENT}"-${WIREGUARD_PUB_NIC}.conf
       fi
+      # Add the WireGuard configuration to the interface and reload it.
       wg addconf ${WIREGUARD_PUB_NIC} <(wg-quick strip ${WIREGUARD_PUB_NIC})
+      # Remove any cron jobs associated with the peer.
       crontab -l | grep --invert-match "${REMOVECLIENT}" | crontab -
       ;;
     7) # Reinstall WireGuard
