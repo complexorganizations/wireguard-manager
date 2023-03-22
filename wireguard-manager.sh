@@ -510,64 +510,78 @@ function set-ipv6-subnet() {
 # Call the set-ipv6-subnet function to set the custom IPv6 subnet
 set-ipv6-subnet
 
-  # Private Subnet Mask IPv4
-  PRIVATE_SUBNET_MASK_V4=$(echo "${PRIVATE_SUBNET_V4}" | cut --delimiter="/" --fields=2)
-  # IPv4 Getaway
-  GATEWAY_ADDRESS_V4=$(echo "${PRIVATE_SUBNET_V4}" | cut --delimiter="." --fields=1-3).1
-  # Private Subnet Mask IPv6
-  PRIVATE_SUBNET_MASK_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter="/" --fields=2)
-  # IPv6 Getaway
-  GATEWAY_ADDRESS_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter=":" --fields=1-3)::1
-  # Get the networking data
-  get-network-information
+# Private Subnet Mask IPv4
+PRIVATE_SUBNET_MASK_V4=$(echo "${PRIVATE_SUBNET_V4}" | cut --delimiter="/" --fields=2) # Get the subnet mask of IPv4
 
-  # Get the IPv4
-  function test-connectivity-v4() {
-    echo "How would you like to detect IPv4?"
-    echo "  1) Curl (Recommended)"
-    echo "  2) Custom (Advanced)"
-    until [[ "${SERVER_HOST_V4_SETTINGS}" =~ ^[1-2]$ ]]; do
-      read -rp "IPv4 Choice [1-2]:" -e -i 1 SERVER_HOST_V4_SETTINGS
-    done
-    case ${SERVER_HOST_V4_SETTINGS} in
-    1)
+# IPv4 Gateway
+GATEWAY_ADDRESS_V4=$(echo "${PRIVATE_SUBNET_V4}" | cut --delimiter="." --fields=1-3).1 # Get the gateway address of IPv4
+
+# Private Subnet Mask IPv6
+PRIVATE_SUBNET_MASK_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter="/" --fields=2) # Get the subnet mask of IPv6
+
+# IPv6 Gateway
+GATEWAY_ADDRESS_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter=":" --fields=1-3)::1 # Get the gateway address of IPv6
+
+# Get the networking data
+get-network-information # Call a function to get the networking data
+
+# Get the IPv4
+function test-connectivity-v4() {
+  echo "How would you like to detect IPv4?"
+  echo "  1) Curl (Recommended)"
+  echo "  2) Custom (Advanced)"
+
+  # Loop until input is valid
+  until [[ "${SERVER_HOST_V4_SETTINGS}" =~ ^[1-2]$ ]]; do
+    read -rp "IPv4 Choice [1-2]:" -e -i 1 SERVER_HOST_V4_SETTINGS
+  done
+
+  case ${SERVER_HOST_V4_SETTINGS} in
+  1)
+    SERVER_HOST_V4=${DEFAULT_INTERFACE_IPV4} # Use the default IPv4 address
+    ;;
+  2)
+    read -rp "Custom IPv4:" SERVER_HOST_V4
+    # If input is empty, use default IPv4
+    if [ -z "${SERVER_HOST_V4}" ]; then
       SERVER_HOST_V4=${DEFAULT_INTERFACE_IPV4}
-      ;;
-    2)
-      read -rp "Custom IPv4:" SERVER_HOST_V4
-      if [ -z "${SERVER_HOST_V4}" ]; then
-        SERVER_HOST_V4=${DEFAULT_INTERFACE_IPV4}
-      fi
-      ;;
-    esac
-  }
+    fi
+    ;;
+  esac
+}
 
-  # Get the IPv4
-  test-connectivity-v4
+# Call the function to get the IPv4
+test-connectivity-v4 # Call a function to get the IPv4 address
 
-  # Determine IPv6
-  function test-connectivity-v6() {
-    echo "How would you like to detect IPv6?"
-    echo "  1) Curl (Recommended)"
-    echo "  2) Custom (Advanced)"
-    until [[ "${SERVER_HOST_V6_SETTINGS}" =~ ^[1-2]$ ]]; do
-      read -rp "IPv6 Choice [1-2]:" -e -i 1 SERVER_HOST_V6_SETTINGS
-    done
-    case ${SERVER_HOST_V6_SETTINGS} in
-    1)
+
+# Determine IPv6
+function test-connectivity-v6() {
+  echo "How would you like to detect IPv6?"
+  echo "  1) Curl (Recommended)"
+  echo "  2) Custom (Advanced)"
+
+  # Loop until input is valid
+  until [[ "${SERVER_HOST_V6_SETTINGS}" =~ ^[1-2]$ ]]; do
+    read -rp "IPv6 Choice [1-2]:" -e -i 1 SERVER_HOST_V6_SETTINGS
+  done
+
+  case ${SERVER_HOST_V6_SETTINGS} in
+  1)
+    SERVER_HOST_V6=${DEFAULT_INTERFACE_IPV6} # Use the default IPv6 address
+    ;;
+  2)
+    read -rp "Custom IPv6:" SERVER_HOST_V6
+    # If input is empty, use default IPv6
+    if [ -z "${SERVER_HOST_V6}" ]; then
       SERVER_HOST_V6=${DEFAULT_INTERFACE_IPV6}
-      ;;
-    2)
-      read -rp "Custom IPv6:" SERVER_HOST_V6
-      if [ -z "${SERVER_HOST_V6}" ]; then
-        SERVER_HOST_V6=${DEFAULT_INTERFACE_IPV6}
-      fi
-      ;;
-    esac
-  }
+    fi
+    ;;
+  esac
+}
 
-  # Get the IPv6
-  test-connectivity-v6
+# Call the function to get the IPv6
+test-connectivity-v6 # Call a function to get the IPv6 address
+
 
   # Determine public NIC
   function server-pub-nic() {
