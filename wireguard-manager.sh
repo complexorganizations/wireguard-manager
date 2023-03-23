@@ -404,44 +404,53 @@ headless-install
 # Set up the wireguard, if config it isn't already there.
 if [ ! -f "${WIREGUARD_CONFIG}" ]; then
 
-  # Custom IPv4 subnet
+  # Define a function to set a custom IPv4 subnet
   function set-ipv4-subnet() {
+    # Prompt the user for the desired IPv4 subnet
     echo "What IPv4 subnet do you want to use?"
     echo "  1) 10.0.0.0/8 (Recommended)"
     echo "  2) Custom (Advanced)"
+    # Keep prompting the user until they enter a valid subnet choice
     until [[ "${PRIVATE_SUBNET_V4_SETTINGS}" =~ ^[1-2]$ ]]; do
       read -rp "Subnet Choice [1-2]:" -e -i 1 PRIVATE_SUBNET_V4_SETTINGS
     done
+    # Based on the user's choice, set the private IPv4 subnet
     case ${PRIVATE_SUBNET_V4_SETTINGS} in
     1)
-      PRIVATE_SUBNET_V4="10.0.0.0/8"
+      PRIVATE_SUBNET_V4="10.0.0.0/8" # Set a default IPv4 subnet
       ;;
     2)
-      read -rp "Custom IPv4 Subnet:" PRIVATE_SUBNET_V4
-      if [ -z "${PRIVATE_SUBNET_V4}" ]; then
+      read -rp "Custom IPv4 Subnet:" PRIVATE_SUBNET_V4 # Prompt user for custom subnet
+      if [ -z "${PRIVATE_SUBNET_V4}" ]; then           # If the user did not enter a subnet, set default
         PRIVATE_SUBNET_V4="10.0.0.0/8"
       fi
       ;;
     esac
   }
 
-  # Custom IPv4 Subnet
+  # Call the function to set the custom IPv4 subnet
   set-ipv4-subnet
 
-  # Custom IPv6 subnet
+  # Define a function to set a custom IPv6 subnet
   function set-ipv6-subnet() {
+    # Ask the user which IPv6 subnet they want to use
     echo "What IPv6 subnet do you want to use?"
     echo "  1) fd00:00:00::0/8 (Recommended)"
     echo "  2) Custom (Advanced)"
+    # Use a loop to ensure the user inputs a valid option
     until [[ "${PRIVATE_SUBNET_V6_SETTINGS}" =~ ^[1-2]$ ]]; do
       read -rp "Subnet Choice [1-2]:" -e -i 1 PRIVATE_SUBNET_V6_SETTINGS
     done
+    # Use a case statement to set the IPv6 subnet based on the user's choice
     case ${PRIVATE_SUBNET_V6_SETTINGS} in
     1)
+      # Use the recommended IPv6 subnet if the user chooses option 1
       PRIVATE_SUBNET_V6="fd00:00:00::0/8"
       ;;
     2)
+      # Ask the user for a custom IPv6 subnet if they choose option 2
       read -rp "Custom IPv6 Subnet:" PRIVATE_SUBNET_V6
+      # If the user does not input a subnet, use the recommended one
       if [ -z "${PRIVATE_SUBNET_V6}" ]; then
         PRIVATE_SUBNET_V6="fd00:00:00::0/8"
       fi
@@ -449,19 +458,19 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     esac
   }
 
-  # Custom IPv6 Subnet
+  # Call the set-ipv6-subnet function to set the custom IPv6 subnet
   set-ipv6-subnet
 
   # Private Subnet Mask IPv4
-  PRIVATE_SUBNET_MASK_V4=$(echo "${PRIVATE_SUBNET_V4}" | cut --delimiter="/" --fields=2)
-  # IPv4 Getaway
-  GATEWAY_ADDRESS_V4=$(echo "${PRIVATE_SUBNET_V4}" | cut --delimiter="." --fields=1-3).1
+  PRIVATE_SUBNET_MASK_V4=$(echo "${PRIVATE_SUBNET_V4}" | cut --delimiter="/" --fields=2) # Get the subnet mask of IPv4
+  # IPv4 Gateway
+  GATEWAY_ADDRESS_V4=$(echo "${PRIVATE_SUBNET_V4}" | cut --delimiter="." --fields=1-3).1 # Get the gateway address of IPv4
   # Private Subnet Mask IPv6
-  PRIVATE_SUBNET_MASK_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter="/" --fields=2)
-  # IPv6 Getaway
-  GATEWAY_ADDRESS_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter=":" --fields=1-3)::1
+  PRIVATE_SUBNET_MASK_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter="/" --fields=2) # Get the subnet mask of IPv6
+  # IPv6 Gateway
+  GATEWAY_ADDRESS_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter=":" --fields=1-3)::1 # Get the gateway address of IPv6
   # Get the networking data
-  get-network-information
+  get-network-information # Call a function to get the networking data
 
   # Get the IPv4
   function test-connectivity-v4() {
