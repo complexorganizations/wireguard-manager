@@ -296,71 +296,73 @@ function usage-guide() {
   echo "  --help        Show Usage Guide"
 }
 
-# The usage of the script
+# Define a function that takes command line arguments as input
 function usage() {
+  # Check if there are any command line arguments left
   while [ $# -ne 0 ]; do
+    # Use a switch-case statement to check the value of the first argument
     case ${1} in
-    --install)
+    --install) # If it's "--install", set the variable HEADLESS_INSTALL to "true"
       shift
       HEADLESS_INSTALL=${HEADLESS_INSTALL=true}
       ;;
-    --start)
+    --start) # If it's "--start", set the variable WIREGUARD_OPTIONS to 2
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=2}
       ;;
-    --stop)
+    --stop) # If it's "--stop", set the variable WIREGUARD_OPTIONS to 3
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=3}
       ;;
-    --restart)
+    --restart) # If it's "--restart", set the variable WIREGUARD_OPTIONS to 4
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=4}
       ;;
-    --list)
+    --list) # If it's "--list", set the variable WIREGUARD_OPTIONS to 1
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=1}
       ;;
-    --add)
+    --add) # If it's "--add", set the variable WIREGUARD_OPTIONS to 5
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=5}
       ;;
-    --remove)
+    --remove) # If it's "--remove", set the variable WIREGUARD_OPTIONS to 6
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=6}
       ;;
-    --reinstall)
+    --reinstall) # If it's "--reinstall", set the variable WIREGUARD_OPTIONS to 7
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=7}
       ;;
-    --uninstall)
+    --uninstall) # If it's "--uninstall", set the variable WIREGUARD_OPTIONS to 8
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=8}
       ;;
-    --update)
+    --update) # If it's "--update", set the variable WIREGUARD_OPTIONS to 9
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=9}
       ;;
-    --backup)
+    --backup) # If it's "--backup", set the variable WIREGUARD_OPTIONS to 10
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=10}
       ;;
-    --restore)
+    --restore) # If it's "--restore", set the variable WIREGUARD_OPTIONS to 11
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=11}
       ;;
-    --ddns)
+    --ddns) # If it's "--ddns", set the variable WIREGUARD_OPTIONS to 12
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=12}
       ;;
-    --purge)
+    --purge) # If it's "--purge", set the variable WIREGUARD_OPTIONS to 14
       shift
       WIREGUARD_OPTIONS=${WIREGUARD_OPTIONS=14}
       ;;
-    --help)
+    --help) # If it's "--help", call the function usage-guide
       shift
       usage-guide
       ;;
-    *)
+    *) # If it's anything else, print an error message and call the function usage-guide, then exit
       echo "Invalid argument: ${1}"
       usage-guide
       exit
@@ -369,31 +371,34 @@ function usage() {
   done
 }
 
+# Call the function usage with all the command line arguments
 usage "$@"
 
-# All questions are skipped, and wireguard is installed and a configuration is generated.
+# The function defines default values for configuration variables when installing WireGuard in headless mode.
+# These variables include private subnet settings, server host settings, NAT choice, MTU choice, client allowed IP settings, automatic updates, automatic backup, DNS provider settings, content blocker settings, client name, and automatic config remover.
 function headless-install() {
+  # If headless installation is specified, set default values for configuration variables.
   if [ "${HEADLESS_INSTALL}" == true ]; then
-    PRIVATE_SUBNET_V4_SETTINGS=${PRIVATE_SUBNET_V4_SETTINGS=1}
-    PRIVATE_SUBNET_V6_SETTINGS=${PRIVATE_SUBNET_V6_SETTINGS=1}
-    SERVER_HOST_V4_SETTINGS=${SERVER_HOST_V4_SETTINGS=1}
-    SERVER_HOST_V6_SETTINGS=${SERVER_HOST_V6_SETTINGS=1}
-    SERVER_PUB_NIC_SETTINGS=${SERVER_PUB_NIC_SETTINGS=1}
-    SERVER_PORT_SETTINGS=${SERVER_PORT_SETTINGS=1}
-    NAT_CHOICE_SETTINGS=${NAT_CHOICE_SETTINGS=1}
-    MTU_CHOICE_SETTINGS=${MTU_CHOICE_SETTINGS=1}
-    SERVER_HOST_SETTINGS=${SERVER_HOST_SETTINGS=1}
-    CLIENT_ALLOWED_IP_SETTINGS=${CLIENT_ALLOWED_IP_SETTINGS=1}
-    AUTOMATIC_UPDATES_SETTINGS=${AUTOMATIC_UPDATES_SETTINGS=1}
-    AUTOMATIC_BACKUP_SETTINGS=${AUTOMATIC_BACKUP_SETTINGS=1}
-    DNS_PROVIDER_SETTINGS=${DNS_PROVIDER_SETTINGS=1}
-    CONTENT_BLOCKER_SETTINGS=${CONTENT_BLOCKER_SETTINGS=1}
-    CLIENT_NAME=${CLIENT_NAME=$(openssl rand -hex 50)}
-    AUTOMATIC_CONFIG_REMOVER=${AUTOMATIC_CONFIG_REMOVER=1}
+    PRIVATE_SUBNET_V4_SETTINGS=${PRIVATE_SUBNET_V4_SETTINGS=1} # Default to 1 if not specified
+    PRIVATE_SUBNET_V6_SETTINGS=${PRIVATE_SUBNET_V6_SETTINGS=1} # Default to 1 if not specified
+    SERVER_HOST_V4_SETTINGS=${SERVER_HOST_V4_SETTINGS=1}       # Default to 1 if not specified
+    SERVER_HOST_V6_SETTINGS=${SERVER_HOST_V6_SETTINGS=1}       # Default to 1 if not specified
+    SERVER_PUB_NIC_SETTINGS=${SERVER_PUB_NIC_SETTINGS=1}       # Default to 1 if not specified
+    SERVER_PORT_SETTINGS=${SERVER_PORT_SETTINGS=1}             # Default to 1 if not specified
+    NAT_CHOICE_SETTINGS=${NAT_CHOICE_SETTINGS=1}               # Default to 1 if not specified
+    MTU_CHOICE_SETTINGS=${MTU_CHOICE_SETTINGS=1}               # Default to 1 if not specified
+    SERVER_HOST_SETTINGS=${SERVER_HOST_SETTINGS=1}             # Default to 1 if not specified
+    CLIENT_ALLOWED_IP_SETTINGS=${CLIENT_ALLOWED_IP_SETTINGS=1} # Default to 1 if not specified
+    AUTOMATIC_UPDATES_SETTINGS=${AUTOMATIC_UPDATES_SETTINGS=1} # Default to 1 if not specified
+    AUTOMATIC_BACKUP_SETTINGS=${AUTOMATIC_BACKUP_SETTINGS=1}   # Default to 1 if not specified
+    DNS_PROVIDER_SETTINGS=${DNS_PROVIDER_SETTINGS=1}           # Default to 1 if not specified
+    CONTENT_BLOCKER_SETTINGS=${CONTENT_BLOCKER_SETTINGS=1}     # Default to 1 if not specified
+    CLIENT_NAME=${CLIENT_NAME=$(openssl rand -hex 50)}         # Generate a random client name if not specified
+    AUTOMATIC_CONFIG_REMOVER=${AUTOMATIC_CONFIG_REMOVER=1}     # Default to 1 if not specified
   fi
 }
 
-# No GUI
+# Call the headless-install function to set default values for configuration variables in headless mode.
 headless-install
 
 # Set up the wireguard, if config it isn't already there.
