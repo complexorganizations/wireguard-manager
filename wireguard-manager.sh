@@ -137,37 +137,46 @@ function kernel-check() {
 # Call the kernel-check function to verify the kernel version.
 kernel-check
 
-# Only allow certain init systems
+# The following function checks if the current init system is one of the allowed options.
 function check-current-init-system() {
-  # This code checks if the current init system is systemd or sysvinit
-  # If it is neither, the script exits
+  # This function checks if the current init system is systemd or sysvinit.
+  # If it is neither, the script exits.
   CURRENT_INIT_SYSTEM=$(ps --no-headers -o comm 1)
+  # This line retrieves the current init system by checking the process name of PID 1.
   case ${CURRENT_INIT_SYSTEM} in
-  *"systemd"* | *"init"*) ;;
+  # The case statement checks if the retrieved init system is one of the allowed options.
+  *"systemd"* | *"init"*)
+    # If the init system is systemd or sysvinit (init), continue with the script.
+    ;;
   *)
+    # If the init system is not one of the allowed options, display an error message and exit.
     echo "${CURRENT_INIT_SYSTEM} init is not supported (yet)."
     exit
     ;;
   esac
 }
 
-# Check if the current init system is supported
-check-current-init-system
+# The check-current-init-system function is being called.
 
-# Check if there are enough space to continue with the installation.
+check-current-init-system
+# Calls the check-current-init-system function.
+
+# The following function checks if there's enough disk space to proceed with the installation.
 function check-disk-space() {
-  # Checks to see if there is more than 1 GB of free space on the drive
-  # where the user is installing to. If there is not, it will exit the
-  # script.
+  # This function checks if there is more than 1 GB of free space on the drive.
   FREE_SPACE_ON_DRIVE_IN_MB=$(df -m / | tr --squeeze-repeats " " | tail -n1 | cut --delimiter=" " --fields=4)
+  # This line calculates the available free space on the root partition in MB.
   if [ "${FREE_SPACE_ON_DRIVE_IN_MB}" -le 1024 ]; then
+    # If the available free space is less than or equal to 1024 MB (1 GB), display an error message and exit.
     echo "Error: More than 1 GB of free space is needed to install everything."
     exit
   fi
 }
 
-# Check if there is enough disk space
+# The check-disk-space function is being called.
+
 check-disk-space
+# Calls the check-disk-space function.
 
 # Global variables
 CURRENT_FILE_PATH=$(realpath "${0}")
@@ -251,14 +260,17 @@ else
   SYSTEM_CRON_NAME="cron"
 fi
 
-# Get the network information
+# This is a Bash function named "get-network-information" that retrieves network information.
 function get-network-information() {
-  # This function will return the IPv4 address of the default interface
+  # This variable will store the IPv4 address of the default network interface by querying the "ipengine" API using "curl" command and extracting it using "jq" command.
   DEFAULT_INTERFACE_IPV4="$(curl --ipv4 --connect-timeout 5 --tlsv1.3 --silent 'https://api.ipengine.dev' | jq -r '.network.ip')"
+  # If the IPv4 address is empty, try getting it from another API.
   if [ -z "${DEFAULT_INTERFACE_IPV4}" ]; then
     DEFAULT_INTERFACE_IPV4="$(curl --ipv4 --connect-timeout 5 --tlsv1.3 --silent 'https://icanhazip.com')"
   fi
+  # This variable will store the IPv6 address of the default network interface by querying the "ipengine" API using "curl" command and extracting it using "jq" command.
   DEFAULT_INTERFACE_IPV6="$(curl --ipv6 --connect-timeout 5 --tlsv1.3 --silent 'https://api.ipengine.dev' | jq -r '.network.ip')"
+  # If the IPv6 address is empty, try getting it from another API.
   if [ -z "${DEFAULT_INTERFACE_IPV6}" ]; then
     DEFAULT_INTERFACE_IPV6="$(curl --ipv6 --connect-timeout 5 --tlsv1.3 --silent 'https://icanhazip.com')"
   fi
