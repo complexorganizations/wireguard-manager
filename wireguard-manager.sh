@@ -84,7 +84,13 @@ function virt-check() {
   # It returns the name of the virtualization if it is supported, or "none" if
   # it is not supported. This code is used to check if the system is running in
   # a virtual machine, and if so, if it is running in a supported virtualization.
+  # systemd-detect-virt is a utility that detects the type of virtualization
+  # that the system is running on. It returns a string that indicates the name
+  # of the virtualization, such as "kvm" or "vmware".
   CURRENT_SYSTEM_VIRTUALIZATION=$(systemd-detect-virt)
+  # This case statement checks if the virtualization that the system is running
+  # on is supported. If it is not supported, the script will print an error
+  # message and exit.
   case ${CURRENT_SYSTEM_VIRTUALIZATION} in
   "kvm" | "none" | "qemu" | "lxc" | "microsoft" | "vmware" | "xen" | "amazon") ;;
   *)
@@ -94,34 +100,41 @@ function virt-check() {
   esac
 }
 
-# Virtualization Check
+# Call the virt-check function to check for supported virtualization.
 virt-check
 
-# Lets check the kernel version
+# The following function checks the kernel version.
 function kernel-check() {
   # Check that the kernel version is at least 3.1.0
-  # This is necessary because the kernel version is used to
-  # determine if the correct kernel modules are installed
-  # and the correct device name for the network interface
-  # is set.
+  # This comment explains the purpose of the function.
   CURRENT_KERNEL_VERSION=$(uname --kernel-release | cut --delimiter="." --fields=1-2)
+  # Get the current kernel version and extract the major and minor version numbers.
   CURRENT_KERNEL_MAJOR_VERSION=$(echo "${CURRENT_KERNEL_VERSION}" | cut --delimiter="." --fields=1)
+  # Extract the major version number from the current kernel version.
   CURRENT_KERNEL_MINOR_VERSION=$(echo "${CURRENT_KERNEL_VERSION}" | cut --delimiter="." --fields=2)
+  # Extract the minor version number from the current kernel version.
   ALLOWED_KERNEL_VERSION="3.1"
+  # Set the minimum allowed kernel version.
   ALLOWED_KERNEL_MAJOR_VERSION=$(echo ${ALLOWED_KERNEL_VERSION} | cut --delimiter="." --fields=1)
+  # Extract the major version number from the allowed kernel version.
   ALLOWED_KERNEL_MINOR_VERSION=$(echo ${ALLOWED_KERNEL_VERSION} | cut --delimiter="." --fields=2)
+  # Extract the minor version number from the allowed kernel version.
   if [ "${CURRENT_KERNEL_MAJOR_VERSION}" -lt "${ALLOWED_KERNEL_MAJOR_VERSION}" ]; then
+    # If the current major version is less than the allowed major version, show an error message and exit.
     echo "Error: Kernel ${CURRENT_KERNEL_VERSION} not supported, please update to ${ALLOWED_KERNEL_VERSION}."
     exit
   fi
   if [ "${CURRENT_KERNEL_MAJOR_VERSION}" == "${ALLOWED_KERNEL_MAJOR_VERSION}" ]; then
+    # If the current major version is equal to the allowed major version, check the minor version.
     if [ "${CURRENT_KERNEL_MINOR_VERSION}" -lt "${ALLOWED_KERNEL_MINOR_VERSION}" ]; then
+      # If the current minor version is less than the allowed minor version, show an error message and exit.
       echo "Error: Kernel ${CURRENT_KERNEL_VERSION} not supported, please update to ${ALLOWED_KERNEL_VERSION}."
       exit
     fi
   fi
 }
 
+# Call the kernel-check function to verify the kernel version.
 kernel-check
 
 # Only allow certain init systems
