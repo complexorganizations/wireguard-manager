@@ -1,40 +1,48 @@
 #!/usr/bin/env bash
-# https://github.com/complexorganizations/wireguard-manager
+# This line sets the interpreter for the script as the Bash shell.
 
-# Require script to be run as root
+# https://github.com/complexorganizations/wireguard-manager
+# This line provides a link to the GitHub repository for the WireGuard manager project.
+
+# The script requires root privileges.
 function super-user-check() {
-  # This code checks to see if the script is running with root privileges.
-  # If it is not, it will exit with an error message.
+  # This function checks if the script is running as the root user.
   if [ "${EUID}" -ne 0 ]; then
+    # If the effective user ID is not 0 (root), display an error message and exit.
     echo "Error: You need to run this script as administrator."
     exit
   fi
 }
 
-# Check for root
-super-user-check
+# The script checks if the user is the root user.
 
-# Get the current system information
+super-user-check
+# Calls the super-user-check function.
+
+# The following function retrieves the current system information.
 function system-information() {
-  # CURRENT_DISTRO is the ID of the current system
-  # CURRENT_DISTRO_VERSION is the VERSION_ID of the current system
-  # CURRENT_DISTRO_MAJOR_VERSION is the major version of the current system (e.g. "16" for Ubuntu 16.04)
+  # This function retrieves the ID, version, and major version of the current system.
   if [ -f /etc/os-release ]; then
-    # shellcheck source=/dev/null
+    # Check if the /etc/os-release file exists, and if so, source it to get the system information.
     source /etc/os-release
-    CURRENT_DISTRO=${ID}
-    CURRENT_DISTRO_VERSION=${VERSION_ID}
-    CURRENT_DISTRO_MAJOR_VERSION=$(echo "${CURRENT_DISTRO_VERSION}" | cut --delimiter="." --fields=1)
+    CURRENT_DISTRO=${ID}                                                                              # CURRENT_DISTRO is the ID of the current system
+    CURRENT_DISTRO_VERSION=${VERSION_ID}                                                              # CURRENT_DISTRO_VERSION is the VERSION_ID of the current system
+    CURRENT_DISTRO_MAJOR_VERSION=$(echo "${CURRENT_DISTRO_VERSION}" | cut --delimiter="." --fields=1) # CURRENT_DISTRO_MAJOR_VERSION is the major version of the current system (e.g. "16" for Ubuntu 16.04)
   fi
 }
 
-# Get the current system information
-system-information
+# The system-information function is being called.
 
-# Pre-Checks system requirements
+system-information
+# Calls the system-information function.
+
+# Define a function to check system requirements
 function installing-system-requirements() {
+  # Check if the current Linux distribution is supported
   if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ] || [ "${CURRENT_DISTRO}" == "fedora" ] || [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "rhel" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ] || [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ] || [ "${CURRENT_DISTRO}" == "alpine" ] || [ "${CURRENT_DISTRO}" == "freebsd" ] || [ "${CURRENT_DISTRO}" == "ol" ]; }; then
+    # Check if required packages are already installed
     if { [ ! -x "$(command -v curl)" ] || [ ! -x "$(command -v cut)" ] || [ ! -x "$(command -v jq)" ] || [ ! -x "$(command -v ip)" ] || [ ! -x "$(command -v lsof)" ] || [ ! -x "$(command -v cron)" ] || [ ! -x "$(command -v awk)" ] || [ ! -x "$(command -v ps)" ] || [ ! -x "$(command -v grep)" ] || [ ! -x "$(command -v qrencode)" ] || [ ! -x "$(command -v sed)" ] || [ ! -x "$(command -v zip)" ] || [ ! -x "$(command -v unzip)" ] || [ ! -x "$(command -v openssl)" ] || [ ! -x "$(command -v nft)" ] || [ ! -x "$(command -v ifup)" ] || [ ! -x "$(command -v chattr)" ] || [ ! -x "$(command -v gpg)" ] || [ ! -x "$(command -v systemd-detect-virt)" ]; }; then
+      # Install required packages depending on the Linux distribution
       if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
         apt-get update
         apt-get install curl coreutils jq iproute2 lsof cron gawk procps grep qrencode sed zip unzip openssl nftables ifupdown e2fsprogs gnupg systemd -y
@@ -67,7 +75,7 @@ function installing-system-requirements() {
   fi
 }
 
-# check for requirements
+# Call the function to check for system requirements and install necessary packages if needed
 installing-system-requirements
 
 # Checking For Virtualization
