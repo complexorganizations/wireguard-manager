@@ -9,7 +9,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Check out code into the directory
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Remove the git history.
         run: |
           git config user.name github-actions

@@ -16,7 +16,7 @@ jobs:
       IP_SERVICE_URL: https://checkip.amazonaws.com
     steps:
       - name: Check out code into the directory
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install the required tools.
         run: sudo apt-get update && sudo apt-get install curl -y
       - name: Test the network using "${{ env.IP_SERVICE_NAME }}"
