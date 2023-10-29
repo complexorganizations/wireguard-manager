@@ -1,0 +1,37 @@
+name: Auto upate hosts
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+jobs:
+  build:
+    name: Update hosts
+    runs-on: ubuntu-latest
+    env:
+      CONTENT_BLOCKER_URL: https://raw.githubusercontent.com/complexorganizations/content-blocker/main/assets/hosts	
+      CONTENT_BLOCKER_PATH: assets/hosts
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v4
+      - name: Get the curent SHA-3-512 hash of file.
+        run: echo "CONTENT_BLOCKER_CURRENT_HASH=$(openssl dgst -sha3-512 "${{ env.CONTENT_BLOCKER_PATH }}" | cut --delimiter=" " --fields=2)" >> $GITHUB_ENV
+      - name: Get the future SHA-3-512 hash of file.
+        run: echo "CONTENT_BLOCKER_FUTURE_HASH=$(curl --silent "${{ env.CONTENT_BLOCKER_URL }}" | openssl dgst -sha3-512 | cut --delimiter=" " --fields=2)" >> $GITHUB_ENV
+      - name: Check if update is needed.
+        run: |
+          if [ "${{ env.CONTENT_BLOCKER_CURRENT_HASH }}" != "${{ env.CONTENT_BLOCKER_FUTURE_HASH }}" ]; then
+            curl "${{ env.CONTENT_BLOCKER_URL }}" -o "${{ env.CONTENT_BLOCKER_PATH }}"
+          else
+            exit 0
+          fi
+      - name: Push the named.cache to github
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          if [[ "$(git status)" == *"${{ env.CONTENT_BLOCKER_PATH }}"* ]]; then
+            git add "${{ env.CONTENT_BLOCKER_PATH }}"
+            git commit -m "Updated hosts $(date)"
+            git push
+          else
+            exit 0
+          fi

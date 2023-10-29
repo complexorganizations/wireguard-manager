@@ -1,0 +1,22 @@
+name: Remove the history.
+on:
+  schedule:
+    - cron: "0 0 1 * *"
+  workflow_dispatch:
+jobs:
+  build:
+    name: Build
+    runs-on: windows-latest
+    steps:
+      - name: Check out code into the directory
+        uses: actions/checkout@v4
+      - name: Remove the git history.
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git checkout --orphan tmp-main
+          git add -A
+          git commit -m "Updates"
+          git branch -D main
+          git branch -m main
+          git push -f origin main

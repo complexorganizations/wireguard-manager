@@ -1,0 +1,37 @@
+name: Auto upate named.cache
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+jobs:
+  build:
+    name: Update named.cache
+    runs-on: ubuntu-latest
+    env:
+      NAMED_CACHE_URL: https://www.internic.net/domain/named.cache
+      NAMED_CACHE_PATH: assets/named.cache
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v4
+      - name: Get the curent SHA-3-512 hash of file.
+        run: echo "NAMED_CACHE_CURRENT_HASH=$(openssl dgst -sha3-512 "${{ env.NAMED_CACHE_PATH }}" | cut --delimiter=" " --fields=2)" >> $GITHUB_ENV
+      - name: Get the future SHA-3-512 hash of file.
+        run: echo "NAMED_CACHE_FUTURE_HASH=$(curl --silent "${{ env.NAMED_CACHE_URL }}" | openssl dgst -sha3-512 | cut --delimiter=" " --fields=2)" >> $GITHUB_ENV
+      - name: Check if update is needed.
+        run: |
+          if [ "${{ env.NAMED_CACHE_CURRENT_HASH }}" != "${{ env.NAMED_CACHE_FUTURE_HASH }}" ]; then
+            curl "${{ env.NAMED_CACHE_URL }}" -o "${{ env.NAMED_CACHE_PATH }}"
+          else
+            exit 0
+          fi
+      - name: Push the named.cache to github
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          if [[ "$(git status)" == *"${{ env.NAMED_CACHE_PATH }}"* ]]; then
+            git add "${{ env.NAMED_CACHE_PATH }}"
+            git commit -m "Updated named.cache $(date)"
+            git push
+          else
+            exit 0
+          fi
