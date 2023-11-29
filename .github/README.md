@@ -2,7 +2,7 @@
 
 ### 🔰 Introduction
 
-Welcome to WireGuard-Manager, where we prioritize your privacy and offer a robust solution for your VPN needs. Our tool simplifies setting up WireGuard, a cutting-edge VPN protocol known for its speed and security.
+Welcome to WireGuard-Manager, your solution for setting up WireGuard, a cutting-edge VPN protocol. WireGuard is known for its speed, security, and ease-of-use, making it an ideal choice for both personal and professional VPN needs. This tool is designed to simplify the installation and management of WireGuard, ensuring a secure and efficient networking experience.
 
 ### Quality and Reliability
 
@@ -39,19 +39,18 @@ WireGuard is a straightforward yet fast and modern VPN that utilizes state-of-th
 
 ### ⛳ Goals
 
-- robust and modern security by default
-- minimal config and critical management
-- fast, both low-latency and high-bandwidth
-- simple internals and small protocol surface area
-- simple CLI and seamless integration with system networking
+- Robust and modern security as a standard.
+- Minimal configuration with essential management tools.
+- Optimal performance for both low-latency and high-bandwidth operations.
+- Simplified command-line interface for easy integration with system networking.
 
 ---
 
 ### 🌲 Prerequisite
 
-- Alma, Alpine, Arch, Archarm, CentOS, Debian, Fedora, FreeBSD, Kali, Mint, Manjaro, Neon, Oracle, Pop, Raspbian, RHEL, Rocky, Ubuntu
-- Linux `Kernel 3.1` or newer
-- You will need superuser access or a user account with `sudo` privilege.
+- Supported on a variety of systems including Alma, Alpine, Arch, CentOS, Debian, Fedora, FreeBSD, Kali, Mint, Manjaro, Neon, Oracle, Pop, Raspbian, RHEL, Rocky, Ubuntu, and more.
+- Requires Linux Kernel 3.1 or newer.
+- Superuser access or a user account with `sudo` privileges is necessary.
 
 ---
 
