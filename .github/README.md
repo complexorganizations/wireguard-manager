@@ -297,20 +297,33 @@ https://user-images.githubusercontent.com/16564273/125283630-9845d180-e2e6-11eb-
 
 ---
 
-### 🤝 Developing
+### 🤝 Code Development
 
-Developing the code without having to clone the repository
+**Effortlessly Develop Code Without Cloning the Repository**
+
+You can work on the code directly without the need to clone the entire repository. This is made possible through Visual Studio Code's online platform. By clicking the link below, you can preview and edit the code in your browser, utilizing the user-friendly interface of Visual Studio Code. This approach simplifies the development process, especially for those who want to make quick changes or don't wish to set up the entire repository on their local machine.
 
 [![Open in Visual Studio Code](https://img.shields.io/badge/preview%20in-vscode.dev-blue)](https://open.vscode.dev/complexorganizations/wireguard-manager)
 
-### 🐛 Debugging
+### 🐛 Code Debugging
 
-After cloning the repo, Then start debugging the code.
+**Step-by-Step Debugging Process After Cloning the Repository**
+
+For a more in-depth debugging process, you may prefer to clone the repository to your local system. This approach allows you to thoroughly test and debug the code in your environment. Follow these steps to clone the repository and initiate the debugging process:
+
+1. **Clone the Repository**: Use the Git command to clone the repository to your preferred directory, such as `/root/` in this example. This step copies all the code from the online repository to your local machine.
 
 ```bash
-git clone https://github.com/complexorganizations/wireguard-manager /root/
-bash -x /root/wireguard-manager/wireguard-manager.sh >>/root/wireguard-manager/wireguard-manager.log
+  git clone https://github.com/complexorganizations/wireguard-manager /root/
 ```
+
+2. **Begin Debugging**: After cloning, navigate to the script's directory and start the debugging process. The script will be executed in debug mode, providing detailed output of each step. This output is redirected to a log file for easier examination. The log file, located in the same directory, stores all the debugging information, making it simple to trace any issues or understand the script's behavior.
+
+```bash
+  bash -x /root/wireguard-manager/wireguard-manager.sh >>/root/wireguard-manager/wireguard-manager.log
+```
+
+By following these steps, you can either quickly modify the code online without cloning or perform a more thorough debugging process by cloning the repository to your local machine. Each method offers different advantages depending on your needs and the scope of your work with the WireGuard Manager script.
 
 ---
 
