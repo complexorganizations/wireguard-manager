@@ -16,7 +16,9 @@ jobs:
       IP_SERVICE_URL: https://checkip.amazonaws.com
     strategy:
       matrix:
-        argument: [install, stop, start, restart, ddns, backup, list, update, purge, uninstall]
+        argumentOne: [install, stop, start, restart]
+        argumentTwo: [ddns, backup, list, update]
+        argumentThree: [purge, uninstall]
     steps:
       - name: Check out code into the directory
         uses: actions/checkout@v4
@@ -25,13 +27,13 @@ jobs:
       - name: Test the network using "${{ env.IP_SERVICE_NAME }}"
         run: curl "${{ env.IP_SERVICE_URL }}"
       - name: Run wireguard-manager with different arguments
-        run: sudo ./wireguard-manager.sh --${{ matrix.argument }}
+        run: sudo ./wireguard-manager.sh --${{ matrix.argumentOne }}
       - name: View WireGuard status
         run: sudo systemctl status wg-quick@wg0
       - name: Add 500 wireguard peers to the mix
         run: for i in {1..500}; do echo -e "\n" | sudo ./wireguard-manager.sh --add; done
       - name: Run wireguard-manager with different arguments
-        run: sudo ./wireguard-manager.sh --${{ matrix.argument }}
+        run: sudo ./wireguard-manager.sh --${{ matrix.argumentTwo }}
       - name: Store configuration files as artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -47,7 +49,7 @@ jobs:
       - name: View crontab rules
         run: sudo crontab -l
       - name: Run wireguard-manager with different arguments
-        run: sudo ./wireguard-manager.sh --${{ matrix.argument }}
+        run: sudo ./wireguard-manager.sh --${{ matrix.argumentThree }}
       - name: View crontab rules
         run: sudo crontab -l
       - name: Test the network using "${{ env.IP_SERVICE_NAME }}"
