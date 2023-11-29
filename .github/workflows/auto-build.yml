@@ -14,11 +14,6 @@ jobs:
     env:
       IP_SERVICE_NAME: checkip.amazonaws.com
       IP_SERVICE_URL: https://checkip.amazonaws.com
-    strategy:
-      matrix:
-        argumentOne: [install, stop, start, restart]
-        argumentTwo: [ddns, backup, list, update]
-        argumentThree: [purge, uninstall]
     steps:
       - name: Check out code into the directory
         uses: actions/checkout@v4
@@ -26,14 +21,26 @@ jobs:
         run: sudo apt-get update && sudo apt-get install curl -y
       - name: Test the network using "${{ env.IP_SERVICE_NAME }}"
         run: curl "${{ env.IP_SERVICE_URL }}"
-      - name: Run wireguard-manager with different arguments
-        run: sudo ./wireguard-manager.sh --${{ matrix.argumentOne }}
+      - name: Run wireguard-manager with install argument
+        run: sudo ./wireguard-manager.sh --install
+      - name: Run wireguard-manager with stop argument
+        run: sudo ./wireguard-manager.sh --stop
+      - name: Run wireguard-manager with start argument
+        run: sudo ./wireguard-manager.sh --start
+      - name: Run wireguard-manager with restart argument
+        run: sudo ./wireguard-manager.sh --restart
       - name: View WireGuard status
         run: sudo systemctl status wg-quick@wg0
       - name: Add 500 wireguard peers to the mix
         run: for i in {1..500}; do echo -e "\n" | sudo ./wireguard-manager.sh --add; done
-      - name: Run wireguard-manager with different arguments
-        run: sudo ./wireguard-manager.sh --${{ matrix.argumentTwo }}
+      - name: Run wireguard-manager with ddns argument
+        run: sudo ./wireguard-manager.sh --ddns
+      - name: Run wireguard-manager with backup argument
+        run: sudo ./wireguard-manager.sh --backup
+      - name: Run wireguard-manager with list argument
+        run: sudo ./wireguard-manager.sh --list
+      - name: Run wireguard-manager with update argument
+        run: sudo ./wireguard-manager.sh --update
       - name: Store configuration files as artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -48,8 +55,10 @@ jobs:
             /etc/resolv.conf
       - name: View crontab rules
         run: sudo crontab -l
-      - name: Run wireguard-manager with different arguments
-        run: sudo ./wireguard-manager.sh --${{ matrix.argumentThree }}
+      - name: Run wireguard-manager with purge argument
+        run: sudo ./wireguard-manager.sh --purge
+      - name: Run wireguard-manager with uninstall argument
+        run: sudo ./wireguard-manager.sh --uninstall
       - name: View crontab rules
         run: sudo crontab -l
       - name: Test the network using "${{ env.IP_SERVICE_NAME }}"
