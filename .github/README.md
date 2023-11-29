@@ -5,9 +5,6 @@ Welcome to WireGuard-Manager, where we prioritize your privacy and offer a robus
 
 ##### Give a ⭐️ and 🍴 if this project helped you!
 
-### Latest Release
-Stay updated with our latest releases: ![Release Badge](https://img.shields.io/github/v/release/complexorganizations/wireguard-manager)
-
 ### Quality and Reliability
 - **Releases Status**: Stay updated with our latest releases: ![Release Badge](https://img.shields.io/github/v/release/complexorganizations/wireguard-manager)
 - **Code Quality**: Assured by ShellCheck. ![ShellCheck Badge](https://github.com/complexorganizations/wireguard-manager/workflows/ShellCheck/badge.svg)
