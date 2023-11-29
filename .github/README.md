@@ -326,7 +326,7 @@ bash -x /root/wireguard-manager/wireguard-manager.sh >>/root/wireguard-manager/w
 
 ---
 
-### ❤ Credits
+### 💋 Credits
 
 Open Source Community
 
