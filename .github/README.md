@@ -224,76 +224,64 @@ usage: ./wireguard-manager.sh <command>
 
 ---
 
-### 🙋 Q&A
+### 🙋 Q&A Session
 
-Which hosting provider do you recommend?
+**What hosting providers are recommended?**
+- **Google Cloud**: Offers global locations and IPv4 support, prices start at $3.50/month. [Visit Google Cloud](https://cloud.google.com)
+- **Amazon Web Services**: Provides global locations, IPv4 support, starting from $5.00/month. [Visit AWS](https://aws.amazon.com)
+- **Microsoft Azure**: Features worldwide locations, IPv4 support, with plans beginning at $5.00/month. [Visit Azure](https://azure.microsoft.com)
+- **Linode**: Includes global locations, supports both IPv4 & IPv6, starting at $5.00/month. [Visit Linode](https://www.linode.com)
+- **Vultr**: Offers worldwide locations, supports IPv4 & IPv6, prices start at $3.50/month. [Visit Vultr](https://www.vultr.com)
 
-- [Google Cloud](https://cloud.google.com): Worldwide locations, IPv4 support, starting at $3.50/month
-- [Amazon Web Services](https://aws.amazon.com): Worldwide locations, IPv4 support, starting at $5.00/month
-- [Microsoft Azure](https://azure.microsoft.com): Worldwide locations, IPv4 support, starting at $5.00/month
-- [Linode](https://www.linode.com): Worldwide locations, IPv4 & IPv6 support, starting at $5.00/month
-- [Vultr](https://www.vultr.com): Worldwide locations, IPv4 & IPv6 support, starting at $3.50/month
+**Which WireGuard clients are recommended?**
+- **Windows**: Download WireGuard [here](https://www.wireguard.com/install).
+- **Android**: Get WireGuard from the [Play Store](https://play.google.com/store/apps/details?id=com.wireguard.android).
+- **macOS**: WireGuard is available [here](https://itunes.apple.com/us/app/wireguard/id1451685025).
+- **iOS**: Download WireGuard from the [App Store](https://itunes.apple.com/us/app/wireguard/id1441195209).
 
-Which WireGuard client do you recommend?
+**Where can I find WireGuard documentation?**
+- The [WireGuard Manual](https://www.wireguard.com) offers comprehensive information on all options.
 
-- Windows: [WireGuard](https://www.wireguard.com/install).
-- Android: [WireGuard](https://play.google.com/store/apps/details?id=com.wireguard.android).
-- macOS: [WireGuard](https://itunes.apple.com/us/app/wireguard/id1451685025).
-- iOS: [WireGuard](https://itunes.apple.com/us/app/wireguard/id1441195209).
+**How to install WireGuard without interactive prompts? (Headless Install)**
+- Use the command: `./wireguard-manager.sh --install`
 
-Is there WireGuard documentation?
+**Are there alternatives to self-hosting a VPN?**
+- Yes, [CloudFlare Warp](https://1.1.1.1) is a notable option.
 
-- Yes, please head to the [WireGuard Manual](https://www.wireguard.com), which references all the options.
+**Why is all the code centralized in one place?**
+- Think of it like a universal remote: it's more convenient to have one device (or codebase) that does everything than multiple specialized ones.
 
-How do I install a wireguard without the questions? (Headless Install)
+**Which port and protocol are needed for WireGuard?**
+- Forward your chosen port or the default port `51820` using the UDP protocol.
 
-- `./wireguard-manager.sh --install`
+**What ports need forwarding for Unbound?**
+- Port forwarding isn't necessary for Unbound since DNS traffic goes through the VPN (`port 53`).
 
-Are there any good alternative to self-hosting vpn?
+**What gets blocked by the content blocker?**
+- The blocker restricts ads, trackers, malware, and phishing attempts.
 
-- [CloudFlare Warp](https://1.1.1.1)
+**What information is collected and how?**
+- No logs are collected or retained; all operations are confined to the system, with no external log transmission.
 
-Why is all the code in one place?
-
-- Consider a remote control, you can have thirty different remotes each doing a different job, or you may have a single remote that does everything.
-
-Which port do I need to forward for wireguard, and which protocol should I use?
-
-- On the udp protocol, either the port of your choice or the default port of `51820` must be forwarded.
-
-For unbound, which ports do I need to forward?
-
-- Because all DNS traffic is routed through the vpn, you don't need to forward those ports `53`.
-
-What is blocked if I enable the content blocker?
-
-- Advertisement, Tracking, malware, and phishing are all prohibited.
-
-What kind of information is collected and how is it gathered?
-
-- We do not collect or retain any logs; everything takes place on the system, and logs are never sent outside of it.
-
-If I want to set up my own VPN server, what should I purchase?
-
+**What do I need for setting up my own VPN server?**
+Purchase these items:
 - [Raspberry Pi 4 Model B](https://www.raspberrypi.com/products/raspberry-pi-4-model-b)
-- [Micro SD](https://www.amazon.com/dp/B06XWMQ81P)
-- [Case](https://www.raspberrypi.com/products/raspberry-pi-4-case)
+- [Micro SD Card](https://www.amazon.com/dp/B06XWMQ81P)
+- [Case for Raspberry Pi](https://www.raspberrypi.com/products/raspberry-pi-4-case)
 - [Case Fan](https://www.raspberrypi.com/products/raspberry-pi-4-case-fan)
 - [Power Supply](https://www.raspberrypi.com/products/type-c-power-supply)
 - [Ethernet Cable](https://www.amazon.com/dp/B00N2VIALK)
 - [SD Card Reader](https://www.amazon.com/dp/B0957HQ4D1)
 
-How much should the entire cost of constructing your own VPN be?
+**What's the estimated cost for building your own VPN?**
+- Expect a one-time hardware cost around $75 USD, plus ongoing expenses for electricity and internet.
 
-- The hardware has a one-time cost of roughly $75 USD, as well as monthly costs of energy and internet.
-
-Official Links
-
-- Homepage: https://www.wireguard.com
-- Install: https://www.wireguard.com/install/
-- QuickStart: https://www.wireguard.com/quickstart/
-- Compiling: https://www.wireguard.com/compilation/
-- Whitepaper: https://www.wireguard.com/papers/wireguard.pdf
+**Official WireGuard Links**
+- Homepage: [WireGuard Official Site](https://www.wireguard.com)
+- Installation Guide: [Install WireGuard](https://www.wireguard.com/install/)
+- Quick Start: [WireGuard QuickStart](https://www.wireguard.com/quickstart/)
+- Compilation Instructions: [Compile WireGuard](https://www.wireguard.com/compilation/)
+- Whitepaper: [WireGuard Whitepaper](https://www.wireguard.com/papers/wireguard.pdf)
 
 ---
 
