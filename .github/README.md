@@ -3,7 +3,8 @@
 ## Introduction
 Welcome to WireGuard-Manager, where we prioritize your privacy and offer a robust solution for your VPN needs. Our tool simplifies setting up WireGuard, a cutting-edge VPN protocol known for its speed and security. 
 
-##### Give a ⭐️ and 🍴 if this project helped you!
+## Show Your Support
+If you've found this project useful, please consider giving it a star ⭐️ and forking it 🍴, Your support is greatly appreciated!
 
 ### Quality and Reliability
 - **Releases Status**: Stay updated with our latest releases: ![Release Badge](https://img.shields.io/github/v/release/complexorganizations/wireguard-manager)
