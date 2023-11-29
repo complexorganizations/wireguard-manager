@@ -3,9 +3,6 @@
 ## Introduction
 Welcome to WireGuard-Manager, where we prioritize your privacy and offer a robust solution for your VPN needs. Our tool simplifies setting up WireGuard, a cutting-edge VPN protocol known for its speed and security. 
 
-## Show Your Support
-If you've found this project useful, please consider giving it a star ⭐️ and forking it 🍴, Your support is greatly appreciated!
-
 ### Quality and Reliability
 - **Releases Status**: Stay updated with our latest releases: ![Release Badge](https://img.shields.io/github/v/release/complexorganizations/wireguard-manager)
 - **Code Quality**: Assured by ShellCheck. ![ShellCheck Badge](https://github.com/complexorganizations/wireguard-manager/workflows/ShellCheck/badge.svg)
@@ -16,6 +13,9 @@ If you've found this project useful, please consider giving it a star ⭐️ and
 - **Issue Tracking**: Current open issues. [![Open Issues](https://img.shields.io/github/issues/complexorganizations/wireguard-manager)](https://github.com/complexorganizations/wireguard-manager/issues)
 - **Contribution Opportunities**: Explore and contribute to our open pull requests. [![Pull Requests](https://img.shields.io/github/issues-pr/complexorganizations/wireguard-manager)](https://github.com/complexorganizations/wireguard-manager/pulls)
 - **Project License**: Licensed under [Apache 2.0]. [![License](https://img.shields.io/github/license/complexorganizations/wireguard-manager)](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/.github/LICENSE)
+
+## Show Your Support
+If you've found this project useful, please consider giving it a star ⭐️ and forking it 🍴, Your support is greatly appreciated!
 
 ---
 
@@ -48,6 +48,13 @@ WireGuard is a straightforward yet fast and modern VPN that utilizes state-of-th
 - Alma, Alpine, Arch, Archarm, CentOS, Debian, Fedora, FreeBSD, Kali, Mint, Manjaro, Neon, Oracle, Pop, Raspbian, RHEL, Rocky, Ubuntu
 - Linux `Kernel 3.1` or newer
 - You will need superuser access or a user account with `sudo` privilege.
+
+---
+
+### Getting Started
+1. **Installation**: Simple and quick installation process.
+2. **Configuration**: Easy-to-follow configuration steps.
+3. **Management**: User-friendly interface for managing your VPN.
 
 ---
 
