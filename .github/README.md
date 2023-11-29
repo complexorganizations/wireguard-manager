@@ -1,6 +1,6 @@
 # WireGuard-Manager: Secure Your Network 👋
 
-## Introduction
+### 🔰 Introduction
 Welcome to WireGuard-Manager, where we prioritize your privacy and offer a robust solution for your VPN needs. Our tool simplifies setting up WireGuard, a cutting-edge VPN protocol known for its speed and security. 
 
 ### Quality and Reliability
@@ -14,7 +14,7 @@ Welcome to WireGuard-Manager, where we prioritize your privacy and offer a robus
 - **Contribution Opportunities**: Explore and contribute to our open pull requests. [![Pull Requests](https://img.shields.io/github/issues-pr/complexorganizations/wireguard-manager)](https://github.com/complexorganizations/wireguard-manager/pulls)
 - **Project License**: Licensed under [Apache 2.0]. [![License](https://img.shields.io/github/license/complexorganizations/wireguard-manager)](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/.github/LICENSE)
 
-## Show Your Support
+### ✊ Show Your Support
 If you've found this project useful, please consider giving it a star ⭐️ and forking it 🍴, Your support is greatly appreciated!
 
 ---
@@ -27,7 +27,7 @@ A Virtual Private Network (VPN) allows users to send and receive data through sh
 
 WireGuard is a straightforward yet fast and modern VPN that utilizes state-of-the-art cryptography. It aims to be faster, simpler, leaner, and more useful than IPsec while avoiding the massive headache. It intends to be considerably more performant than OpenVPN. WireGuard is designed as a general-purpose VPN for running on embedded interfaces and super computers alike, fit for many circumstances. Initially released for the Linux kernel, it is now cross-platform (Windows, macOS, BSD, iOS, Android) and widely deployable. It is currently under a massive development, but it already might be regarded as the most secure, most comfortable to use, and the simplest VPN solution in the industry.
 
-### Why WireGuard-Manager?
+### 💻 Why WireGuard-Manager?
 - **Security First**: With top-notch encryption and privacy features.
 - **User-Friendly**: Easy to install and manage, regardless of your tech-savviness.
 - **High Performance**: Enjoy fast and reliable connections.
@@ -51,7 +51,7 @@ WireGuard is a straightforward yet fast and modern VPN that utilizes state-of-th
 
 ---
 
-### Getting Started
+### 🚦 Getting Started
 1. **Installation**: Simple and quick installation process.
 2. **Configuration**: Easy-to-follow configuration steps.
 3. **Management**: User-friendly interface for managing your VPN.
@@ -326,13 +326,13 @@ bash -x /root/wireguard-manager/wireguard-manager.sh >>/root/wireguard-manager/w
 
 ---
 
-### ❤️ Credits
+### ❤ Credits
 
 Open Source Community
 
 ---
 
-### Community and Contributions
+### 📱 Community and Contributions
 
 [![Discord](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/images/icons/discord.svg)](https://discord.gg/HyhugYT9u7)
 [![Slack](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/images/icons/slack.svg)](https://parking-unitedcom.slack.com/archives/C05QM7PS9GV/p1693631754500589)
