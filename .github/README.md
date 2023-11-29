@@ -137,22 +137,22 @@ usage: ./wireguard-manager.sh <command>
 
 ### 💡 Options
 
-- `PRIVATE_SUBNET_V4_SETTINGS` - By default, the private IPv4 subnet configuration is `10.0.0.0/8`.
-- `PRIVATE_SUBNET_V6_SETTINGS` - `fd00:00:00::0/8` is the default private IPv6 subnet.
-- `SERVER_HOST_V4_SETTINGS` - Curl detects a public IPv4 address by default.
-- `SERVER_HOST_V6_SETTINGS` - Curl by default finds a public IPv6 address.
-- `SERVER_PUB_NIC_SETTINGS` - Using the ip command, to find the local public network interface.
-- `SERVER_PORT_SETTINGS` - `51820` is the default public port for the wireguard interface.
-- `NAT_CHOICE_SETTINGS` - Determine whether or not to use the vpn tunnel's keep alive feature.
-- `MTU_CHOICE_SETTINGS` - The wireguard peers will utilize this MTU.
-- `SERVER_HOST_SETTINGS` -
-- `CLIENT_ALLOWED_IP_SETTINGS` - Using an IP range, choose what should be sent to the VPN.
-- `AUTOMATIC_UPDATES_SETTINGS` -
-- `AUTOMATIC_BACKUP_SETTINGS` -
-- `DNS_PROVIDER_SETTINGS` - You'll have to utilize another DNS if you don't have Unbound.
-- `CONTENT_BLOCKER_SETTINGS` -
-- `CLIENT_NAME` - The wireguard peer's name.
-- `AUTOMATIC_CONFIG_REMOVER` -
+- `PRIVATE_SUBNET_V4_SETTINGS` - Specifies the private IPv4 subnet to be used within the VPN. The default is `10.0.0.0/8`, which is a standard private IP range.
+- `PRIVATE_SUBNET_V6_SETTINGS` - Defines the private IPv6 subnet. The default `fd00:00:00::0/8` is a typical private IPv6 range.
+- `SERVER_HOST_V4_SETTINGS` - This setting is for detecting the public IPv4 address of the server, commonly used for establishing connections from outside the local network.
+- `SERVER_HOST_V6_SETTINGS` - Similar to the IPv4 setting, but for detecting the server's public IPv6 address.
+- `SERVER_PUB_NIC_SETTINGS` - Determines the local public network interface using the `ip` command. This is essential for the server to communicate on the public network.
+- `SERVER_PORT_SETTINGS` - Specifies the default public port (`51820`) for the WireGuard interface. This is the port through which VPN traffic will pass.
+- `NAT_CHOICE_SETTINGS` - Configures whether or not to use the VPN tunnel's keep-alive feature, which helps maintain the connection active.
+- `MTU_CHOICE_SETTINGS` - Sets the Maximum Transmission Unit (MTU) for WireGuard peers. This value impacts the size of packets transmitted over the network.
+- `SERVER_HOST_SETTINGS` - This might be a general setting for defining server-specific configurations, but it's not clear without more context.
+- `CLIENT_ALLOWED_IP_SETTINGS` - Defines the IP range allowed for clients connecting to the VPN. This can restrict which devices can connect.
+- `AUTOMATIC_UPDATES_SETTINGS` - Likely relates to whether the system will automatically update software or configurations.
+- `AUTOMATIC_BACKUP_SETTINGS` - Pertains to the automatic backup of system configurations or data.
+- `DNS_PROVIDER_SETTINGS` - Involves setting up a DNS provider for the network. If you're not using Unbound, you'll need to specify another DNS service.
+- `CONTENT_BLOCKER_SETTINGS` - Might relate to settings for blocking certain types of content through the network.
+- `CLIENT_NAME` - The name assigned to a WireGuard peer (client) in the VPN.
+- `AUTOMATIC_CONFIG_REMOVER` - Possibly a setting to automatically remove certain configurations after they are no longer needed or after a set period.
 
 ---
 
