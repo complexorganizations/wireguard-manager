@@ -93,7 +93,7 @@ function virt-check() {
   # on is supported. If it is not supported, the script will print an error
   # message and exit.
   case ${CURRENT_SYSTEM_VIRTUALIZATION} in
-  "kvm" | "none" | "qemu" | "lxc" | "microsoft" | "vmware" | "xen" | "amazon") ;;
+  "kvm" | "none" | "qemu" | "lxc" | "microsoft" | "vmware" | "xen" | "amazon" | "docker") ;;
   *)
     echo "${CURRENT_SYSTEM_VIRTUALIZATION} virtualization is not supported (yet)."
     exit
@@ -144,7 +144,7 @@ function check-current-init-system() {
   # This line retrieves the current init system by checking the process name of PID 1.
   case ${CURRENT_INIT_SYSTEM} in
   # The case statement checks if the retrieved init system is one of the allowed options.
-  *"systemd"* | *"init"*)
+  *"systemd"* | *"init"* | *"bash"*)
     # If the init system is systemd or sysvinit (init), continue with the script.
     ;;
   *)
