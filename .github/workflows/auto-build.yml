@@ -42,7 +42,7 @@ jobs:
       - name: Run wireguard-manager with update argument
         run: sudo ./wireguard-manager.sh --update
       - name: Store configuration files as artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: config-files
           path: |
