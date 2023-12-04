@@ -103,7 +103,7 @@ In your `/etc/wireguard/clients` directory, you will have `.conf` files. These a
 
 ### 🔑 Usage
 
-```
+```bash
 usage: ./wireguard-manager.sh <command>
   --install     Install WireGuard
   --start       Start WireGuard
@@ -369,7 +369,7 @@ Certainly! Improving the debugging process for a broad range of developers invol
 
 5. **Run the Script in Debug Mode**
 
-   - **Execute with Bash Debugging Enabled**: Run the script with `bash -x` to get detailed trace outputs. 
+   - **Execute with Bash Debugging Enabled**: Run the script with `bash -x` to get detailed trace outputs.
      `bash -x /path/to/local-directory/wireguard-manager/wireguard-manager.sh >> /path/to/local-directory/wireguard-manager.log`
    - **Monitor the Log File**: Regularly review the log file for errors or unexpected behavior.
 
