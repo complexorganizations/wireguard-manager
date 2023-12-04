@@ -331,13 +331,13 @@ For a more in-depth debugging process, you may prefer to clone the repository to
 1. **Clone the Repository**: Use the Git command to clone the repository to your preferred directory, such as `/root/` in this example. This step copies all the code from the online repository to your local machine.
 
 ```bash
-  git clone https://github.com/complexorganizations/wireguard-manager /root/
+git clone https://github.com/complexorganizations/wireguard-manager /root/
 ```
 
 2. **Begin Debugging**: After cloning, navigate to the script's directory and start the debugging process. The script will be executed in debug mode, providing detailed output of each step. This output is redirected to a log file for easier examination. The log file, located in the same directory, stores all the debugging information, making it simple to trace any issues or understand the script's behavior.
 
 ```bash
-  bash -x /root/wireguard-manager/wireguard-manager.sh >>/root/wireguard-manager/wireguard-manager.log
+bash -x /root/wireguard-manager/wireguard-manager.sh >>/root/wireguard-manager/wireguard-manager.log
 ```
 
 By following these steps, you can either quickly modify the code online without cloning or perform a more thorough debugging process by cloning the repository to your local machine. Each method offers different advantages depending on your needs and the scope of your work with the WireGuard Manager script.
@@ -354,9 +354,7 @@ Certainly! Improving the debugging process for a broad range of developers invol
 2. **Clone the Repository**
 
    - **Use Git to Clone**: Clone the WireGuard Manager repository to a local directory.
-     ```bash
-     git clone https://github.com/complexorganizations/wireguard-manager /path/to/local-directory
-     ```
+     `git clone https://github.com/complexorganizations/wireguard-manager /path/to/local-directory`
    - **Choose an Appropriate Directory**: Avoid using root directories for development. Choose a user directory to ensure safety and manage permissions easily.
 
 3. **Familiarize with the Codebase**
@@ -371,10 +369,8 @@ Certainly! Improving the debugging process for a broad range of developers invol
 
 5. **Run the Script in Debug Mode**
 
-   - **Execute with Bash Debugging Enabled**: Run the script with `bash -x` to get detailed trace outputs.
-     ```bash
-     bash -x /path/to/local-directory/wireguard-manager/wireguard-manager.sh >> /path/to/local-directory/wireguard-manager.log
-     ```
+   - **Execute with Bash Debugging Enabled**: Run the script with `bash -x` to get detailed trace outputs. 
+     `bash -x /path/to/local-directory/wireguard-manager/wireguard-manager.sh >> /path/to/local-directory/wireguard-manager.log`
    - **Monitor the Log File**: Regularly review the log file for errors or unexpected behavior.
 
 6. **Test in Different Environments**
