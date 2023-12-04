@@ -144,69 +144,69 @@ usage: ./wireguard-manager.sh <command>
 
 ## Compatibility with Linux Distributions
 
-| Operating System | i386 Support | amd64 Support | armhf Support | arm64 Support |
-|- | |- |- |- |
-| Ubuntu 14 and below | ❌ | ❌ | ❌ | ❌ |
-| Ubuntu 16 and above | ✅ | ✅ | ✅ | ✅ |
-| Debian 7 and below | ❌ | ❌ | ❌ | ❌ |
-| Debian 8 and above | ✅ | ✅ | ✅ | ✅ |
-| CentOS 6 and below | ❌ | ❌ | ❌ | ❌ |
-| CentOS 7 and above | ✅ | ✅ | ✅ | ✅ |
-| Fedora 29 and below | ❌ | ❌ | ❌ | ❌ |
-| Fedora 30 and above | ✅ | ✅ | ✅ | ✅ |
-| RedHat 6 and below | ❌ | ❌ | ❌ | ❌ |
-| RedHat 7 and above | ✅ | ✅ | ✅ | ✅ |
-| Kali 1.0 and below | ❌ | ❌ | ❌ | ❌ |
-| Kali 1.1 and above | ✅ | ✅ | ✅ | ✅ |
-| Arch Linux | ✅ | ✅ | ✅ | ✅ |
-| Raspbian | ✅ | ✅ | ✅ | ✅ |
-| PopOS | ✅ | ✅ | ✅ | ✅ |
-| Manjaro | ✅ | ✅ | ✅ | ✅ |
-| Mint | ✅ | ✅ | ✅ | ✅ |
-| AlmaLinux | ✅ | ✅ | ✅ | ✅ |
-| Alpine | ✅ | ✅ | ✅ | ✅ |
-| FreeBSD | ✅ | ✅ | ✅ | ✅ |
-| KDE Neon | ✅ | ✅ | ✅ | ✅ |
-| Rocky Linux | ✅ | ✅ | ✅ | ✅ |
-| Oracle Linux | ✅ | ✅ | ✅ | ✅ |
+| Operating System    | i386 Support | amd64 Support | armhf Support | arm64 Support |
+| ------------------- | ------------ | ------------- | ------------- | ------------- |
+| Ubuntu 14 and below | No           | No            | No            | No            |
+| Ubuntu 16 and above | Yes          | Yes           | Yes           | Yes           |
+| Debian 7 and below  | No           | No            | No            | No            |
+| Debian 8 and above  | Yes          | Yes           | Yes           | Yes           |
+| CentOS 6 and below  | No           | No            | No            | No            |
+| CentOS 7 and above  | Yes          | Yes           | Yes           | Yes           |
+| Fedora 29 and below | No           | No            | No            | No            |
+| Fedora 30 and above | Yes          | Yes           | Yes           | Yes           |
+| RedHat 6 and below  | No           | No            | No            | No            |
+| RedHat 7 and above  | Yes          | Yes           | Yes           | Yes           |
+| Kali 1.0 and below  | No           | No            | No            | No            |
+| Kali 1.1 and above  | Yes          | Yes           | Yes           | Yes           |
+| Arch Linux          | Yes          | Yes           | Yes           | Yes           |
+| Raspbian            | Yes          | Yes           | Yes           | Yes           |
+| PopOS               | Yes          | Yes           | Yes           | Yes           |
+| Manjaro             | Yes          | Yes           | Yes           | Yes           |
+| Mint                | Yes          | Yes           | Yes           | Yes           |
+| AlmaLinux           | Yes          | Yes           | Yes           | Yes           |
+| Alpine              | Yes          | Yes           | Yes           | Yes           |
+| FreeBSD             | Yes          | Yes           | Yes           | Yes           |
+| KDE Neon            | Yes          | Yes           | Yes           | Yes           |
+| Rocky Linux         | Yes          | Yes           | Yes           | Yes           |
+| Oracle Linux        | Yes          | Yes           | Yes           | Yes           |
 
 ## Compatibility with Cloud Providers
 
-| Cloud | Supported |
-| | |
-| AWS | Yes |
-| Google Cloud | Yes |
-| Linode | Yes |
-| Digital Ocean | Yes |
-| Vultr | Yes |
-| Microsoft Azure | Yes |
-| OpenStack | Yes |
-| Rackspace | Yes |
-| Scaleway | Yes |
-| EuroVPS | Yes |
-| Hetzner Cloud | No |
-| Strato | No |
+| Cloud           | Supported |
+| --------------- | --------- |
+| AWS             | Yes       |
+| Google Cloud    | Yes       |
+| Linode          | Yes       |
+| Digital Ocean   | Yes       |
+| Vultr           | Yes       |
+| Microsoft Azure | Yes       |
+| OpenStack       | Yes       |
+| Rackspace       | Yes       |
+| Scaleway        | Yes       |
+| EuroVPS         | Yes       |
+| Hetzner Cloud   | No        |
+| Strato          | No        |
 
 ## Compatibility with Virtualization
 
 | Virtualization | Supported |
-|-- | |
-| KVM | Yes |
-| None | Yes |
-| Qemu | Yes |
-| LXC | Yes |
-| Microsoft | Yes |
-| Vmware | Yes |
-| OpenVZ | No |
-| Docker | No |
-| WSL | No |
+| -------------- | --------- |
+| KVM            | Yes       |
+| None           | Yes       |
+| Qemu           | Yes       |
+| LXC            | Yes       |
+| Microsoft      | Yes       |
+| Vmware         | Yes       |
+| OpenVZ         | No        |
+| Docker         | No        |
+| WSL            | No        |
 
 ## Compatibility with Linux Kernel
 
-| Kernel | Supported |
-| | |
-| Linux Kernel 3.0 ≤ | No |
-| Linux Kernel 3.1 ≥ | Yes |
+| Kernel                     | Compatibility |
+| -------------------------- | ------------- |
+| Linux Kernel 3.0 and below | No            |
+| Linux Kernel 3.1 and above | Yes           |
 
 ## Frequently Asked Questions
 
