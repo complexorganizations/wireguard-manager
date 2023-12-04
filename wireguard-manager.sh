@@ -13,163 +13,142 @@ function check_root() {
 # Call the function to check root privileges
 check_root
 
-# The following function retrieves the current system information.
-function system-information() {
-  # This function retrieves the ID, version, and major version of the current system.
+# This function retrieves the current system information.
+function get_system_info() {
+  # Check if the /etc/os-release file exists
   if [ -f /etc/os-release ]; then
-    # Check if the /etc/os-release file exists, and if so, source it to get the system information.
-    # shellcheck source=/dev/null
+    # Source /etc/os-release to get system information
     source /etc/os-release
-    CURRENT_DISTRO=${ID}                                                                              # CURRENT_DISTRO is the ID of the current system
-    CURRENT_DISTRO_VERSION=${VERSION_ID}                                                              # CURRENT_DISTRO_VERSION is the VERSION_ID of the current system
-    CURRENT_DISTRO_MAJOR_VERSION=$(echo "${CURRENT_DISTRO_VERSION}" | cut --delimiter="." --fields=1) # CURRENT_DISTRO_MAJOR_VERSION is the major version of the current system (e.g. "16" for Ubuntu 16.04)
+    # Set system ID, version, and major version
+    SYSTEM_ID=${ID}                                                  # SYSTEM_ID is the ID of the current Linux distribution
+    SYSTEM_VERSION=${VERSION_ID}                                     # SYSTEM_VERSION is the version of the current Linux distribution
+    SYSTEM_MAJOR_VERSION=$(echo "${SYSTEM_VERSION}" | cut -d"." -f1) # SYSTEM_MAJOR_VERSION is the major version of the current Linux distribution
   fi
 }
 
-# The system-information function is being called.
-
-system-information
-# Calls the system-information function.
+# Call the function to get system information
+get_system_info
 
 # Define a function to check system requirements
-function installing-system-requirements() {
+function check_system_requirements() {
+  # List of supported distributions
+  SUPPORTED_DISTROS=("ubuntu" "debian" "raspbian" "pop" "kali" "linuxmint" "neon" "fedora" "centos" "rhel" "almalinux" "rocky" "arch" "archarm" "manjaro" "alpine" "freebsd" "ol")
   # Check if the current Linux distribution is supported
-  if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ] || [ "${CURRENT_DISTRO}" == "fedora" ] || [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "rhel" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ] || [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ] || [ "${CURRENT_DISTRO}" == "alpine" ] || [ "${CURRENT_DISTRO}" == "freebsd" ] || [ "${CURRENT_DISTRO}" == "ol" ]; }; then
+  if [[ " ${SUPPORTED_DISTROS[@]} " =~ " ${SYSTEM_ID} " ]]; then
+    # List of required packages
+    REQUIRED_PACKAGES=("curl" "cut" "jq" "ip" "lsof" "cron" "awk" "ps" "grep" "qrencode" "sed" "zip" "unzip" "openssl" "nft" "ifup" "chattr" "gpg" "systemd-detect-virt")
     # Check if required packages are already installed
-    if { [ ! -x "$(command -v curl)" ] || [ ! -x "$(command -v cut)" ] || [ ! -x "$(command -v jq)" ] || [ ! -x "$(command -v ip)" ] || [ ! -x "$(command -v lsof)" ] || [ ! -x "$(command -v cron)" ] || [ ! -x "$(command -v awk)" ] || [ ! -x "$(command -v ps)" ] || [ ! -x "$(command -v grep)" ] || [ ! -x "$(command -v qrencode)" ] || [ ! -x "$(command -v sed)" ] || [ ! -x "$(command -v zip)" ] || [ ! -x "$(command -v unzip)" ] || [ ! -x "$(command -v openssl)" ] || [ ! -x "$(command -v nft)" ] || [ ! -x "$(command -v ifup)" ] || [ ! -x "$(command -v chattr)" ] || [ ! -x "$(command -v gpg)" ] || [ ! -x "$(command -v systemd-detect-virt)" ]; }; then
-      # Install required packages depending on the Linux distribution
-      if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
-        apt-get update
-        apt-get install curl coreutils jq iproute2 lsof cron gawk procps grep qrencode sed zip unzip openssl nftables ifupdown e2fsprogs gnupg systemd -y
-      elif { [ "${CURRENT_DISTRO}" == "fedora" ] || [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "rhel" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ]; }; then
-        yum check-update
-        if [ "${CURRENT_DISTRO}" == "centos" ] && [ "${CURRENT_DISTRO_MAJOR_VERSION}" -ge 7 ]; then
-          yum install epel-release elrepo-release -y
-        fi
-        if [ "${CURRENT_DISTRO}" == "centos" ] && [ "${CURRENT_DISTRO_MAJOR_VERSION}" == 7 ]; then
-          yum install yum-plugin-elrepo -y
-        fi
-        yum install curl coreutils jq iproute lsof cronie gawk procps-ng grep qrencode sed zip unzip openssl nftables NetworkManager e2fsprogs gnupg systemd -y
-      elif { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ]; }; then
-        pacman -Sy --noconfirm archlinux-keyring
-        pacman -Su --noconfirm --needed curl coreutils jq iproute2 lsof cronie gawk procps-ng grep qrencode sed zip unzip openssl nftables ifupdown e2fsprogs gnupg systemd
-      elif [ "${CURRENT_DISTRO}" == "alpine" ]; then
-        apk update
-        apk add curl coreutils jq iproute2 lsof cronie gawk procps grep qrencode sed zip unzip openssl nftables ifupdown e2fsprogs gnupg systemd
-      elif [ "${CURRENT_DISTRO}" == "freebsd" ]; then
-        pkg update
-        pkg install curl coreutils jq iproute2 lsof cronie gawk procps grep qrencode sed zip unzip openssl nftables ifupdown e2fsprogs gnupg systemd
-      elif [ "${CURRENT_DISTRO}" == "ol" ]; then
-        yum check-update
-        yum install curl coreutils jq iproute lsof cronie gawk procps-ng grep qrencode sed zip unzip openssl nftables NetworkManager e2fsprogs gnupg systemd -y
+    for package in "${REQUIRED_PACKAGES[@]}"; do
+      if ! command -v $package &>/dev/null; then
+        # Install required packages depending on the Linux distribution
+        case "${SYSTEM_ID}" in
+        "ubuntu" | "debian" | "raspbian" | "pop" | "kali" | "linuxmint" | "neon")
+          apt-get update
+          apt-get install -y $package
+          ;;
+        "fedora" | "centos" | "rhel" | "almalinux" | "rocky")
+          yum check-update
+          yum install -y $package
+          ;;
+        "arch" | "archarm" | "manjaro")
+          pacman -Sy --noconfirm $package
+          ;;
+        "alpine")
+          apk update
+          apk add $package
+          ;;
+        "freebsd")
+          pkg update
+          pkg install $package
+          ;;
+        "ol")
+          yum check-update
+          yum install -y $package
+          ;;
+        esac
       fi
-    fi
+    done
   else
-    echo "Error: ${CURRENT_DISTRO} ${CURRENT_DISTRO_VERSION} is not supported."
-    exit
+    echo "Error: ${SYSTEM_ID} ${SYSTEM_VERSION} is not supported."
+    exit 1
   fi
 }
 
 # Call the function to check for system requirements and install necessary packages if needed
-installing-system-requirements
+check_system_requirements
 
-# Checking For Virtualization
-function virt-check() {
-  # This code checks if the system is running in a supported virtualization.
-  # It returns the name of the virtualization if it is supported, or "none" if
-  # it is not supported. This code is used to check if the system is running in
-  # a virtual machine, and if so, if it is running in a supported virtualization.
-  # systemd-detect-virt is a utility that detects the type of virtualization
-  # that the system is running on. It returns a string that indicates the name
-  # of the virtualization, such as "kvm" or "vmware".
+# Define a function to check if the system is running in a supported virtualization environment
+function check_virtualization() {
+  # Get the current system virtualization
   CURRENT_SYSTEM_VIRTUALIZATION=$(systemd-detect-virt)
-  # This case statement checks if the virtualization that the system is running
-  # on is supported. If it is not supported, the script will print an error
-  # message and exit.
-  case ${CURRENT_SYSTEM_VIRTUALIZATION} in
-  "kvm" | "none" | "qemu" | "lxc" | "microsoft" | "vmware" | "xen" | "amazon" | "docker") ;;
-  *)
+  # List of supported virtualizations
+  SUPPORTED_VIRTUALIZATIONS=("kvm" "none" "qemu" "lxc" "microsoft" "vmware" "xen" "amazon" "docker")
+  # Check if the current system virtualization is supported
+  if [[ ! " ${SUPPORTED_VIRTUALIZATIONS[@]} " =~ " ${CURRENT_SYSTEM_VIRTUALIZATION} " ]]; then
     echo "${CURRENT_SYSTEM_VIRTUALIZATION} virtualization is not supported (yet)."
-    exit
-    ;;
-  esac
+    exit 1
+  fi
 }
 
-# Call the virt-check function to check for supported virtualization.
-virt-check
+# Call the function to check for supported virtualization
+check_virtualization
 
-# The following function checks the kernel version.
-function kernel-check() {
-  CURRENT_KERNEL_VERSION=$(uname --kernel-release | cut --delimiter="." --fields=1-2)
+# This function checks the kernel version.
+function check_kernel_version() {
   # Get the current kernel version and extract the major and minor version numbers.
-  CURRENT_KERNEL_MAJOR_VERSION=$(echo "${CURRENT_KERNEL_VERSION}" | cut --delimiter="." --fields=1)
-  # Extract the major version number from the current kernel version.
-  CURRENT_KERNEL_MINOR_VERSION=$(echo "${CURRENT_KERNEL_VERSION}" | cut --delimiter="." --fields=2)
-  # Extract the minor version number from the current kernel version.
-  ALLOWED_KERNEL_VERSION="3.1"
+  CURRENT_KERNEL_VERSION=$(uname -r | cut -d"." -f1-2)
+  CURRENT_KERNEL_MAJOR_VERSION=$(echo "${CURRENT_KERNEL_VERSION}" | cut -d"." -f1)
+  CURRENT_KERNEL_MINOR_VERSION=$(echo "${CURRENT_KERNEL_VERSION}" | cut -d"." -f2)
   # Set the minimum allowed kernel version to 3.1.0.
-  ALLOWED_KERNEL_MAJOR_VERSION=$(echo ${ALLOWED_KERNEL_VERSION} | cut --delimiter="." --fields=1)
-  # Extract the major version number from the allowed kernel version.
-  ALLOWED_KERNEL_MINOR_VERSION=$(echo ${ALLOWED_KERNEL_VERSION} | cut --delimiter="." --fields=2)
-  # Extract the minor version number from the allowed kernel version.
-  if [ "${CURRENT_KERNEL_MAJOR_VERSION}" -lt "${ALLOWED_KERNEL_MAJOR_VERSION}" ]; then
-    # If the current major version is less than the allowed major version, show an error message and exit.
+  ALLOWED_KERNEL_VERSION="3.1"
+  ALLOWED_KERNEL_MAJOR_VERSION=$(echo ${ALLOWED_KERNEL_VERSION} | cut -d"." -f1)
+  ALLOWED_KERNEL_MINOR_VERSION=$(echo ${ALLOWED_KERNEL_VERSION} | cut -d"." -f2)
+  # Check if the current kernel version is less than the allowed version
+  if [ "${CURRENT_KERNEL_MAJOR_VERSION}" -lt "${ALLOWED_KERNEL_MAJOR_VERSION}" ] ||
+    [ "${CURRENT_KERNEL_MAJOR_VERSION}" -eq "${ALLOWED_KERNEL_MAJOR_VERSION}" ] &&
+    [ "${CURRENT_KERNEL_MINOR_VERSION}" -lt "${ALLOWED_KERNEL_MINOR_VERSION}" ]; then
     echo "Error: Kernel ${CURRENT_KERNEL_VERSION} not supported, please update to ${ALLOWED_KERNEL_VERSION}."
-    exit
-  fi
-  if [ "${CURRENT_KERNEL_MAJOR_VERSION}" == "${ALLOWED_KERNEL_MAJOR_VERSION}" ]; then
-    # If the current major version is equal to the allowed major version, check the minor version.
-    if [ "${CURRENT_KERNEL_MINOR_VERSION}" -lt "${ALLOWED_KERNEL_MINOR_VERSION}" ]; then
-      # If the current minor version is less than the allowed minor version, show an error message and exit.
-      echo "Error: Kernel ${CURRENT_KERNEL_VERSION} not supported, please update to ${ALLOWED_KERNEL_VERSION}."
-      exit
-    fi
+    exit 1
   fi
 }
 
-# Call the kernel-check function to verify the kernel version.
-kernel-check
+# Call the function to check the kernel version
+check_kernel_version
 
-# The following function checks if the current init system is one of the allowed options.
-function check-current-init-system() {
-  # This function checks if the current init system is systemd or sysvinit.
-  # If it is neither, the script exits.
+# This function checks if the current init system is one of the supported options.
+function check_init_system() {
+  # Get the current init system by checking the process name of PID 1
   CURRENT_INIT_SYSTEM=$(ps --no-headers -o comm 1)
-  # This line retrieves the current init system by checking the process name of PID 1.
+  # Check if the retrieved init system is one of the supported options
   case ${CURRENT_INIT_SYSTEM} in
-  # The case statement checks if the retrieved init system is one of the allowed options.
-  *"systemd"* | *"init"* | *"bash"*)
-    # If the init system is systemd or sysvinit (init), continue with the script.
+  "systemd" | "init" | "bash")
+    # If the init system is systemd, sysvinit (init), or bash, continue with the script
     ;;
   *)
-    # If the init system is not one of the allowed options, display an error message and exit.
+    # If the init system is not one of the supported options, display an error message and exit
     echo "${CURRENT_INIT_SYSTEM} init is not supported (yet)."
-    exit
+    exit 1
     ;;
   esac
 }
 
-# The check-current-init-system function is being called.
+# Call the check_init_system function
+check_init_system
 
-check-current-init-system
-# Calls the check-current-init-system function.
-
-# The following function checks if there's enough disk space to proceed with the installation.
-function check-disk-space() {
-  # This function checks if there is more than 1 GB of free space on the drive.
-  FREE_SPACE_ON_DRIVE_IN_MB=$(df -m / | tr --squeeze-repeats " " | tail -n1 | cut --delimiter=" " --fields=4)
-  # This line calculates the available free space on the root partition in MB.
+# This function checks if there's enough disk space to proceed with the installation.
+function check_disk_space() {
+  # Get the available free space on the root partition in MB.
+  FREE_SPACE_ON_DRIVE_IN_MB=$(df -m / | awk 'NR==2 {print $4}')
+  # Check if the available free space is less than or equal to 1024 MB (1 GB).
   if [ "${FREE_SPACE_ON_DRIVE_IN_MB}" -le 1024 ]; then
     # If the available free space is less than or equal to 1024 MB (1 GB), display an error message and exit.
     echo "Error: More than 1 GB of free space is needed to install everything."
-    exit
+    exit 1
   fi
 }
 
-# The check-disk-space function is being called.
-
-check-disk-space
-# Calls the check-disk-space function.
+# Call the check_disk_space function
+check_disk_space
 
 # Global variables
 # Assigns the path of the current script to a variable
