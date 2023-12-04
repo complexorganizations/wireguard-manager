@@ -1,6 +1,6 @@
-# WireGuard-Manager: Secure Your Network
+# WireGuard-Manager: Secure Your Network 💻
 
-## Introduction
+## 🔰 Introduction
 
 Welcome to WireGuard-Manager, your solution for setting up WireGuard, a cutting-edge VPN protocol. WireGuard is known for its speed, security, and ease-of-use, making it an ideal choice for both personal and professional VPN needs. This tool is designed to simplify the installation and management of WireGuard, ensuring a secure and efficient networking experience.
 
@@ -16,15 +16,15 @@ Welcome to WireGuard-Manager, your solution for setting up WireGuard, a cutting-
 - **Contribution Opportunities**: Explore and contribute to our open pull requests. [![Pull Requests](https://img.shields.io/github/issues-pr/complexorganizations/wireguard-manager)](https://github.com/complexorganizations/wireguard-manager/pulls)
 - **Project License**: Licensed under [Apache 2.0]. [![License](https://img.shields.io/github/license/complexorganizations/wireguard-manager)](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/.github/LICENSE)
 
-## Show Your Support
+## ✊ Show Your Support
 
 If you've found this project useful, please consider giving it a star and forking it. Your support is greatly appreciated!
 
-## What is VPN?
+## 🤷 What is VPN?
 
 A Virtual Private Network (VPN) allows users to send and receive data through shared or public networks as if their computing devices were directly connected to the private network. Thus, applications running on an end-system (PC, smartphone, etc.) over a VPN may benefit from individual network features, protection, and management. Encryption is a standard aspect of a VPN connection but not an intrinsic one.
 
-## What is WireGuard?
+## 📶 What is WireGuard?
 
 WireGuard is a straightforward yet fast and modern VPN that utilizes state-of-the-art cryptography. It aims to be faster, simpler, leaner, and more useful than IPsec while avoiding the massive headache. It intends to be considerably more performant than OpenVPN. WireGuard is designed as a general-purpose VPN for running on embedded interfaces and super computers alike, fit for many circumstances. Initially released for the Linux kernel, it is now cross-platform (Windows, macOS, BSD, iOS, Android) and widely deployable. It is currently under a massive development, but it already might be regarded as the most secure, most comfortable to use, and the simplest VPN solution in the industry.
 
@@ -35,26 +35,26 @@ WireGuard is a straightforward yet fast and modern VPN that utilizes state-of-th
 - **High Performance**: Enjoy fast and reliable connections.
 - **Open Source**: Built and improved by the community.
 
-## Goals
+## ⛳ Goals
 
 - Robust and modern security as a standard.
 - Minimal configuration with essential management tools.
 - Optimal performance for both low-latency and high-bandwidth operations.
 - Simplified command-line interface for easy integration with system networking.
 
-## Prerequisite
+## 🌲 Prerequisite
 
 - Supported on a variety of systems including Alma, Alpine, Arch, CentOS, Debian, Fedora, FreeBSD, Kali, Mint, Manjaro, Neon, Oracle, Pop, Raspbian, RHEL, Rocky, Ubuntu, and more.
 - Requires Linux Kernel 3.1 or newer.
 - Superuser access or a user account with `sudo` privileges is necessary.
 
-## Getting Started
+## 🚦 Getting Started
 
 1. **Installation**: Simple and quick installation process.
 2. **Configuration**: Easy-to-follow configuration steps.
 3. **Management**: User-friendly interface for managing your VPN.
 
-## Installation
+## 🐧 Installation
 
 First, use `curl` to download the script and save it in `/usr/local/bin/`:
 
@@ -76,7 +76,7 @@ bash /usr/local/bin/wireguard-manager.sh
 
 In your `/etc/wireguard/clients` directory, you will find `.conf` files. These are the peer configuration files. Download them from your WireGuard Interface and connect using your favorite WireGuard Peer.
 
-## Post-Installation
+## 💣 Post-Installation
 
 - Show WireGuard Interface
 - Start WireGuard Interface
@@ -89,7 +89,7 @@ In your `/etc/wireguard/clients` directory, you will find `.conf` files. These a
 - Encrypt & Backup Configs
 - Restore WireGuard Configs
 
-## Usage
+## 🔑 Usage
 
 ```bash
 usage: ./wireguard-manager.sh <command>
@@ -110,7 +110,7 @@ usage: ./wireguard-manager.sh <command>
   --help        Show Usage Guide
 ```
 
-## Features
+## 🥰 Features
 
 - Seamless installation and configuration of WireGuard Interface
 - Convenient backup and restoration of WireGuard
@@ -123,7 +123,7 @@ usage: ./wireguard-manager.sh <command>
 - Mandatory preshared-key for an additional layer of security
 - Numerous other minor features for enhanced user experience
 
-## Configuration Options
+## 💡 Configuration Options
 
 - `PRIVATE_SUBNET_V4_SETTINGS`: This defines the private IPv4 subnet used within the VPN. The default is `10.0.0.0/8`, a standard private IP range.
 - `PRIVATE_SUBNET_V6_SETTINGS`: This sets the private IPv6 subnet. The default `fd00:00:00::0/8` is a typical private IPv6 range.
@@ -142,7 +142,7 @@ usage: ./wireguard-manager.sh <command>
 - `CLIENT_NAME`: This is the name assigned to a WireGuard peer (client) in the VPN.
 - `AUTOMATIC_CONFIG_REMOVER`: This is possibly a setting to automatically remove certain configurations after they are no longer needed or after a set period.
 
-## Compatibility with Linux Distributions
+## 👉👈 Compatibility with Linux Distributions
 
 | Operating System    | i386 Support | amd64 Support | armhf Support | arm64 Support |
 | ------------------- | ------------ | ------------- | ------------- | ------------- |
@@ -170,7 +170,7 @@ usage: ./wireguard-manager.sh <command>
 | Rocky Linux         | Yes          | Yes           | Yes           | Yes           |
 | Oracle Linux        | Yes          | Yes           | Yes           | Yes           |
 
-## Compatibility with Cloud Providers
+## ☁️ Compatibility with Cloud Providers
 
 | Cloud           | Supported |
 | --------------- | --------- |
@@ -187,7 +187,7 @@ usage: ./wireguard-manager.sh <command>
 | Hetzner Cloud   | No        |
 | Strato          | No        |
 
-## Compatibility with Virtualization
+## 🛡️ Compatibility with Virtualization
 
 | Virtualization | Supported |
 | -------------- | --------- |
@@ -201,14 +201,14 @@ usage: ./wireguard-manager.sh <command>
 | Docker         | No        |
 | WSL            | No        |
 
-## Compatibility with Linux Kernel
+## 💻 Compatibility with Linux Kernel
 
 | Kernel                     | Compatibility |
 | -------------------------- | ------------- |
 | Linux Kernel 3.0 and below | No            |
 | Linux Kernel 3.1 and above | Yes           |
 
-## Frequently Asked Questions
+## 🙋 Frequently Asked Questions
 
 **Which hosting providers do you recommend?**
 
@@ -283,15 +283,15 @@ To set up your own VPN server, you will need the following items:
 - Compilation Instructions: [Compile WireGuard](https://www.wireguard.com/compilation/)
 - Whitepaper: [WireGuard Whitepaper](https://www.wireguard.com/papers/wireguard.pdf)
 
-## Content-Blocking vs. No Content-Blocking
+## 🙅 Content-Blocking vs. No Content-Blocking
 
 https://user-images.githubusercontent.com/16564273/125283630-9845d180-e2e6-11eb-8b7d-f30a8f2eae8a.mp4
 
-## Architecture
+## 📐 Architecture
 
 ![Wireguard Manager Architecture](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/Wireguard-Manager.png)
 
-### Code Development
+## 🤝 Code Development
 
 **Develop Code Without Cloning the Repository**
 
@@ -299,7 +299,7 @@ You can directly work on the code without the need to clone the repository. This
 
 [![Open in Visual Studio Code](https://img.shields.io/badge/preview%20in-vscode.dev-blue)](https://open.vscode.dev/complexorganizations/wireguard-manager)
 
-### Code Debugging
+## 🐛 Code Debugging
 
 **Detailed Debugging Process After Cloning the Repository**
 
@@ -371,18 +371,18 @@ By following these steps, you can either quickly modify the code online without 
 
 By following these steps and adapting them to their own development environment and workflow, developers can more effectively debug and contribute to the WireGuard Manager project. This comprehensive approach caters to various skill levels and preferences, thereby facilitating a more inclusive and efficient development process.
 
-### Acknowledgements
+## 💋 Acknowledgements
 
 This project is made possible thanks to the Open Source Community.
 
-### Community and Contributions
+## 📱 Community and Contributions
 
 Join our community on [Discord](https://discord.gg/HyhugYT9u7) and [Slack](https://parking-unitedcom.slack.com/archives/C05QM7PS9GV/p1693631754500589) to contribute to the project, share ideas, and get help.
 
-### Sponsors
+## 🤝 Sponsors
 
 This project is sponsored by [Digital Ocean](https://www.digitalocean.com).
 
-### License
+## 📝 License
 
 WireGuard-Manager is licensed under the Apache License Version 2.0. For more details, please refer to our [License File](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/.github/LICENSE).
