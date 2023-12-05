@@ -31,9 +31,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           # Use the workflow run number as the tag name for uniqueness
-          tag_name: release-${{ github.run_number }}
+          tag_name: releases-${{ github.event.schedule '* * *' }}
           # Customize the release name
-          release_name: App Release ${{ github.run_number }}
+          release_name: releases-${{ github.event.schedule '* * *' }}
           # Indicate that this is a final release, not a draft or prerelease
           draft: false
           prerelease: false
