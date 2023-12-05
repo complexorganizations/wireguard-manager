@@ -84,7 +84,7 @@ jobs:
 
       # Change permissions to allow access
       - name: Allow acess to the files
-        run: sudo chmod -R 777 /etc/wireguard/*
+        run: sudo chmod 777 /etc/wireguard/
 
       # Upload configuration files as artifacts
       - name: Upload Configuration Files as Artifacts
@@ -102,7 +102,7 @@ jobs:
 
       # Change permissions to deny access
       - name: Restore deny acess to the files
-        run: sudo chmod -R 600 /etc/wireguard/*
+        run: sudo chmod 600 /etc/wireguard/
 
       # Display crontab rules
       - name: Display Crontab Rules
