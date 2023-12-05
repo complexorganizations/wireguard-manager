@@ -185,93 +185,76 @@ UNBOUND_CONFIG="${UNBOUND_ROOT}/unbound.conf"
 UNBOUND_ROOT_HINTS="${UNBOUND_ROOT}/root.hints"
 # Assigns a path for the Unbound anchor file
 UNBOUND_ANCHOR="/var/lib/unbound/root.key"
-if { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ]; }; then
+case "${SYSTEM_ID}" in
+arch | archarm | manjaro)
   UNBOUND_ANCHOR="${UNBOUND_ROOT}/root.key"
-fi
+  ;;
+esac
 # Assigns a path for the Unbound configuration directory
 UNBOUND_CONFIG_DIRECTORY="${UNBOUND_ROOT}/unbound.conf.d"
 # Assigns a path for the Unbound hosts configuration file
 UNBOUND_CONFIG_HOST="${UNBOUND_CONFIG_DIRECTORY}/hosts.conf"
-case $(shuf --input-range=1-5 --head-count=1) in
-1)
-  UNBOUND_ROOT_SERVER_CONFIG_URL="https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/named.cache"
-  ;;
-2)
-  UNBOUND_ROOT_SERVER_CONFIG_URL="https://cdn.statically.io/gh/complexorganizations/wireguard-manager/main/assets/named.cache"
-  ;;
-3)
-  UNBOUND_ROOT_SERVER_CONFIG_URL="https://cdn.jsdelivr.net/gh/complexorganizations/wireguard-manager/assets/named.cache"
-  ;;
-4)
-  UNBOUND_ROOT_SERVER_CONFIG_URL="https://www.internic.net/domain/named.cache"
-  ;;
-5)
-  UNBOUND_ROOT_SERVER_CONFIG_URL="https://complexorganizations.github.io/wireguard-manager/assets/named.cache"
-  ;;
-esac
-case $(shuf --input-range=1-5 --head-count=1) in
-1)
-  UNBOUND_CONFIG_HOST_URL="https://raw.githubusercontent.com/complexorganizations/content-blocker/main/assets/hosts"
-  ;;
-2)
-  UNBOUND_CONFIG_HOST_URL="https://cdn.statically.io/gh/complexorganizations/content-blocker/main/assets/hosts"
-  ;;
-3)
-  UNBOUND_CONFIG_HOST_URL="https://cdn.jsdelivr.net/gh/complexorganizations/content-blocker/assets/hosts"
-  ;;
-4)
-  UNBOUND_CONFIG_HOST_URL="https://combinatronics.io/complexorganizations/content-blocker/main/assets/hosts"
-  ;;
-5)
-  UNBOUND_CONFIG_HOST_URL="https://complexorganizations.github.io/wireguard-manager/assets/hosts"
-  ;;
-esac
-case $(shuf --input-range=1-5 --head-count=1) in
-1)
-  WIREGUARD_MANAGER_UPDATE="https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh"
-  ;;
-2)
-  WIREGUARD_MANAGER_UPDATE="https://cdn.statically.io/gh/complexorganizations/wireguard-manager/main/wireguard-manager.sh"
-  ;;
-3)
-  WIREGUARD_MANAGER_UPDATE="https://cdn.jsdelivr.net/gh/complexorganizations/wireguard-manager/wireguard-manager.sh"
-  ;;
-4)
-  WIREGUARD_MANAGER_UPDATE="https://combinatronics.io/complexorganizations/wireguard-manager/main/wireguard-manager.sh"
-  ;;
-5)
-  WIREGUARD_MANAGER_UPDATE="https://complexorganizations.github.io/wireguard-manager/wireguard-manager.sh"
-  ;;
-esac
-# Check if the CURRENT_DISTRO variable matches any of the following distros:
-# fedora, centos, rhel, almalinux, or rocky
-if { [ "${CURRENT_DISTRO}" == "fedora" ] || [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "rhel" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ]; }; then
-  # If the condition is true, set the SYSTEM_CRON_NAME variable to "crond"
-  SYSTEM_CRON_NAME="crond"
-# If the CURRENT_DISTRO variable matches any of the following distros:
-# arch, archarm, or manjaro
-elif { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ]; }; then
-  # If the condition is true, set the SYSTEM_CRON_NAME variable to "cronie"
-  SYSTEM_CRON_NAME="cronie"
-else
-  # If none of the above conditions are met, set the SYSTEM_CRON_NAME variable to "cron"
-  SYSTEM_CRON_NAME="cron"
-fi
+# Random URL
+UNBOUND_ROOT_SERVER_CONFIG_URLS=(
+  "https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/named.cache"
+  "https://cdn.statically.io/gh/complexorganizations/wireguard-manager/main/assets/named.cache"
+  "https://cdn.jsdelivr.net/gh/complexorganizations/wireguard-manager/assets/named.cache"
+  "https://www.internic.net/domain/named.cache"
+  "https://complexorganizations.github.io/wireguard-manager/assets/named.cache"
+)
 
-# This is a Bash function named "get-network-information" that retrieves network information.
+UNBOUND_ROOT_SERVER_CONFIG_URL=${UNBOUND_ROOT_SERVER_CONFIG_URLS[RANDOM % 5]}
+
+UNBOUND_CONFIG_HOST_URLS=(
+  "https://raw.githubusercontent.com/complexorganizations/content-blocker/main/assets/hosts"
+  "https://cdn.statically.io/gh/complexorganizations/content-blocker/main/assets/hosts"
+  "https://cdn.jsdelivr.net/gh/complexorganizations/content-blocker/assets/hosts"
+  "https://combinatronics.io/complexorganizations/content-blocker/main/assets/hosts"
+  "https://complexorganizations.github.io/wireguard-manager/assets/hosts"
+)
+
+UNBOUND_CONFIG_HOST_URL=${UNBOUND_CONFIG_HOST_URLS[RANDOM % 5]}
+
+WIREGUARD_MANAGER_UPDATE_URLS=(
+  "https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh"
+  "https://cdn.statically.io/gh/complexorganizations/wireguard-manager/main/wireguard-manager.sh"
+  "https://cdn.jsdelivr.net/gh/complexorganizations/wireguard-manager/wireguard-manager.sh"
+  "https://combinatronics.io/complexorganizations/wireguard-manager/main/wireguard-manager.sh"
+  "https://complexorganizations.github.io/wireguard-manager/wireguard-manager.sh"
+)
+
+WIREGUARD_MANAGER_UPDATE=${WIREGUARD_MANAGER_UPDATE_URLS[RANDOM % 5]}
+
+# Check if the SYSTEM_ID variable matches any of the following distros:
+case "${SYSTEM_ID}" in
+fedora | centos | rhel | almalinux | rocky)
+  SYSTEM_CRON_NAME="crond"
+  ;;
+arch | archarm | manjaro)
+  SYSTEM_CRON_NAME="cronie"
+  ;;
+*)
+  SYSTEM_CRON_NAME="cron"
+  ;;
+esac
+
 function get-network-information() {
-  # This variable will store the IPv4 address of the default network interface by querying the "ipengine" API using "curl" command and extracting it using "jq" command.
-  DEFAULT_INTERFACE_IPV4="$(curl --ipv4 --connect-timeout 5 --tlsv1.2 --silent 'https://checkip.amazonaws.com')"
-  # If the IPv4 address is empty, try getting it from another API.
-  if [ -z "${DEFAULT_INTERFACE_IPV4}" ]; then
-    DEFAULT_INTERFACE_IPV4="$(curl --ipv4 --connect-timeout 5 --tlsv1.3 --silent 'https://icanhazip.com')"
-  fi
-  # This variable will store the IPv6 address of the default network interface by querying the "ipengine" API using "curl" command and extracting it using "jq" command.
-  DEFAULT_INTERFACE_IPV6="$(curl --ipv6 --connect-timeout 5 --tlsv1.3 --silent 'https://ifconfig.co')"
-  # If the IPv6 address is empty, try getting it from another API.
-  if [ -z "${DEFAULT_INTERFACE_IPV6}" ]; then
-    DEFAULT_INTERFACE_IPV6="$(curl --ipv6 --connect-timeout 5 --tlsv1.3 --silent 'https://icanhazip.com')"
-  fi
+  IPV4_APIs=("https://checkip.amazonaws.com" "https://icanhazip.com")
+  IPV6_APIs=("https://ifconfig.co" "https://icanhazip.com")
+
+  for api in "${IPV4_APIs[@]}"; do
+    DEFAULT_INTERFACE_IPV4=$(curl --ipv4 --connect-timeout 5 --tlsv1.3 --silent "$api")
+    if [ -n "${DEFAULT_INTERFACE_IPV4}" ]; then
+      break
+    fi
+  done
+
+  for api in "${IPV6_APIs[@]}"; do
+    DEFAULT_INTERFACE_IPV6=$(curl --ipv6 --connect-timeout 5 --tlsv1.3 --silent "$api")
+    if [ -n "${DEFAULT_INTERFACE_IPV6}" ]; then
+      break
+    fi
+  done
 }
 
 # Usage Guide of the application
@@ -977,18 +960,18 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     fi
     # Install kernel headers for the current kernel version based on the Linux distribution.
     if [ "${INSTALL_LINUX_HEADERS}" == true ]; then
-      if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
+      if { [ "${SYSTEM_ID}" == "ubuntu" ] || [ "${SYSTEM_ID}" == "debian" ] || [ "${SYSTEM_ID}" == "pop" ] || [ "${SYSTEM_ID}" == "kali" ] || [ "${SYSTEM_ID}" == "linuxmint" ] || [ "${SYSTEM_ID}" == "neon" ]; }; then
         apt-get update
         apt-get install linux-headers-"$(uname --kernel-release)" -y
-      elif [ "${CURRENT_DISTRO}" == "raspbian" ]; then
+      elif [ "${SYSTEM_ID}" == "raspbian" ]; then
         apt-get update
         apt-get install raspberrypi-kernel-headers -y
-      elif { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ]; }; then
+      elif { [ "${SYSTEM_ID}" == "arch" ] || [ "${SYSTEM_ID}" == "archarm" ] || [ "${SYSTEM_ID}" == "manjaro" ]; }; then
         pacman -Su --noconfirm --needed linux-headers
-      elif { [ "${CURRENT_DISTRO}" == "fedora" ] || [ "${CURRENT_DISTRO}" == "ol" ]; }; then
+      elif { [ "${SYSTEM_ID}" == "fedora" ] || [ "${SYSTEM_ID}" == "ol" ]; }; then
         yum check-update
         yum install kernel-headers-"$(uname --kernel-release)" kernel-devel-"$(uname --kernel-release)" -y
-      elif { [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "rhel" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ]; }; then
+      elif { [ "${SYSTEM_ID}" == "centos" ] || [ "${SYSTEM_ID}" == "rhel" ] || [ "${SYSTEM_ID}" == "almalinux" ] || [ "${SYSTEM_ID}" == "rocky" ]; }; then
         yum check-update
         yum install kernel-headers-"$(uname --kernel-release)" kernel-devel-"$(uname --kernel-release)" -y
       fi
@@ -1003,26 +986,26 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     # Check if resolvconf is already installed.
     if [ ! -x "$(command -v resolvconf)" ]; then
       # Install resolvconf for various distributions.
-      if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
+      if { [ "${SYSTEM_ID}" == "ubuntu" ] || [ "${SYSTEM_ID}" == "debian" ] || [ "${SYSTEM_ID}" == "raspbian" ] || [ "${SYSTEM_ID}" == "pop" ] || [ "${SYSTEM_ID}" == "kali" ] || [ "${SYSTEM_ID}" == "linuxmint" ] || [ "${SYSTEM_ID}" == "neon" ]; }; then
         apt-get install resolvconf -y
       # Install openresolv for various distributions.
-      elif { [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "rhel" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ]; }; then
+      elif { [ "${SYSTEM_ID}" == "centos" ] || [ "${SYSTEM_ID}" == "rhel" ] || [ "${SYSTEM_ID}" == "almalinux" ] || [ "${SYSTEM_ID}" == "rocky" ]; }; then
         # Enable the copr repository for CentOS 7.
-        if [ "${CURRENT_DISTRO}" == "centos" ] && [ "${CURRENT_DISTRO_MAJOR_VERSION}" == 7 ]; then
+        if [ "${SYSTEM_ID}" == "centos" ] && [ "${SYSTEM_ID_MAJOR_VERSION}" == 7 ]; then
           yum copr enable macieks/openresolv -y
         fi
         yum install openresolv -y
       # Install openresolv for Fedora and Oracle Linux distributions.
-      elif { [ "${CURRENT_DISTRO}" == "fedora" ] || [ "${CURRENT_DISTRO}" == "ol" ]; }; then
+      elif { [ "${SYSTEM_ID}" == "fedora" ] || [ "${SYSTEM_ID}" == "ol" ]; }; then
         yum install openresolv -y
       # Install resolvconf for Arch-based distributions.
-      elif { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ]; }; then
+      elif { [ "${SYSTEM_ID}" == "arch" ] || [ "${SYSTEM_ID}" == "archarm" ] || [ "${SYSTEM_ID}" == "manjaro" ]; }; then
         pacman -Su --noconfirm --needed resolvconf
       # Install resolvconf for Alpine Linux.
-      elif [ "${CURRENT_DISTRO}" == "alpine" ]; then
+      elif [ "${SYSTEM_ID}" == "alpine" ]; then
         apk add resolvconf
       # Install resolvconf for FreeBSD.
-      elif [ "${CURRENT_DISTRO}" == "freebsd" ]; then
+      elif [ "${SYSTEM_ID}" == "freebsd" ]; then
         pkg install resolvconf
       fi
     fi
@@ -1036,7 +1019,7 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     # Check if the WireGuard command (wg) is not already installed.
     if [ ! -x "$(command -v wg)" ]; then
       # Install WireGuard for Debian-based distributions.
-      if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
+      if { [ "${SYSTEM_ID}" == "ubuntu" ] || [ "${SYSTEM_ID}" == "debian" ] || [ "${SYSTEM_ID}" == "raspbian" ] || [ "${SYSTEM_ID}" == "pop" ] || [ "${SYSTEM_ID}" == "kali" ] || [ "${SYSTEM_ID}" == "linuxmint" ] || [ "${SYSTEM_ID}" == "neon" ]; }; then
         apt-get update
         if [ ! -f "/etc/apt/sources.list.d/backports.list" ]; then
           echo "deb http://deb.debian.org/debian buster-backports main" >>/etc/apt/sources.list.d/backports.list
@@ -1046,36 +1029,36 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
         fi
         apt-get install wireguard -y
       # Install WireGuard for Arch-based distributions.
-      elif { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ]; }; then
+      elif { [ "${SYSTEM_ID}" == "arch" ] || [ "${SYSTEM_ID}" == "archarm" ] || [ "${SYSTEM_ID}" == "manjaro" ]; }; then
         pacman -Su --noconfirm --needed wireguard-tools
-      elif [ "${CURRENT_DISTRO}" = "fedora" ]; then
+      elif [ "${SYSTEM_ID}" = "fedora" ]; then
         dnf check-update
         dnf copr enable jdoss/wireguard -y
         dnf install wireguard-tools -y
       # Install WireGuard for other distributions (Fedora, CentOS, RHEL, etc.).
-      elif [ "${CURRENT_DISTRO}" == "centos" ]; then
+      elif [ "${SYSTEM_ID}" == "centos" ]; then
         yum check-update
         yum install kmod-wireguard wireguard-tools -y
-      elif [ "${CURRENT_DISTRO}" == "rhel" ]; then
+      elif [ "${SYSTEM_ID}" == "rhel" ]; then
         yum check-update
-        yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-"${CURRENT_DISTRO_MAJOR_VERSION}".noarch.rpm https://www.elrepo.org/elrepo-release-"${CURRENT_DISTRO_MAJOR_VERSION}".el"${CURRENT_DISTRO_MAJOR_VERSION}".elrepo.noarch.rpm
+        yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-"${SYSTEM_ID_MAJOR_VERSION}".noarch.rpm https://www.elrepo.org/elrepo-release-"${SYSTEM_ID_MAJOR_VERSION}".el"${SYSTEM_ID_MAJOR_VERSION}".elrepo.noarch.rpm
         yum check-update
         yum install kmod-wireguard wireguard-tools -y
-      elif [ "${CURRENT_DISTRO}" == "alpine" ]; then
+      elif [ "${SYSTEM_ID}" == "alpine" ]; then
         apk update
         apk add wireguard-tools
-      elif [ "${CURRENT_DISTRO}" == "freebsd" ]; then
+      elif [ "${SYSTEM_ID}" == "freebsd" ]; then
         pkg update
         pkg install wireguard
-      elif { [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ]; }; then
+      elif { [ "${SYSTEM_ID}" == "almalinux" ] || [ "${SYSTEM_ID}" == "rocky" ]; }; then
         yum check-update
         yum install kmod-wireguard wireguard-tools -y
-      elif [ "${CURRENT_DISTRO}" == "ol" ]; then
+      elif [ "${SYSTEM_ID}" == "ol" ]; then
         yum check-update
-        yum install oraclelinux-developer-release-el"${CURRENT_DISTRO_MAJOR_VERSION}" -y
-        yum config-manager --disable ol"${CURRENT_DISTRO_MAJOR_VERSION}"_developer
-        yum config-manager --enable ol"${CURRENT_DISTRO_MAJOR_VERSION}"_developer_UEKR6
-        yum config-manager --save --setopt=ol"${CURRENT_DISTRO_MAJOR_VERSION}"_developer_UEKR6.includepkgs='wireguard-tools*'
+        yum install oraclelinux-developer-release-el"${SYSTEM_ID_MAJOR_VERSION}" -y
+        yum config-manager --disable ol"${SYSTEM_ID_MAJOR_VERSION}"_developer
+        yum config-manager --enable ol"${SYSTEM_ID_MAJOR_VERSION}"_developer_UEKR6
+        yum config-manager --save --setopt=ol"${SYSTEM_ID_MAJOR_VERSION}"_developer_UEKR6.includepkgs='wireguard-tools*'
         yum install wireguard-tools -y
       fi
     fi
@@ -1090,26 +1073,26 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     if [ "${INSTALL_UNBOUND}" == true ]; then
       if [ ! -x "$(command -v unbound)" ]; then
         # Install Unbound for different Linux distributions.
-        if { [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
+        if { [ "${SYSTEM_ID}" == "debian" ] || [ "${SYSTEM_ID}" == "ubuntu" ] || [ "${SYSTEM_ID}" == "raspbian" ] || [ "${SYSTEM_ID}" == "pop" ] || [ "${SYSTEM_ID}" == "kali" ] || [ "${SYSTEM_ID}" == "linuxmint" ] || [ "${SYSTEM_ID}" == "neon" ]; }; then
           apt-get install unbound unbound-host unbound-anchor -y
-          if [ "${CURRENT_DISTRO}" == "ubuntu" ]; then
+          if [ "${SYSTEM_ID}" == "ubuntu" ]; then
             if [[ "${CURRENT_INIT_SYSTEM}" == *"systemd"* ]]; then
               systemctl disable --now systemd-resolved
             elif [[ "${CURRENT_INIT_SYSTEM}" == *"init"* ]]; then
               service systemd-resolved stop
             fi
           fi
-        elif { [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "rhel" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ]; }; then
+        elif { [ "${SYSTEM_ID}" == "centos" ] || [ "${SYSTEM_ID}" == "rhel" ] || [ "${SYSTEM_ID}" == "almalinux" ] || [ "${SYSTEM_ID}" == "rocky" ]; }; then
           yum install unbound unbound-host unbound-anchor -y
-        elif [ "${CURRENT_DISTRO}" == "fedora" ]; then
+        elif [ "${SYSTEM_ID}" == "fedora" ]; then
           dnf install unbound unbound-host unbound-anchor -y
-        elif { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ]; }; then
+        elif { [ "${SYSTEM_ID}" == "arch" ] || [ "${SYSTEM_ID}" == "archarm" ] || [ "${SYSTEM_ID}" == "manjaro" ]; }; then
           pacman -Su --noconfirm --needed unbound
-        elif [ "${CURRENT_DISTRO}" == "alpine" ]; then
+        elif [ "${SYSTEM_ID}" == "alpine" ]; then
           apk add unbound unbound-host unbound-anchor
-        elif [ "${CURRENT_DISTRO}" == "freebsd" ]; then
+        elif [ "${SYSTEM_ID}" == "freebsd" ]; then
           pkg install unbound unbound-host unbound-anchor
-        elif [ "${CURRENT_DISTRO}" == "ol" ]; then
+        elif [ "${SYSTEM_ID}" == "ol" ]; then
           yum install unbound unbound-host unbound-anchor -y
         fi
       fi
@@ -1546,18 +1529,18 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
       # Bring down the WireGuard interface
       wg-quick down ${WIREGUARD_PUB_NIC}
       # Reinstall or update WireGuard based on the current Linux distribution
-      if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
+      if { [ "${SYSTEM_ID}" == "ubuntu" ] || [ "${SYSTEM_ID}" == "debian" ] || [ "${SYSTEM_ID}" == "raspbian" ] || [ "${SYSTEM_ID}" == "pop" ] || [ "${SYSTEM_ID}" == "kali" ] || [ "${SYSTEM_ID}" == "linuxmint" ] || [ "${SYSTEM_ID}" == "neon" ]; }; then
         dpkg-reconfigure wireguard-dkms
         modprobe wireguard
-      elif { [ "${CURRENT_DISTRO}" == "fedora" ] || [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "rhel" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ]; }; then
+      elif { [ "${SYSTEM_ID}" == "fedora" ] || [ "${SYSTEM_ID}" == "centos" ] || [ "${SYSTEM_ID}" == "rhel" ] || [ "${SYSTEM_ID}" == "almalinux" ] || [ "${SYSTEM_ID}" == "rocky" ]; }; then
         yum reinstall wireguard-tools -y
-      elif { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ]; }; then
+      elif { [ "${SYSTEM_ID}" == "arch" ] || [ "${SYSTEM_ID}" == "archarm" ] || [ "${SYSTEM_ID}" == "manjaro" ]; }; then
         pacman -Su --noconfirm wireguard-tools
-      elif [ "${CURRENT_DISTRO}" == "alpine" ]; then
+      elif [ "${SYSTEM_ID}" == "alpine" ]; then
         apk fix wireguard-tools
-      elif [ "${CURRENT_DISTRO}" == "freebsd" ]; then
+      elif [ "${SYSTEM_ID}" == "freebsd" ]; then
         pkg check wireguard
-      elif [ "${CURRENT_DISTRO}" == "ol" ]; then
+      elif [ "${SYSTEM_ID}" == "ol" ]; then
         yum reinstall wireguard-tools -y
       fi
       # Enable and start the WireGuard service based on the current init system
@@ -1584,10 +1567,10 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
       fi
       # Remove WireGuard and qrencode packages based on the current distribution
       # For CentOS, AlmaLinux, and Rocky Linux distributions
-      if { [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ]; }; then
+      if { [ "${SYSTEM_ID}" == "centos" ] || [ "${SYSTEM_ID}" == "almalinux" ] || [ "${SYSTEM_ID}" == "rocky" ]; }; then
         yum remove wireguard qrencode -y
         # For Ubuntu, Debian, Raspbian, Pop!_OS, Kali Linux, Linux Mint, and KDE Neon distributions
-      elif { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
+      elif { [ "${SYSTEM_ID}" == "ubuntu" ] || [ "${SYSTEM_ID}" == "debian" ] || [ "${SYSTEM_ID}" == "raspbian" ] || [ "${SYSTEM_ID}" == "pop" ] || [ "${SYSTEM_ID}" == "kali" ] || [ "${SYSTEM_ID}" == "linuxmint" ] || [ "${SYSTEM_ID}" == "neon" ]; }; then
         apt-get remove --purge wireguard qrencode -y
         # Remove backports repository and keys if they exist
         if [ -f "/etc/apt/sources.list.d/backports.list" ]; then
@@ -1596,30 +1579,30 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
           apt-key del 0E98404D386FA1D9
         fi
         # For Arch, Arch ARM, and Manjaro distributions
-      elif { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ]; }; then
+      elif { [ "${SYSTEM_ID}" == "arch" ] || [ "${SYSTEM_ID}" == "archarm" ] || [ "${SYSTEM_ID}" == "manjaro" ]; }; then
         pacman -Rs --noconfirm wireguard-tools qrencode
         # For Fedora distribution
-      elif [ "${CURRENT_DISTRO}" == "fedora" ]; then
+      elif [ "${SYSTEM_ID}" == "fedora" ]; then
         dnf remove wireguard qrencode -y
         # Remove WireGuard repository if it exists
         if [ -f "/etc/yum.repos.d/wireguard.repo" ]; then
           rm --force /etc/yum.repos.d/wireguard.repo
         fi
         # For RHEL distribution
-      elif [ "${CURRENT_DISTRO}" == "rhel" ]; then
+      elif [ "${SYSTEM_ID}" == "rhel" ]; then
         yum remove wireguard qrencode -y
         # Remove WireGuard repository if it exists
         if [ -f "/etc/yum.repos.d/wireguard.repo" ]; then
           rm --force /etc/yum.repos.d/wireguard.repo
         fi
         # For Alpine Linux distribution
-      elif [ "${CURRENT_DISTRO}" == "alpine" ]; then
+      elif [ "${SYSTEM_ID}" == "alpine" ]; then
         apk del wireguard-tools libqrencode
         # For FreeBSD distribution
-      elif [ "${CURRENT_DISTRO}" == "freebsd" ]; then
+      elif [ "${SYSTEM_ID}" == "freebsd" ]; then
         pkg delete wireguard libqrencode
       # For Oracle Linux distribution
-      elif [ "${CURRENT_DISTRO}" == "ol" ]; then
+      elif [ "${SYSTEM_ID}" == "ol" ]; then
         yum remove wireguard qrencode -y
       fi
       # Delete WireGuard backup
@@ -1648,12 +1631,12 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
         fi
         # Remove Unbound package based on the current distribution
         # For CentOS, RHEL, AlmaLinux, and Rocky Linux distributions
-        if { [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "rhel" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ]; }; then
+        if { [ "${SYSTEM_ID}" == "centos" ] || [ "${SYSTEM_ID}" == "rhel" ] || [ "${SYSTEM_ID}" == "almalinux" ] || [ "${SYSTEM_ID}" == "rocky" ]; }; then
           yum remove unbound -y
         # For Ubuntu, Debian, Raspbian, Pop!_OS, Kali Linux, Linux Mint, and KDE Neon distributions
-        elif { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
+        elif { [ "${SYSTEM_ID}" == "ubuntu" ] || [ "${SYSTEM_ID}" == "debian" ] || [ "${SYSTEM_ID}" == "raspbian" ] || [ "${SYSTEM_ID}" == "pop" ] || [ "${SYSTEM_ID}" == "kali" ] || [ "${SYSTEM_ID}" == "linuxmint" ] || [ "${SYSTEM_ID}" == "neon" ]; }; then
           # If the distribution is Ubuntu, restart systemd-resolved service based on the init system
-          if [ "${CURRENT_DISTRO}" == "ubuntu" ]; then
+          if [ "${SYSTEM_ID}" == "ubuntu" ]; then
             if [[ "${CURRENT_INIT_SYSTEM}" == *"systemd"* ]]; then
               systemctl enable --now systemd-resolved
             elif [[ "${CURRENT_INIT_SYSTEM}" == *"init"* ]]; then
@@ -1662,16 +1645,16 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
           fi
           apt-get remove --purge unbound -y
         # For Arch, Arch ARM, and Manjaro distributions
-        elif { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ]; }; then
+        elif { [ "${SYSTEM_ID}" == "arch" ] || [ "${SYSTEM_ID}" == "archarm" ] || [ "${SYSTEM_ID}" == "manjaro" ]; }; then
           pacman -Rs --noconfirm unbound
         # For Fedora and Oracle Linux distributions
-        elif { [ "${CURRENT_DISTRO}" == "fedora" ] || [ "${CURRENT_DISTRO}" == "ol" ]; }; then
+        elif { [ "${SYSTEM_ID}" == "fedora" ] || [ "${SYSTEM_ID}" == "ol" ]; }; then
           yum remove unbound -y
         # For Alpine Linux distribution
-        elif [ "${CURRENT_DISTRO}" == "alpine" ]; then
+        elif [ "${SYSTEM_ID}" == "alpine" ]; then
           apk del unbound
         # For FreeBSD distribution
-        elif [ "${CURRENT_DISTRO}" == "freebsd" ]; then
+        elif [ "${SYSTEM_ID}" == "freebsd" ]; then
           pkg delete unbound
         fi
         # Remove Unbound root directory if it exists
