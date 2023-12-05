@@ -17,9 +17,9 @@ check_root
 function get_system_info() {
   # Check if the /etc/os-release file exists
   if [ -f /etc/os-release ]; then
-    # Source /etc/os-release to get system information
+    # Source /etc/os-release to get system information, then assign the values to variables for later use
+    # shellcheck source=/dev/null # Ignore SC1091
     source /etc/os-release
-    # Set system ID, version, and major version
     SYSTEM_ID=${ID}                                                  # SYSTEM_ID is the ID of the current Linux distribution
     SYSTEM_VERSION=${VERSION_ID}                                     # SYSTEM_VERSION is the version of the current Linux distribution
     SYSTEM_MAJOR_VERSION=$(echo "${SYSTEM_VERSION}" | cut -d"." -f1) # SYSTEM_MAJOR_VERSION is the major version of the current Linux distribution
