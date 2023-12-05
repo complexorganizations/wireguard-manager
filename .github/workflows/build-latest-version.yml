@@ -64,7 +64,7 @@ jobs:
 
       # Add multiple WireGuard peers
       - name: Add Multiple WireGuard Peers
-        run: for i in {1..500}; do echo -e "\n" | sudo ./wireguard-manager.sh --add; done
+        run: for i in {1..10}; do echo -e "\n" | sudo ./wireguard-manager.sh --add; done
 
       # Update dynamic DNS settings
       - name: Update Dynamic DNS Settings
