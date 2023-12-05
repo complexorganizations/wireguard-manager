@@ -9,10 +9,10 @@ Welcome to WireGuard-Manager, your solution for setting up WireGuard, a cutting-
 ### Project Information and Status
 
 - **Latest Releases**: Stay on top of our newest versions:
-  ![Latest Release](https://img.shields.io/github/v/release/complexorganizations/wireguard-manager)
+  [![Latest Release](https://img.shields.io/github/v/release/complexorganizations/wireguard-manager)](https://github.com/complexorganizationsg/wireguard-manager/releases/latest)
 
 - **Code Quality Assurance**: Verified by ShellCheck for reliability:
-  ![ShellCheck Badge](https://github.com/complexorganizations/wireguard-manager/workflows/ShellCheck/badge.svg)
+  [![ShellCheck](https://github.com/complexorganizations/wireguard-manager/actions/workflows/wireguard-manager.yml/badge.svg)](https://github.com/complexorganizations/wireguard-manager/actions/workflows/wireguard-manager.yml)
 
 ### Build Statuses
 
