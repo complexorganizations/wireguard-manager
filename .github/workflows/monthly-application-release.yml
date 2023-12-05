@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Checkout Repository
         # Use the checkout action to clone your repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       # Add a step to get the current date and time
       - name: Get Current Date
