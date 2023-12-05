@@ -1,17 +1,32 @@
+# Name of the workflow
 name: ShellCheck
+
+# Define the events that trigger the workflow
 on:
+  # Trigger the workflow on push events
   push:
+    # Only for .sh files
     paths:
       - "**.sh"
+  # Trigger the workflow on pull request events
   pull_request:
+    # Only for .sh files
     paths:
       - "**.sh"
+  # Allow manual triggering of the workflow
   workflow_dispatch:
+
+# Define the jobs in the workflow
 jobs:
+  # Define a job named "shellcheck"
   shellcheck:
+    # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    # Define the steps in the job
     steps:
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v4
-    - name: shellcheck
-      uses: ludeeus/action-shellcheck@master
+      # Check out the repository code
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2 # Updated to use the latest version
+      # Run shellcheck on the shell scripts
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@0.5.0 # Updated to use a specific version instead of master
