@@ -283,6 +283,16 @@ To set up your own VPN server, you will need the following items:
 - Compilation Instructions: [Compile WireGuard](https://www.wireguard.com/compilation/)
 - Whitepaper: [WireGuard Whitepaper](https://www.wireguard.com/papers/wireguard.pdf)
 
+## WireGuard vs. OpenVPN
+
+This section compares the internet speed differences between WireGuard and OpenVPN using speed tests.
+
+### WireGuard Speed Test
+![Wireguard Speed Test](https://www.speedtest.net/result/15593888174.png)
+
+### OpenVPN Speed Test
+![OpenVPN Speed Test](https://www.speedtest.net/result/15593895433.png)
+
 ## 🙅 Content-Blocking vs. No Content-Blocking
 
 https://user-images.githubusercontent.com/16564273/125283630-9845d180-e2e6-11eb-8b7d-f30a8f2eae8a.mp4
