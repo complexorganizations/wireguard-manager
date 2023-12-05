@@ -1278,9 +1278,9 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${CLIENT_NAME}"-${WIRE
     # Change ownership of WireGuard configuration directory to root
     chown --recursive root:root ${WIREGUARD_PATH}
     # Set the correct permissions for the WireGuard configuration directory
-    find ${WIREGUARD_PATH} -type d -exec chmod 755 {} +
+    find ${WIREGUARD_PATH} -type d -exec chmod 700 {} +
     # Set the correct permissions for the WireGuard configuration file
-    find ${WIREGUARD_PATH} -type f -exec chmod 644 {} +
+    find ${WIREGUARD_PATH} -type f -exec chmod 600 {} +
     # Set up automatic WireGuard expiration (if enabled)
     if [ "${AUTOMATIC_WIREGUARD_EXPIRATION}" == true ]; then
       crontab -l | {
