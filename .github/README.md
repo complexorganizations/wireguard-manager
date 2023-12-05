@@ -12,7 +12,7 @@ Welcome to WireGuard-Manager, your solution for setting up WireGuard, a cutting-
   [![Latest Release](https://img.shields.io/github/v/release/complexorganizations/wireguard-manager)](https://github.com/complexorganizations/wireguard-manager/releases/latest)
 
 - **Code Quality Assurance**: Verified by ShellCheck for reliability:
-  [![ShellCheck](https://github.com/complexorganizations/wireguard-manager/actions/workflows/wireguard-manager.yml/badge.svg)](https://github.com/complexorganizations/wireguard-manager/actions/workflows/wireguard-manager.yml)
+  [![ShellCheck WireGuard Manager](https://github.com/complexorganizations/wireguard-manager/actions/workflows/shell-check-wireguard-manager.yml/badge.svg)](https://github.com/complexorganizations/wireguard-manager/actions/workflows/shell-check-wireguard-manager.yml)
 
 ### Build Statuses
 
