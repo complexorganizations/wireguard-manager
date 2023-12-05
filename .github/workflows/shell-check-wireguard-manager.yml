@@ -1,5 +1,5 @@
 # Name of the workflow
-name: ShellCheck
+name: ShellCheck WireGuard Manager
 
 # Define the events that trigger the workflow
 on:

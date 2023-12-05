@@ -1,5 +1,5 @@
 # Name of the workflow
-name: Auto update named.cache
+name: Automated Update of Named Cache
 
 # Define the events that trigger the workflow
 on:
@@ -14,7 +14,7 @@ jobs:
   # Define a job named "build"
   build:
     # Name of the job that will be displayed on GitHub
-    name: Update named.cache
+    name: Refresh Named Cache
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     # Environment variables available to all steps in the job
@@ -33,7 +33,7 @@ jobs:
       - name: Get the future SHA-3-512 hash of file
         run: echo "NAMED_CACHE_FUTURE_HASH=$(curl --silent "${{ env.NAMED_CACHE_URL }}" | openssl dgst -sha3-512 | awk '{print $2}')" >> $GITHUB_ENV
       # Check if an update is needed
-      - name: Check if update is needed
+      - name: Verify necessity of update
         run: |
           if [ "${{ env.NAMED_CACHE_CURRENT_HASH }}" != "${{ env.NAMED_CACHE_FUTURE_HASH }}" ]; then
             curl "${{ env.NAMED_CACHE_URL }}" -o "${{ env.NAMED_CACHE_PATH }}"
@@ -42,7 +42,7 @@ jobs:
             exit 0
           fi
       # Push the updated file to GitHub
-      - name: Push the updated named.cache to GitHub
+      - name: Upload the refreshed named.cache to GitHub
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com

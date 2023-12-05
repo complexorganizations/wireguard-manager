@@ -1,5 +1,5 @@
 # Name of the workflow
-name: Build the Latest Version
+name: Construct Most Recent Release
 
 # Define the events that trigger the workflow
 on:
