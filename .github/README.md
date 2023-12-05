@@ -263,13 +263,15 @@ usage: ./wireguard-manager.sh <command>
 
 To set up your own VPN server, you will need the following items:
 
-- [Raspberry Pi 4 Model B](https://www.raspberrypi.com/products/raspberry-pi-4-model-b)
-- [Micro SD Card](https://www.amazon.com/dp/B06XWMQ81P)
-- [Case for Raspberry Pi](https://www.raspberrypi.com/products/raspberry-pi-4-case)
-- [Case Fan](https://www.raspberrypi.com/products/raspberry-pi-4-case-fan)
-- [Power Supply](https://www.raspberrypi.com/products/type-c-power-supply)
-- [Ethernet Cable](https://www.amazon.com/dp/B00N2VIALK)
-- [SD Card Reader](https://www.amazon.com/dp/B0957HQ4D1)
+### Raspberry Pi 5 Setup Components
+
+- **Raspberry Pi 5**: [View Product](https://www.raspberrypi.com/products/raspberry-pi-5/)
+- **Raspberry Pi Case**: [View Product](https://www.raspberrypi.com/products/raspberry-pi-5-case/)
+- **Raspberry Pi Active Cooler**: [View Product](https://www.raspberrypi.com/products/active-cooler)
+- **Raspberry Pi USB-C Power Supply**: [View Product](https://www.raspberrypi.com/products/27w-power-supply/)
+- **Micro SD Card**: [View on Amazon](https://www.amazon.com/dp/B06XWMQ81P)
+- **Ethernet Cable**: [View on Amazon](https://www.amazon.com/dp/B00N2VIALK)
+- **SD Card Reader**: [View on Amazon](https://www.amazon.com/dp/B0957HQ4D1)
 
 ### Estimated Cost for Building Your Own VPN
 
