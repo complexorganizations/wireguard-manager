@@ -19,6 +19,11 @@ jobs:
         # Use the checkout action to clone your repository
         uses: actions/checkout@v2
 
+      # Add a step to get the current date and time
+      - name: Get Current Date
+        id: current_date
+        run: echo "CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_ENV
+
       # Add build and test steps as needed
       # - name: Build and Test
       #   run: <insert build and test commands here>
@@ -31,9 +36,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           # Use the workflow run number as the tag name for uniqueness
-          tag_name: releases-${{ github.event.schedule '* * *' }}
+          tag_name: releases-${{ env.CURRENT_DATE }}
           # Customize the release name
-          release_name: releases-${{ github.event.schedule '* * *' }}
+          release_name: releases-${{ env.CURRENT_DATE }}
           # Indicate that this is a final release, not a draft or prerelease
           draft: false
           prerelease: false
