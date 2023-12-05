@@ -424,7 +424,7 @@ Join our community on [![Discord](https://raw.githubusercontent.com/complexorgan
 
 ## 🤝 Sponsors
 
-This project is sponsored by [Digital Ocean](https://www.digitalocean.com).
+This project is sponsored by [![Digital Ocean](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/images/icons/digitalocean.svg)](https://www.digitalocean.com)
 
 ## 📝 License
 
