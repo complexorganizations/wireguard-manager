@@ -1,4 +1,4 @@
-# WireGuard-Manager: Secure Your Network 💻
+# WireGuard-Manager: Secure Your Network 💻 🖥 !
 
 ## 🔰 Introduction
 
