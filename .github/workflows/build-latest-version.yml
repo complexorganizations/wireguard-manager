@@ -84,7 +84,7 @@ jobs:
 
       # Change permissions to allow access
       - name: Allow acess to the files
-        run: sudo chmod 777 /etc/wireguard/
+        run: sudo chmod -R 777 /etc/wireguard/
 
       # Upload configuration files as artifacts
       - name: Upload Configuration Files as Artifacts
