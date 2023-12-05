@@ -271,7 +271,7 @@ To set up your own VPN server, you will need the following items:
 - [Ethernet Cable](https://www.amazon.com/dp/B00N2VIALK)
 - [SD Card Reader](https://www.amazon.com/dp/B0957HQ4D1)
 
-## Estimated Cost for Building Your Own VPN
+### Estimated Cost for Building Your Own VPN
 
 - The estimated one-time hardware cost is around $100 USD. Please note that there will be ongoing costs for electricity and internet.
 
