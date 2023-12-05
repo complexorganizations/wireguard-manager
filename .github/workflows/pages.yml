@@ -48,7 +48,7 @@ jobs:
     steps:
       # Check out the repository code
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       # Setup GitHub Pages
       - name: Setup Pages
         uses: actions/github-pages@v3
