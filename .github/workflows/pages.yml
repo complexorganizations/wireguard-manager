@@ -1,35 +1,63 @@
+# Name of the workflow
 name: Deploy files to github pages
+
+# Define the events that trigger the workflow
 on:
+  # Trigger the workflow on push events
   push:
+    # Only for the main branch
     branches:
       - "main"
+    # Only for specific paths
     paths:
       - "assets/hosts"
       - "assets/named.cache"
       - "wireguard-manager.sh"
+  # Allow manual triggering of the workflow
   workflow_dispatch:
+
+# Define the permissions for the workflow
 permissions:
+  # Read access to the repository content
   contents: read
+  # Write access to GitHub Pages
   pages: write
+  # Write access to GitHub ID Tokens
   id-token: write
+
+# Define the concurrency settings for the workflow
 concurrency:
+  # Group name for the concurrency
   group: "pages"
+  # Cancel any in-progress job runs when a new job run is triggered
   cancel-in-progress: true
+
+# Define the jobs in the workflow
 jobs:
+  # Define a job named "deploy"
   deploy:
+    # Define the environment for the job
     environment:
+      # Name of the environment
       name: github-pages
+      # URL of the environment
       url: ${{ steps.deployment.outputs.page_url }}
+    # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    # Define the steps in the job
     steps:
+      # Check out the repository code
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
+      # Setup GitHub Pages
       - name: Setup Pages
-        uses: actions/configure-pages@v3
+        uses: actions/github-pages@v3
+      # Upload the repository content as an artifact
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-artifact@v2
         with:
           path: "."
+      # Deploy the artifact to GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/github-pages@v3

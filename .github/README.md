@@ -263,15 +263,17 @@ usage: ./wireguard-manager.sh <command>
 
 To set up your own VPN server, you will need the following items:
 
-- [Raspberry Pi 4 Model B](https://www.raspberrypi.com/products/raspberry-pi-4-model-b)
-- [Micro SD Card](https://www.amazon.com/dp/B06XWMQ81P)
-- [Case for Raspberry Pi](https://www.raspberrypi.com/products/raspberry-pi-4-case)
-- [Case Fan](https://www.raspberrypi.com/products/raspberry-pi-4-case-fan)
-- [Power Supply](https://www.raspberrypi.com/products/type-c-power-supply)
-- [Ethernet Cable](https://www.amazon.com/dp/B00N2VIALK)
-- [SD Card Reader](https://www.amazon.com/dp/B0957HQ4D1)
+### Raspberry Pi 5 Setup Components
 
-## Estimated Cost for Building Your Own VPN
+- **Raspberry Pi 5**: [View Product](https://www.raspberrypi.com/products/raspberry-pi-5/)
+- **Raspberry Pi Case**: [View Product](https://www.raspberrypi.com/products/raspberry-pi-5-case/)
+- **Raspberry Pi Active Cooler**: [View Product](https://www.raspberrypi.com/products/active-cooler)
+- **Raspberry Pi USB-C Power Supply**: [View Product](https://www.raspberrypi.com/products/27w-power-supply/)
+- **Micro SD Card**: [View on Amazon](https://www.amazon.com/dp/B06XWMQ81P)
+- **Ethernet Cable**: [View on Amazon](https://www.amazon.com/dp/B00N2VIALK)
+- **SD Card Reader**: [View on Amazon](https://www.amazon.com/dp/B0957HQ4D1)
+
+### Estimated Cost for Building Your Own VPN
 
 - The estimated one-time hardware cost is around $100 USD. Please note that there will be ongoing costs for electricity and internet.
 
@@ -282,6 +284,19 @@ To set up your own VPN server, you will need the following items:
 - Quick Start: [WireGuard QuickStart](https://www.wireguard.com/quickstart/)
 - Compilation Instructions: [Compile WireGuard](https://www.wireguard.com/compilation/)
 - Whitepaper: [WireGuard Whitepaper](https://www.wireguard.com/papers/wireguard.pdf)
+
+## VPN Speed Comparison
+
+This section compares the internet speed differences between using no VPN, WireGuard, and OpenVPN.
+
+### No VPN (Normal Connection)
+![No VPN Speed Test](https://www.speedtest.net/result/15594017199.png)
+
+### WireGuard Speed Test
+![Wireguard Speed Test](https://www.speedtest.net/result/15593888174.png)
+
+### OpenVPN Speed Test
+![OpenVPN Speed Test](https://www.speedtest.net/result/15593895433.png)
 
 ## 🙅 Content-Blocking vs. No Content-Blocking
 

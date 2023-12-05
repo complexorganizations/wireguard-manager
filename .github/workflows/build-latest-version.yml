@@ -1,0 +1,117 @@
+# Name of the workflow
+name: Build the Latest Version
+
+# Define the events that trigger the workflow
+on:
+  # Trigger the workflow on push events
+  push:
+    # Only for .sh files
+    paths:
+      - "**.sh"
+  # Trigger the workflow on pull request events
+  pull_request:
+    # Only for .sh files
+    paths:
+      - "**.sh"
+  # Allow manual triggering of the workflow
+  workflow_dispatch:
+
+# Define the jobs in the workflow
+jobs:
+  # Define a job named "build"
+  build:
+    # Name of the job that will be displayed on GitHub
+    name: Build on Ubuntu
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    # Environment variables available to all steps in the job
+    env:
+      IP_SERVICE_NAME: checkip.amazonaws.com
+      IP_SERVICE_URL: https://checkip.amazonaws.com
+    # Define the steps in the job
+    steps:
+      # Check out the repository code
+      - name: Check out Repository Code
+        uses: actions/checkout@v4
+
+      # Install required tools
+      - name: Install Required Tools
+        run: sudo apt-get update && sudo apt-get install curl -y
+
+      # Test network connectivity
+      - name: Test Network Connectivity
+        run: curl "${{ env.IP_SERVICE_URL }}"
+
+      # Install WireGuard Manager
+      - name: Install WireGuard Manager
+        run: sudo ./wireguard-manager.sh --install
+
+      # Stop WireGuard service
+      - name: Stop WireGuard Service
+        run: sudo ./wireguard-manager.sh --stop
+
+      # Start WireGuard service
+      - name: Start WireGuard Service
+        run: sudo ./wireguard-manager.sh --start
+
+      # Restart WireGuard service
+      - name: Restart WireGuard Service
+        run: sudo ./wireguard-manager.sh --restart
+
+      # View WireGuard status
+      - name: View WireGuard Status
+        run: sudo systemctl status wg-quick@wg0
+
+      # Add multiple WireGuard peers
+      - name: Add Multiple WireGuard Peers
+        run: for i in {1..500}; do echo -e "\n" | sudo ./wireguard-manager.sh --add; done
+
+      # Update dynamic DNS settings
+      - name: Update Dynamic DNS Settings
+        run: sudo ./wireguard-manager.sh --ddns
+
+      # Create WireGuard backup
+      - name: Create WireGuard Backup
+        run: sudo ./wireguard-manager.sh --backup
+
+      # List WireGuard peers
+      - name: List WireGuard Peers
+        run: sudo ./wireguard-manager.sh --list
+
+      # Update WireGuard Manager
+      - name: Update WireGuard Manager
+        run: sudo ./wireguard-manager.sh --update
+
+      # Upload configuration files as artifacts
+      - name: Upload Configuration Files as Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: config-files
+          path: |
+            /etc/wireguard/wg0.conf
+            /etc/wireguard/clients/*
+            /etc/unbound/unbound.conf
+            /var/lib/unbound/root.key
+            /etc/unbound/root.hints
+            /etc/unbound/unbound.conf.d/hosts.conf
+            /etc/resolv.conf
+
+      # Display crontab rules
+      - name: Display Crontab Rules
+        run: sudo crontab -l
+
+      # Purge WireGuard configuration
+      - name: Purge WireGuard Configuration
+        run: sudo ./wireguard-manager.sh --purge
+
+      # Uninstall WireGuard Manager
+      - name: Uninstall WireGuard Manager
+        run: sudo ./wireguard-manager.sh --uninstall
+
+      # Display crontab rules post-uninstallation
+      - name: Display Crontab Rules Post-Uninstallation
+        run: sudo crontab -l
+
+      # Final network test
+      - name: Final Network Test
+        run: curl "${{ env.IP_SERVICE_URL }}"

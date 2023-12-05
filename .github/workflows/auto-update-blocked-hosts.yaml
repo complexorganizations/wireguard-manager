@@ -1,5 +1,5 @@
 # Name of the workflow
-name: Auto update named.cache
+name: Audo update the block hosts file
 
 # Define the events that trigger the workflow
 on:
@@ -14,13 +14,13 @@ jobs:
   # Define a job named "build"
   build:
     # Name of the job that will be displayed on GitHub
-    name: Update named.cache
+    name: Update hosts
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     # Environment variables available to all steps in the job
     env:
-      NAMED_CACHE_URL: https://www.internic.net/domain/named.cache
-      NAMED_CACHE_PATH: assets/named.cache
+      CONTENT_BLOCKER_URL: https://raw.githubusercontent.com/complexorganizations/content-blocker/main/assets/hosts
+      CONTENT_BLOCKER_PATH: assets/hosts
     # Define the steps in the job
     steps:
       # Check out the repository code
@@ -28,29 +28,29 @@ jobs:
         uses: actions/checkout@v2
       # Get the current SHA-3-512 hash of the file
       - name: Get the current SHA-3-512 hash of file
-        run: echo "NAMED_CACHE_CURRENT_HASH=$(openssl dgst -sha3-512 "${{ env.NAMED_CACHE_PATH }}" | awk '{print $2}')" >> $GITHUB_ENV
+        run: echo "CONTENT_BLOCKER_CURRENT_HASH=$(openssl dgst -sha3-512 "${{ env.CONTENT_BLOCKER_PATH }}" | awk '{print $2}')" >> $GITHUB_ENV
       # Get the future SHA-3-512 hash of the file
       - name: Get the future SHA-3-512 hash of file
-        run: echo "NAMED_CACHE_FUTURE_HASH=$(curl --silent "${{ env.NAMED_CACHE_URL }}" | openssl dgst -sha3-512 | awk '{print $2}')" >> $GITHUB_ENV
+        run: echo "CONTENT_BLOCKER_FUTURE_HASH=$(curl --silent "${{ env.CONTENT_BLOCKER_URL }}" | openssl dgst -sha3-512 | awk '{print $2}')" >> $GITHUB_ENV
       # Check if an update is needed
       - name: Check if update is needed
         run: |
-          if [ "${{ env.NAMED_CACHE_CURRENT_HASH }}" != "${{ env.NAMED_CACHE_FUTURE_HASH }}" ]; then
-            curl "${{ env.NAMED_CACHE_URL }}" -o "${{ env.NAMED_CACHE_PATH }}"
+          if [ "${{ env.CONTENT_BLOCKER_CURRENT_HASH }}" != "${{ env.CONTENT_BLOCKER_FUTURE_HASH }}" ]; then
+            curl "${{ env.CONTENT_BLOCKER_URL }}" -o "${{ env.CONTENT_BLOCKER_PATH }}"
           else
             echo "No update needed"
             exit 0
           fi
       # Push the updated file to GitHub
-      - name: Push the updated named.cache to GitHub
+      - name: Push the updated hosts file to GitHub
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          if git diff --exit-code --quiet -- "${{ env.NAMED_CACHE_PATH }}"; then
+          if git diff --exit-code --quiet -- "${{ env.CONTENT_BLOCKER_PATH }}"; then
             echo "No changes to commit"
             exit 0
           else
-            git add "${{ env.NAMED_CACHE_PATH }}"
-            git commit -m "Updated named.cache $(date)"
+            git add "${{ env.CONTENT_BLOCKER_PATH }}"
+            git commit -m "Updated hosts $(date)"
             git push
           fi
