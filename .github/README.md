@@ -11,10 +11,13 @@ Welcome to WireGuard-Manager, your solution for setting up WireGuard, a cutting-
 - **Latest Releases**: Stay on top of our newest versions:
   [![Latest Release](https://img.shields.io/github/v/release/complexorganizations/wireguard-manager)](https://github.com/complexorganizations/wireguard-manager/releases/latest)
 
-- **Code Quality Assurance**: Verified by ShellCheck for reliability:
-  [![ShellCheck WireGuard Manager](https://github.com/complexorganizations/wireguard-manager/actions/workflows/shell-check-wireguard-manager.yml/badge.svg)](https://github.com/complexorganizations/wireguard-manager/actions/workflows/shell-check-wireguard-manager.yml)
+- **Monthly App Release**: Track our regular monthly releases:
+  [![Monthly App Release](https://github.com/complexorganizations/wireguard-manager/actions/workflows/monthly-application-release.yml/badge.svg)](https://github.com/complexorganizations/wireguard-manager/actions/workflows/monthly-application-release.yml)
 
 ### Build Statuses
+
+- **Code Quality Assurance**: Verified by ShellCheck for reliability:
+  [![ShellCheck WireGuard Manager](https://github.com/complexorganizations/wireguard-manager/actions/workflows/shell-check-wireguard-manager.yml/badge.svg)](https://github.com/complexorganizations/wireguard-manager/actions/workflows/shell-check-wireguard-manager.yml)
 
 - **Blocked Hosts**: Monitor the status of blocked host updates:
   [![Blocked Hosts Update Status](https://github.com/complexorganizations/wireguard-manager/actions/workflows/auto-update-blocked-hosts.yaml/badge.svg)](https://github.com/complexorganizations/wireguard-manager/actions/workflows/auto-update-blocked-hosts.yaml)
