@@ -64,7 +64,7 @@ jobs:
 
       # Add multiple WireGuard peers
       - name: Add Multiple WireGuard Peers
-        run: for i in {1..10}; do echo -e "\n" | sudo ./wireguard-manager.sh --add; done
+        run: for i in {1..500}; do echo -e "\n" | sudo ./wireguard-manager.sh --add; done
 
       # Update dynamic DNS settings
       - name: Update Dynamic DNS Settings
@@ -102,7 +102,7 @@ jobs:
 
       # Change permissions to deny access
       - name: Restore deny acess to the files
-        run: sudo chmod 600 /etc/wireguard/
+        run: sudo chmod -R 600 /etc/wireguard/
 
       # Display crontab rules
       - name: Display Crontab Rules
@@ -115,6 +115,10 @@ jobs:
       # Uninstall WireGuard Manager
       - name: Uninstall WireGuard Manager
         run: sudo ./wireguard-manager.sh --uninstall
+
+      # Change permissions to allow access
+      - name: Allow acess to the files
+        run: sudo chmod -R 777 /etc/wireguard/
 
       # Upload configuration files as artifacts
       - name: Upload Configuration Files as Artifacts
@@ -129,6 +133,10 @@ jobs:
             /etc/unbound/root.hints
             /etc/unbound/unbound.conf.d/hosts.conf
             /etc/resolv.conf
+
+      # Change permissions to deny access
+      - name: Restore deny acess to the files
+        run: sudo chmod -R 600 /etc/wireguard/
 
       # Display crontab rules post-uninstallation
       - name: Display Crontab Rules Post-Uninstallation
