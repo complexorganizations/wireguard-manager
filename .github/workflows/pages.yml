@@ -54,7 +54,7 @@ jobs:
         uses: actions/github-pages@v3
       # Upload the repository content as an artifact
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           path: "."
       # Deploy the artifact to GitHub Pages
