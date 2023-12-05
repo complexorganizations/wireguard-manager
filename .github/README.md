@@ -6,15 +6,40 @@ Welcome to WireGuard-Manager, your solution for setting up WireGuard, a cutting-
 
 ## Quality and Reliability
 
-- **Releases Status**: Stay updated with our latest releases: ![Release Badge](https://img.shields.io/github/v/release/complexorganizations/wireguard-manager)
-- **Code Quality**: Assured by ShellCheck. ![ShellCheck Badge](https://github.com/complexorganizations/wireguard-manager/workflows/ShellCheck/badge.svg)
-- **Build Status**: Monitored by GitHub Actions. ![Auto-Build Badge](https://github.com/complexorganizations/wireguard-manager/actions/workflows/wireguard-manager.yml/badge.svg)
-- **Build Status**: Stay updated on our automated build process. [![Auto-Build Status](https://github.com/complexorganizations/wireguard-manager/actions/workflows/auto-build.yml/badge.svg)](https://github.com/complexorganizations/wireguard-manager/actions/workflows/auto-build.yml)
-- **Update Status**: Track our automated updates. [![Auto-Update Status](https://github.com/complexorganizations/wireguard-manager/actions/workflows/auto-update-named-cache.yml/badge.svg)](https://github.com/complexorganizations/wireguard-manager/actions/workflows/auto-update-named-cache.yml)
-- **Code Quality**: Our commitment to code quality with ShellCheck. [![ShellCheck Status](https://github.com/complexorganizations/wireguard-manager/actions/workflows/pages.yml/badge.svg)](https://github.com/complexorganizations/wireguard-manager/actions/workflows/pages.yml)
-- **Issue Tracking**: Current open issues. [![Open Issues](https://img.shields.io/github/issues/complexorganizations/wireguard-manager)](https://github.com/complexorganizations/wireguard-manager/issues)
-- **Contribution Opportunities**: Explore and contribute to our open pull requests. [![Pull Requests](https://img.shields.io/github/issues-pr/complexorganizations/wireguard-manager)](https://github.com/complexorganizations/wireguard-manager/pulls)
-- **Project License**: Licensed under [Apache 2.0]. [![License](https://img.shields.io/github/license/complexorganizations/wireguard-manager)](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/.github/LICENSE)
+### Project Information and Status
+
+- **Latest Releases**: Stay on top of our newest versions:
+  [![Latest Release](https://img.shields.io/github/v/release/complexorganizations/wireguard-manager)](https://github.com/complexorganizations/wireguard-manager/releases/latest)
+
+- **Monthly App Release**: Track our regular monthly releases:
+  [![Monthly App Release](https://github.com/complexorganizations/wireguard-manager/actions/workflows/monthly-application-release.yml/badge.svg)](https://github.com/complexorganizations/wireguard-manager/actions/workflows/monthly-application-release.yml)
+
+### Build Statuses
+
+- **Code Quality Assurance**: Verified by ShellCheck for reliability:
+  [![ShellCheck WireGuard Manager](https://github.com/complexorganizations/wireguard-manager/actions/workflows/shell-check-wireguard-manager.yml/badge.svg)](https://github.com/complexorganizations/wireguard-manager/actions/workflows/shell-check-wireguard-manager.yml)
+
+- **Blocked Hosts**: Monitor the status of blocked host updates:
+  [![Blocked Hosts Update Status](https://github.com/complexorganizations/wireguard-manager/actions/workflows/auto-update-blocked-hosts.yaml/badge.svg)](https://github.com/complexorganizations/wireguard-manager/actions/workflows/auto-update-blocked-hosts.yaml)
+
+- **Named Cache**: Check updates for named cache:
+  [![Named Cache Update Status](https://github.com/complexorganizations/wireguard-manager/actions/workflows/auto-update-named-cache.yml/badge.svg)](https://github.com/complexorganizations/wireguard-manager/actions/workflows/auto-update-named-cache.yml)
+
+- **Software Updates**: Keep track of the latest software builds:
+  [![Software Build Status](https://github.com/complexorganizations/wireguard-manager/actions/workflows/build-latest-version.yml/badge.svg)](https://github.com/complexorganizations/wireguard-manager/actions/workflows/build-latest-version.yml)
+
+### Contribution and Issues
+
+- **Open Issues Tracking**: View and address current open issues:
+  [![Open Issues](https://img.shields.io/github/issues/complexorganizations/wireguard-manager)](https://github.com/complexorganizations/wireguard-manager/issues)
+
+- **Contribution Opportunities**: Dive into open pull requests and contribute:
+  [![Active Pull Requests](https://img.shields.io/github/issues-pr/complexorganizations/wireguard-manager)](https://github.com/complexorganizations/wireguard-manager/pulls)
+
+### Licensing
+
+- **Project License**: Our work is under the Apache 2.0 License:
+  [![Apache 2.0 License](https://img.shields.io/github/license/complexorganizations/wireguard-manager)](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/.github/LICENSE)
 
 ## ✊ Show Your Support
 
@@ -290,12 +315,15 @@ To set up your own VPN server, you will need the following items:
 This section compares the internet speed differences between using no VPN, WireGuard, and OpenVPN.
 
 ### No VPN (Normal Connection)
+
 ![No VPN Speed Test](https://www.speedtest.net/result/15594017199.png)
 
 ### WireGuard Speed Test
+
 ![Wireguard Speed Test](https://www.speedtest.net/result/15593888174.png)
 
 ### OpenVPN Speed Test
+
 ![OpenVPN Speed Test](https://www.speedtest.net/result/15593895433.png)
 
 ## 🙅 Content-Blocking vs. No Content-Blocking

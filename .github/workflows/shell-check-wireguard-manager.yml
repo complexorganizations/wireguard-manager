@@ -1,5 +1,5 @@
 # Name of the workflow
-name: ShellCheck
+name: ShellCheck WireGuard Manager
 
 # Define the events that trigger the workflow
 on:
@@ -26,7 +26,7 @@ jobs:
     steps:
       # Check out the repository code
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v2 # Updated to use the latest version
+        uses: actions/checkout@v4 # Updated to use the latest version
       # Run shellcheck on the shell scripts
       - name: Run ShellCheck
-        uses: ludeeus/action-shellcheck@0.5.0 # Updated to use a specific version instead of master
+        uses: ludeeus/action-shellcheck@2.0.0 # Updated to use a specific version instead of master

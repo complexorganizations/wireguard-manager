@@ -1,0 +1,44 @@
+name: Monthly App Release
+
+# Define the events that trigger the workflow
+on:
+  # Trigger the workflow on a schedule (every first day of the month at midnight)
+  schedule:
+    - cron: "0 0 1 * *"
+  # Allow manual triggering of the workflow
+  workflow_dispatch:
+
+jobs:
+  # Define the job for building and releasing the app
+  release_app:
+    # Set the type of virtual host machine
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        # Use the checkout action to clone your repository
+        uses: actions/checkout@v4
+
+      # Add a step to get the current date and time
+      - name: Get Current Date
+        id: current_date
+        run: echo "CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_ENV
+
+      # Add build and test steps as needed
+      # - name: Build and Test
+      #   run: <insert build and test commands here>
+
+      - name: Create and Publish Release
+        # Use the create-release action to create a new release
+        uses: actions/create-release@v1
+        env:
+          # Use the built-in GITHUB_TOKEN for authentication
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Use the workflow run number as the tag name for uniqueness
+          tag_name: releases-${{ env.CURRENT_DATE }}
+          # Customize the release name
+          release_name: releases-${{ env.CURRENT_DATE }}
+          # Indicate that this is a final release, not a draft or prerelease
+          draft: false
+          prerelease: false

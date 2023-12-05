@@ -1,5 +1,5 @@
 # Name of the workflow
-name: Audo update the block hosts file
+name: Automated Update of Blocked Hosts File
 
 # Define the events that trigger the workflow
 on:
@@ -14,7 +14,7 @@ jobs:
   # Define a job named "build"
   build:
     # Name of the job that will be displayed on GitHub
-    name: Update hosts
+    name: Automated Hosts File Update
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     # Environment variables available to all steps in the job
@@ -25,7 +25,7 @@ jobs:
     steps:
       # Check out the repository code
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       # Get the current SHA-3-512 hash of the file
       - name: Get the current SHA-3-512 hash of file
         run: echo "CONTENT_BLOCKER_CURRENT_HASH=$(openssl dgst -sha3-512 "${{ env.CONTENT_BLOCKER_PATH }}" | awk '{print $2}')" >> $GITHUB_ENV
