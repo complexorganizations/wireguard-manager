@@ -39,7 +39,7 @@ Welcome to WireGuard-Manager, your solution for setting up WireGuard, a cutting-
 ### Licensing
 
 - **Project License**: Our work is under the Apache 2.0 License:
-  [![Apache 2.0 License](https://img.shields.io/github/license/complexorganizations/wireguard-manager)](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/.github/LICENSE)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/License.md)
 
 ## ✊ Show Your Support
 
