@@ -88,7 +88,7 @@ jobs:
 
       # Upload configuration files as artifacts
       - name: Upload Configuration Files as Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: config-files-before-purge
           path: |
@@ -118,7 +118,7 @@ jobs:
 
       # Upload configuration files as artifacts
       - name: Upload Configuration Files as Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: config-files-after-purge
           path: |
