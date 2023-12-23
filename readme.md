@@ -79,6 +79,10 @@ WireGuard is a straightforward yet fast and modern VPN that utilizes state-of-th
 2. **Configuration**: Easy-to-follow configuration steps.
 3. **Management**: User-friendly interface for managing your VPN.
 
+## Installation Guide
+
+https://github.com/complexorganizations/wireguard-manager/assets/102563715/dd539835-2c30-4146-b4f8-940329aa6070
+
 ## 🐧 Installation
 
 First, use `curl` to download the script and save it in `/usr/local/bin/`:
