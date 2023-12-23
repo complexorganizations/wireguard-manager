@@ -1,23 +1,51 @@
 #!/usr/bin/env bash
-# This line sets the interpreter for the script as the Bash shell.
 
-# https://github.com/complexorganizations/wireguard-manager
-# This line provides a link to the GitHub repository for the WireGuard manager project.
+# WireGuard-Manager Installation Script
+# Purpose: This script automates the installation of WireGuard-Manager, a comprehensive tool for managing WireGuard VPN configurations.
+# Author: ComplexOrganizations
+# Repository: https://github.com/complexorganizations/wireguard-manager
 
-# The script requires root privileges.
-function super-user-check() {
-  # This function checks if the script is running as the root user.
-  if [ "${EUID}" -ne 0 ]; then
-    # If the effective user ID is not 0 (root), display an error message and exit.
-    echo "Error: You need to run this script as administrator."
-    exit
+# Usage Instructions:
+# 1. System Requirements: Ensure you have 'curl' installed on your system. This script is compatible with most Linux distributions.
+# 2. Downloading the Script: 
+#    - Use the following command to download the script:
+#      curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
+# 3. Making the Script Executable:
+#    - Grant execution permissions to the script:
+#      chmod +x /usr/local/bin/wireguard-manager.sh
+# 4. Running the Script:
+#    - Execute the script with root privileges:
+#      bash /usr/local/bin/wireguard-manager.sh
+# 5. Follow the on-screen instructions to complete the installation of WireGuard-Manager.
+
+# Advanced Usage:
+# - The script supports various command-line arguments for custom installations. Refer to the repository's readme.md for more details.
+# - For automated deployments, environment variables can be set before running this script.
+
+# Troubleshooting:
+# - If you encounter issues, ensure your system is up-to-date and retry the installation.
+# - For specific errors, refer to the 'Troubleshooting' section in the repository's documentation.
+
+# Contributing:
+# - Contributions to the script are welcome. Please follow the contributing guidelines in the repository.
+
+# Contact Information:
+# - For support, feature requests, or bug reports, please open an issue on the GitHub repository.
+
+# License: MIT License
+
+# Note: This script is provided 'as is', without warranty of any kind. The user is responsible for understanding the operations and risks involved.
+
+# Check if the script is running as root
+function check_root() {
+  if [ "$(id -u)" -ne 0 ]; then
+    echo "Error: This script must be run as root."
+    exit 1
   fi
 }
 
-# The script checks if the user is the root user.
-
-super-user-check
-# Calls the super-user-check function.
+# Call the function to check root privileges
+check_root
 
 # The following function retrieves the current system information.
 function system-information() {
