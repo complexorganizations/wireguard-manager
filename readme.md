@@ -432,4 +432,4 @@ This project is sponsored by [![Digital Ocean](https://raw.githubusercontent.com
 
 ## 📝 License
 
-WireGuard-Manager is licensed under the Apache License Version 2.0. For more details, please refer to our [License File](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/.github/LICENSE).
+WireGuard-Manager is licensed under the Apache License Version 2.0. For more details, please refer to our [License File](https://github.com/complexorganizations/wireguard-manager/blob/main/license.md).
