@@ -7,7 +7,7 @@
 
 # Usage Instructions:
 # 1. System Requirements: Ensure you have 'curl' installed on your system. This script is compatible with most Linux distributions.
-# 2. Downloading the Script: 
+# 2. Downloading the Script:
 #    - Use the following command to download the script:
 #      curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
 # 3. Making the Script Executable:
@@ -47,6 +47,23 @@ function check_root() {
 # Call the function to check root privileges
 check_root
 
+# Check either if its linux or macos
+function check_os() {
+  if { [ "$(uname)" != "Linux" ] && [ "$(uname)" != "Darwin" ]; }; then
+    echo "Error: This script is only supported on Linux and MacOS."
+    exit 1
+  fi
+  if [ "$(uname)" == "Darwin" ]; then
+    macos=true
+  fi
+  if [ "$(uname)" == "Linux" ]; then
+    linux=true
+  fi
+}
+
+# Call the function to check the operating system
+check_os
+
 # The following function retrieves the current system information.
 function system-information() {
   # This function retrieves the ID, version, and major version of the current system.
@@ -62,8 +79,11 @@ function system-information() {
 
 # The system-information function is being called.
 
-system-information
-# Calls the system-information function.
+# Check if the current system is linux
+if [ "${linux}" == true ]; then
+  system-information
+  # Calls the system-information function.
+fi
 
 # Define a function to check system requirements
 function installing-system-requirements() {
@@ -104,8 +124,11 @@ function installing-system-requirements() {
   fi
 }
 
-# Call the function to check for system requirements and install necessary packages if needed
-installing-system-requirements
+# Check if the current system is linux
+if [ "${linux}" == true ]; then
+  # Call the function to check for system requirements and install necessary packages if needed
+  installing-system-requirements
+fi
 
 # Checking For Virtualization
 function virt-check() {
@@ -129,8 +152,11 @@ function virt-check() {
   esac
 }
 
-# Call the virt-check function to check for supported virtualization.
-virt-check
+# Check if the current system is linux
+if [ "${linux}" == true ]; then
+  # Call the virt-check function to check for supported virtualization.
+  virt-check
+fi
 
 # The following function checks the kernel version.
 function kernel-check() {
@@ -161,8 +187,11 @@ function kernel-check() {
   fi
 }
 
-# Call the kernel-check function to verify the kernel version.
-kernel-check
+# Check if the current system is linux
+if [ "${linux}" == true ]; then
+  # Call the kernel-check function to verify the kernel version.
+  kernel-check
+fi
 
 # The following function checks if the current init system is one of the allowed options.
 function check-current-init-system() {
@@ -185,8 +214,11 @@ function check-current-init-system() {
 
 # The check-current-init-system function is being called.
 
-check-current-init-system
-# Calls the check-current-init-system function.
+# Check if the current system is linux
+if [ "${linux}" == true ]; then
+  check-current-init-system
+  # Calls the check-current-init-system function.
+fi
 
 # The following function checks if there's enough disk space to proceed with the installation.
 function check-disk-space() {
@@ -202,8 +234,11 @@ function check-disk-space() {
 
 # The check-disk-space function is being called.
 
-check-disk-space
-# Calls the check-disk-space function.
+# Check if the current system is linux
+if [ "${linux}" == true ]; then
+  check-disk-space
+  # Calls the check-disk-space function.
+fi
 
 # Global variables
 # Assigns the path of the current script to a variable
