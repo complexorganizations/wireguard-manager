@@ -1018,40 +1018,40 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
   # Invoke the custom-dns function to allow the user to select a DNS provider.
   custom-dns
 
-  # Define a function to ask for the first WireGuard peer's name.
+  # Function to prompt for the name of the first WireGuard peer.
   function client-name() {
-    # Check if the CLIENT_NAME variable is empty.
+    # If CLIENT_NAME variable is not set, prompt the user for input.
     if [ -z "${CLIENT_NAME}" ]; then
-      # Prompt the user for a client name with rules for naming.
-      echo "Let's name the WireGuard Peer. Use one word only, no special characters, no spaces."
-      # Read the user input and provide a random name as the default value.
+      # Display naming rules to the user.
+      echo "Please provide a name for the WireGuard Peer. The name should be a single word, without special characters or spaces."
+      # Read the user's input, offering a random string as the default name.
       read -rp "Client name:" -e -i "$(openssl rand -hex 50)" CLIENT_NAME
     fi
-    # If the user doesn't provide a name, generate a random name.
+    # If no name is provided by the user, assign a random string as the name.
     if [ -z "${CLIENT_NAME}" ]; then
       CLIENT_NAME="$(openssl rand -hex 50)"
     fi
   }
 
-  # Call the function to ask for the first WireGuard peer's name.
+  # Invoke the function to prompt for the first WireGuard peer's name.
   client-name
 
-  # Define a function to automatically remove WireGuard peers after a period of time.
+  # Function to set up automatic deletion of WireGuard peers.
   function auto-remove-config() {
-    # Prompt the user to choose if they want to expire the peer after a certain period of time.
-    echo "Would you like to expire the peer after a certain period of time?"
-    echo "  1) Every Year (Recommended)"
-    echo "  2) No"
-    # Loop until the user enters a valid choice (1 or 2).
+    # Ask the user if they want to set an expiration date for the peer.
+    echo "Do you want to set an expiration date for the peer?"
+    echo "  1) Yes, expire after one year (Recommended)"
+    echo "  2) No, do not expire"
+    # Keep asking until the user enters 1 or 2.
     until [[ "${AUTOMATIC_CONFIG_REMOVER}" =~ ^[1-2]$ ]]; do
-      read -rp "Automatic config expire [1-2]:" -e -i 1 AUTOMATIC_CONFIG_REMOVER
+      read -rp "Choose an option for peer expiration [1-2]:" -e -i 1 AUTOMATIC_CONFIG_REMOVER
     done
-    # Perform actions based on the user's choice.
+    # Execute actions based on the user's choice.
     case ${AUTOMATIC_CONFIG_REMOVER} in
     1)
-      # Set the variable to enable automatic WireGuard peer expiration.
+      # If the user chose to expire the peer, set the expiration flag to true.
       AUTOMATIC_WIREGUARD_EXPIRATION=true
-      # Enable and start the cron service depending on the init system being used.
+      # Depending on the init system, enable and start the cron service.
       if [[ "${CURRENT_INIT_SYSTEM}" == *"systemd"* ]]; then
         systemctl enable --now ${SYSTEM_CRON_NAME}
       elif [[ "${CURRENT_INIT_SYSTEM}" == *"init"* ]]; then
@@ -1059,37 +1059,37 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
       fi
       ;;
     2)
-      # Set the variable to disable automatic WireGuard peer expiration.
+      # If the user chose not to expire the peer, set the expiration flag to false.
       AUTOMATIC_WIREGUARD_EXPIRATION=false
       ;;
     esac
   }
 
-  # Call the function to configure automatic removal of WireGuard peers.
+  # Invoke the function to set up automatic deletion of WireGuard peers.
   auto-remove-config
 
-  # Define a function to check the kernel version and install kernel headers if required.
+  # Function to verify kernel version and install necessary kernel headers.
   function install-kernel-headers() {
-    # Set the allowed kernel version and extract its major and minor version numbers.
-    ALLOWED_KERNEL_VERSION="5.6"
-    ALLOWED_KERNEL_MAJOR_VERSION=$(echo ${ALLOWED_KERNEL_VERSION} | cut --delimiter="." --fields=1)
-    ALLOWED_KERNEL_MINOR_VERSION=$(echo ${ALLOWED_KERNEL_VERSION} | cut --delimiter="." --fields=2)
-    # Determine if the current kernel version is less than or equal to the allowed version.
-    if [ "${CURRENT_KERNEL_MAJOR_VERSION}" -le "${ALLOWED_KERNEL_MAJOR_VERSION}" ]; then
+    # Define the minimum kernel version required and extract its major and minor version numbers.
+    MINIMUM_KERNEL_VERSION="5.6"
+    MINIMUM_KERNEL_MAJOR_VERSION=$(echo ${MINIMUM_KERNEL_VERSION} | cut --delimiter="." --fields=1)
+    MINIMUM_KERNEL_MINOR_VERSION=$(echo ${MINIMUM_KERNEL_VERSION} | cut --delimiter="." --fields=2)
+    # Check if the current kernel version is less than or equal to the minimum required version.
+    if [ "${CURRENT_KERNEL_MAJOR_VERSION}" -le "${MINIMUM_KERNEL_MAJOR_VERSION}" ]; then
       INSTALL_LINUX_HEADERS=true
     fi
-    # Determine if the current kernel version is the same as the allowed version.
-    if [ "${CURRENT_KERNEL_MAJOR_VERSION}" == "${ALLOWED_KERNEL_MAJOR_VERSION}" ]; then
-      # Check if the current kernel minor version is less than the allowed minor version.
-      if [ "${CURRENT_KERNEL_MINOR_VERSION}" -lt "${ALLOWED_KERNEL_MINOR_VERSION}" ]; then
+    # If the current kernel major version matches the minimum required major version, compare minor versions.
+    if [ "${CURRENT_KERNEL_MAJOR_VERSION}" == "${MINIMUM_KERNEL_MAJOR_VERSION}" ]; then
+      # If the current minor version is less than the required, set flag to install headers.
+      if [ "${CURRENT_KERNEL_MINOR_VERSION}" -lt "${MINIMUM_KERNEL_MINOR_VERSION}" ]; then
         INSTALL_LINUX_HEADERS=true
       fi
-      # Check if the current kernel minor version is greater than or equal to the allowed minor version.
-      if [ "${CURRENT_KERNEL_MINOR_VERSION}" -ge "${ALLOWED_KERNEL_MINOR_VERSION}" ]; then
+      # If the current minor version is greater than or equal to the required, set flag to not install headers.
+      if [ "${CURRENT_KERNEL_MINOR_VERSION}" -ge "${MINIMUM_KERNEL_MINOR_VERSION}" ]; then
         INSTALL_LINUX_HEADERS=false
       fi
     fi
-    # Install kernel headers for the current kernel version based on the Linux distribution.
+    # If the flag to install headers is set, install appropriate headers based on the Linux distribution.
     if [ "${INSTALL_LINUX_HEADERS}" == true ]; then
       if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
         apt-get update
@@ -1109,47 +1109,47 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     fi
   }
 
-  # Call the function to check the kernel version and install kernel headers if required.
+  # Invoke the function to verify kernel version and install necessary kernel headers.
   install-kernel-headers
 
-  # Define a function to install resolvconf or openresolv.
+  # Function to install either resolvconf or openresolv, depending on the distribution.
   function install-resolvconf-or-openresolv() {
-    # Check if resolvconf is already installed.
+    # Check if resolvconf is already installed on the system.
     if [ ! -x "$(command -v resolvconf)" ]; then
-      # Install resolvconf for various distributions.
+      # If resolvconf is not installed, install it for Ubuntu, Debian, Raspbian, Pop, Kali, Linux Mint, and Neon distributions.
       if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
         apt-get install resolvconf -y
-      # Install openresolv for various distributions.
+      # For CentOS, RHEL, AlmaLinux, and Rocky distributions, install openresolv.
       elif { [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "rhel" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ]; }; then
-        # Enable the copr repository for CentOS 7.
+        # If the distribution is CentOS 7, enable the copr repository before installing openresolv.
         if [ "${CURRENT_DISTRO}" == "centos" ] && [ "${CURRENT_DISTRO_MAJOR_VERSION}" == 7 ]; then
           yum copr enable macieks/openresolv -y
         fi
         yum install openresolv -y
-      # Install openresolv for Fedora and Oracle Linux distributions.
+      # For Fedora and Oracle Linux distributions, install openresolv.
       elif { [ "${CURRENT_DISTRO}" == "fedora" ] || [ "${CURRENT_DISTRO}" == "ol" ]; }; then
         yum install openresolv -y
-      # Install resolvconf for Arch-based distributions.
+      # For Arch, Arch ARM, and Manjaro distributions, install resolvconf.
       elif { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ]; }; then
         pacman -Su --noconfirm --needed resolvconf
-      # Install resolvconf for Alpine Linux.
+      # For Alpine Linux, install resolvconf.
       elif [ "${CURRENT_DISTRO}" == "alpine" ]; then
         apk add resolvconf
-      # Install resolvconf for FreeBSD.
+      # For FreeBSD, install resolvconf.
       elif [ "${CURRENT_DISTRO}" == "freebsd" ]; then
         pkg install resolvconf
       fi
     fi
   }
 
-  # Call the function to install resolvconf or openresolv.
+  # Invoke the function to install either resolvconf or openresolv, depending on the distribution.
   install-resolvconf-or-openresolv
 
-  # Define a function to install the WireGuard server.
+  # Function to install the WireGuard server if it's not already installed.
   function install-wireguard-server() {
-    # Check if the WireGuard command (wg) is not already installed.
+    # Verify if the WireGuard command (wg) is available on the system.
     if [ ! -x "$(command -v wg)" ]; then
-      # Install WireGuard for Debian-based distributions.
+      # For Debian-based distributions, update the package list and install WireGuard.
       if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
         apt-get update
         if [ ! -f "/etc/apt/sources.list.d/backports.list" ]; then
@@ -1159,31 +1159,36 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
           apt-get update
         fi
         apt-get install wireguard -y
-      # Install WireGuard for Arch-based distributions.
+      # For Arch-based distributions, update the package list and install WireGuard tools.
       elif { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ]; }; then
         pacman -Su --noconfirm --needed wireguard-tools
       elif [ "${CURRENT_DISTRO}" = "fedora" ]; then
         dnf check-update
         dnf copr enable jdoss/wireguard -y
         dnf install wireguard-tools -y
-      # Install WireGuard for other distributions (Fedora, CentOS, RHEL, etc.).
+      # For CentOS, update the package list and install WireGuard tools and kernel module.
       elif [ "${CURRENT_DISTRO}" == "centos" ]; then
         yum check-update
         yum install kmod-wireguard wireguard-tools -y
+      # For RHEL, install necessary repositories and then install WireGuard tools and kernel module.
       elif [ "${CURRENT_DISTRO}" == "rhel" ]; then
         yum check-update
         yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-"${CURRENT_DISTRO_MAJOR_VERSION}".noarch.rpm https://www.elrepo.org/elrepo-release-"${CURRENT_DISTRO_MAJOR_VERSION}".el"${CURRENT_DISTRO_MAJOR_VERSION}".elrepo.noarch.rpm
         yum check-update
         yum install kmod-wireguard wireguard-tools -y
+      # For Alpine Linux, update the package list and install WireGuard tools.
       elif [ "${CURRENT_DISTRO}" == "alpine" ]; then
         apk update
         apk add wireguard-tools
+      # For FreeBSD, update the package list and install WireGuard.
       elif [ "${CURRENT_DISTRO}" == "freebsd" ]; then
         pkg update
         pkg install wireguard
+      # For AlmaLinux and Rocky, update the package list and install WireGuard tools and kernel module.
       elif { [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ]; }; then
         yum check-update
         yum install kmod-wireguard wireguard-tools -y
+      # For Oracle Linux, configure necessary repositories and then install WireGuard tools.
       elif [ "${CURRENT_DISTRO}" == "ol" ]; then
         yum check-update
         yum install oraclelinux-developer-release-el"${CURRENT_DISTRO_MAJOR_VERSION}" -y
@@ -1195,17 +1200,20 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     fi
   }
 
-  # Install WireGuard Server
+  # Invoke the function to install the WireGuard server.
   install-wireguard-server
 
-  # Define a function to install Unbound, a DNS resolver.
+  # Function to install Unbound, a DNS resolver, if required and not already installed.
   function install-unbound() {
-    # Check if the INSTALL_UNBOUND variable is true and Unbound is not already installed.
+    # If INSTALL_UNBOUND is true and Unbound is not installed, proceed with installation.
     if [ "${INSTALL_UNBOUND}" == true ]; then
       if [ ! -x "$(command -v unbound)" ]; then
-        # Install Unbound for different Linux distributions.
+        # Installation commands for Unbound vary based on the Linux distribution.
+        # The following checks the distribution and installs Unbound accordingly.
+        # For Debian-based distributions:
         if { [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
           apt-get install unbound unbound-host unbound-anchor -y
+          # If the distribution is Ubuntu, disable systemd-resolved.
           if [ "${CURRENT_DISTRO}" == "ubuntu" ]; then
             if [[ "${CURRENT_INIT_SYSTEM}" == *"systemd"* ]]; then
               systemctl disable --now systemd-resolved
@@ -1213,16 +1221,22 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
               service systemd-resolved stop
             fi
           fi
+        # For CentOS, RHEL, AlmaLinux, and Rocky:
         elif { [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "rhel" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ]; }; then
           yum install unbound unbound-host unbound-anchor -y
+        # For Fedora:
         elif [ "${CURRENT_DISTRO}" == "fedora" ]; then
           dnf install unbound unbound-host unbound-anchor -y
+        # For Arch-based distributions:
         elif { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ]; }; then
           pacman -Su --noconfirm --needed unbound
+        # For Alpine Linux:
         elif [ "${CURRENT_DISTRO}" == "alpine" ]; then
           apk add unbound unbound-host unbound-anchor
+        # For FreeBSD:
         elif [ "${CURRENT_DISTRO}" == "freebsd" ]; then
           pkg install unbound unbound-host unbound-anchor
+        # For Oracle Linux:
         elif [ "${CURRENT_DISTRO}" == "ol" ]; then
           yum install unbound unbound-host unbound-anchor -y
         fi
@@ -1231,6 +1245,9 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
       unbound-anchor -a ${UNBOUND_ANCHOR}
       # Download root hints.
       curl "${UNBOUND_ROOT_SERVER_CONFIG_URL}" --create-dirs -o ${UNBOUND_ROOT_HINTS}
+      # Configure Unbound settings.
+      # The settings are stored in a temporary variable and then written to the Unbound configuration file.
+      # If INSTALL_BLOCK_LIST is true, include a block list in the Unbound configuration.
       # Configure Unbound settings.
       UNBOUND_TEMP_INTERFACE_INFO="server:
 \tnum-threads: $(nproc)
@@ -1305,7 +1322,7 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
   # Call the function to install Unbound.
   install-unbound
 
-  # Define a function to set WireGuard configuration
+  # Function to configure WireGuard settings
   function wireguard-setconf() {
     # Generate server private and public keys
     SERVER_PRIVKEY=$(wg genkey)
@@ -1325,9 +1342,11 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     mkdir --parents ${WIREGUARD_CLIENT_PATH}
     # Set up nftables rules depending on whether Unbound is installed
     if [ "${INSTALL_UNBOUND}" == true ]; then
+      # Set up nftables rules for when Unbound is installed
       NFTABLES_POSTUP="sysctl --write net.ipv4.ip_forward=1; sysctl --write net.ipv6.conf.all.forwarding=1; nft add table inet wireguard-${WIREGUARD_PUB_NIC}; nft add chain inet wireguard-${WIREGUARD_PUB_NIC} wireguard_chain {type nat hook postrouting priority srcnat\;}; nft add rule inet wireguard-${WIREGUARD_PUB_NIC} wireguard_chain oifname ${SERVER_PUB_NIC} masquerade"
       NFTABLES_POSTDOWN="sysctl --write net.ipv4.ip_forward=0; sysctl --write net.ipv6.conf.all.forwarding=0; nft delete table inet wireguard-${WIREGUARD_PUB_NIC}"
     else
+      # Set up nftables rules for when Unbound is not installed
       NFTABLES_POSTUP="sysctl --write net.ipv4.ip_forward=1; sysctl --write net.ipv6.conf.all.forwarding=1; nft add table inet wireguard-${WIREGUARD_PUB_NIC}; nft add chain inet wireguard-${WIREGUARD_PUB_NIC} PREROUTING {type nat hook prerouting priority 0\;}; nft add chain inet wireguard-${WIREGUARD_PUB_NIC} POSTROUTING {type nat hook postrouting priority 100\;}; nft add rule inet wireguard-${WIREGUARD_PUB_NIC} POSTROUTING ip saddr ${PRIVATE_SUBNET_V4} oifname ${SERVER_PUB_NIC} masquerade; nft add rule inet wireguard-${WIREGUARD_PUB_NIC} POSTROUTING ip6 saddr ${PRIVATE_SUBNET_V6} oifname ${SERVER_PUB_NIC} masquerade"
       NFTABLES_POSTDOWN="sysctl --write net.ipv4.ip_forward=0; sysctl --write net.ipv6.conf.all.forwarding=0; nft delete table inet wireguard-${WIREGUARD_PUB_NIC}"
     fi
@@ -1348,7 +1367,7 @@ PresharedKey = ${PRESHARED_KEY}
 AllowedIPs = ${CLIENT_ADDRESS_V4}/32,${CLIENT_ADDRESS_V6}/128
 # ${CLIENT_NAME} end" >>${WIREGUARD_CONFIG}
 
-    # Create client WireGuard configuration file
+    # Generate client-specific WireGuard configuration file
     echo "# ${WIREGUARD_WEBSITE_URL}
 [Interface]
 Address = ${CLIENT_ADDRESS_V4}/${PRIVATE_SUBNET_MASK_V4},${CLIENT_ADDRESS_V6}/${PRIVATE_SUBNET_MASK_V6}
@@ -1362,20 +1381,20 @@ Endpoint = ${SERVER_HOST}:${SERVER_PORT}
 PersistentKeepalive = ${NAT_CHOICE}
 PresharedKey = ${PRESHARED_KEY}
 PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${CLIENT_NAME}"-${WIREGUARD_PUB_NIC}.conf
-    # Change ownership of WireGuard configuration directory to root
+    # Update ownership of the WireGuard configuration directory to root
     chown --recursive root:root ${WIREGUARD_PATH}
-    # Set the correct permissions for the WireGuard configuration directory
+    # Apply appropriate permissions to the WireGuard configuration directory
     find ${WIREGUARD_PATH} -type d -exec chmod 700 {} +
-    # Set the correct permissions for the WireGuard configuration file
+    # Apply appropriate permissions to the WireGuard configuration files
     find ${WIREGUARD_PATH} -type f -exec chmod 600 {} +
-    # Set up automatic WireGuard expiration (if enabled)
+    # Schedule automatic WireGuard expiration if enabled
     if [ "${AUTOMATIC_WIREGUARD_EXPIRATION}" == true ]; then
       crontab -l | {
         cat
         echo "$(date +%M) $(date +%H) $(date +%d) $(date +%m) * echo -e \"${CLIENT_NAME}\" | ${CURRENT_FILE_PATH} --remove"
       } | crontab -
     fi
-    # Start and enable the required services based on the init system (systemd or init)
+    # Initiate and set the necessary services to run at startup, depending on the init system (either systemd or init)
     if [[ "${CURRENT_INIT_SYSTEM}" == *"systemd"* ]]; then
       systemctl enable --now nftables
       systemctl enable --now wg-quick@${WIREGUARD_PUB_NIC}
@@ -1390,15 +1409,15 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${CLIENT_NAME}"-${WIRE
         service unbound restart
       fi
     fi
-    # Generate a QR code for the client configuration
+    # Create a QR code for the client configuration for easy scanning
     qrencode -t ansiutf8 <${WIREGUARD_CLIENT_PATH}/"${CLIENT_NAME}"-${WIREGUARD_PUB_NIC}.conf
-    # Print the client configuration to the console
+    # Display the client configuration details in the terminal
     cat ${WIREGUARD_CLIENT_PATH}/"${CLIENT_NAME}"-${WIREGUARD_PUB_NIC}.conf
-    # Print the client configuration file path
+    # Show the path where the client configuration file is stored
     echo "Client Config --> ${WIREGUARD_CLIENT_PATH}/${CLIENT_NAME}-${WIREGUARD_PUB_NIC}.conf"
   }
 
-  # Setting Up WireGuard Config
+  # Configuring WireGuard settings
   wireguard-setconf
 
 # After WireGuard Install
