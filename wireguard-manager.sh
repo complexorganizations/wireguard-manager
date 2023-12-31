@@ -553,7 +553,7 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
   }
 
   # Call the function to retrieve the IPv4 address
-  test-connectivity-v4 
+  test-connectivity-v4
   # Invoke the function to get the IPv4 address
 
   # Define a function to retrieve the IPv6 address of the WireGuard interface
@@ -583,33 +583,33 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
   }
 
   # Call the function to retrieve the IPv6 address
-  test-connectivity-v6 
+  test-connectivity-v6
 
-  # Define a function to determine the public NIC.
+  # Define a function to identify the public Network Interface Card (NIC).
   function server-pub-nic() {
-    # Ask the user how to detect the NIC.
-    echo "How would you like to detect NIC?"
-    echo "  1) IP (Recommended)"
-    echo "  2) Custom (Advanced)"
-    # Wait until the user inputs 1 or 2.
+    # Prompt the user to select the method for identifying the NIC.
+    echo "How would you like to identify the Network Interface Card (NIC)?"
+    echo "  1) IP Route (Recommended)"
+    echo "  2) Custom Input (Advanced)"
+    # Loop until the user provides a valid input (either 1 or 2).
     until [[ "${SERVER_PUB_NIC_SETTINGS}" =~ ^[1-2]$ ]]; do
-      read -rp "Nic Choice [1-2]:" -e -i 1 SERVER_PUB_NIC_SETTINGS
+      read -rp "NIC Choice [1-2]:" -e -i 1 SERVER_PUB_NIC_SETTINGS
     done
-    # Execute a case statement to check the user's choice.
+    # Execute a case statement based on the user's choice.
     case ${SERVER_PUB_NIC_SETTINGS} in
     1)
-      # Use the IP route to determine the NIC.
+      # Use the IP route command to automatically identify the NIC.
       SERVER_PUB_NIC="$(ip route | grep default | head --lines=1 | cut --delimiter=" " --fields=5)"
-      # If no NIC is found, exit with an error.
+      # If no NIC is found, exit the script with an error message.
       if [ -z "${SERVER_PUB_NIC}" ]; then
-        echo "Error: Your server's public network interface could not be found."
+        echo "Error: Unable to identify your server's public network interface."
         exit
       fi
       ;;
     2)
-      # Ask the user to input a custom NAT.
-      read -rp "Custom NAT:" SERVER_PUB_NIC
-      # If the user input is empty, use the IP route to determine the NIC.
+      # Prompt the user to manually input the NIC.
+      read -rp "Custom NIC:" SERVER_PUB_NIC
+      # If the user doesn't provide an input, use the IP route command to identify the NIC.
       if [ -z "${SERVER_PUB_NIC}" ]; then
         SERVER_PUB_NIC="$(ip route | grep default | head --lines=1 | cut --delimiter=" " --fields=5)"
       fi
@@ -617,34 +617,33 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     esac
   }
 
-  # Execute the function to determine the public NIC.
+  # Call the function to identify the public NIC.
   server-pub-nic
 
-  # Define a function to set the WireGuard server port
+  # Define a function to configure the WireGuard server's listening port
   function set-port() {
-    # Display message to ask for user input regarding the port to listen on
+    # Prompt the user to specify the port for the WireGuard server
     echo "What port do you want WireGuard server to listen to?"
-    # Display options for the user to select
+    # Provide the user with options for setting the port
     echo "  1) 51820 (Recommended)"
     echo "  2) Custom (Advanced)"
-
-    # Loop until a valid port setting is selected (either 1 or 2)
+    # Continue prompting the user until a valid option (1 or 2) is selected
     until [[ "${SERVER_PORT_SETTINGS}" =~ ^[1-2]$ ]]; do
-      # Prompt user for port choice and allow them to edit (-e) with the default value of 1 (-i 1)
+      # Ask the user for their port choice, with 1 as the default option
       read -rp "Port Choice [1-2]:" -e -i 1 SERVER_PORT_SETTINGS
     done
-    # Check which option was selected and set the SERVER_PORT variable accordingly
+    # Set the SERVER_PORT variable based on the user's choice
     case ${SERVER_PORT_SETTINGS} in
     1)
       SERVER_PORT="51820"
-      # Check if the selected port is already in use by another application and exit if it is
+      # If the chosen port is already in use, display an error message and exit the script
       if [ "$(lsof -i UDP:"${SERVER_PORT}")" ]; then
         echo "Error: Please use a different port because ${SERVER_PORT} is already in use."
         exit
       fi
       ;;
     2)
-      # Loop until a valid custom port number between 1 and 65535 is entered
+      # Continue prompting the user until a valid custom port number (between 1 and 65535) is entered
       until [[ "${SERVER_PORT}" =~ ^[0-9]+$ ]] && [ "${SERVER_PORT}" -ge 1 ] && [ "${SERVER_PORT}" -le 65535 ]; do
         read -rp "Custom port [1-65535]:" SERVER_PORT
       done
@@ -652,7 +651,7 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
       if [ -z "${SERVER_PORT}" ]; then
         SERVER_PORT="51820"
       fi
-      # Check if the selected port is already in use by another application and exit if it is
+      # If the chosen port is already in use, display an error message and exit the script
       if [ "$(lsof -i UDP:"${SERVER_PORT}")" ]; then
         echo "Error: The port ${SERVER_PORT} is already used by a different application, please use a different port."
         exit
@@ -661,231 +660,281 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     esac
   }
 
-  # Call the set-port function to set the WireGuard server port
+  # Invoke the set-port function to configure the WireGuard server's listening port
   set-port
 
-  # Determine Keepalive interval.
-  function nat-keepalive() {                                         # Define a function called nat-keepalive
-    echo "What do you want your keepalive interval to be?"           # Prompt user for keepalive interval
-    echo "  1) 25 (Default)"                                         # Option 1: default interval of 25
-    echo "  2) Custom (Advanced)"                                    # Option 2: custom interval
-    until [[ "${NAT_CHOICE_SETTINGS}" =~ ^[1-2]$ ]]; do              # Loop until a valid choice (1 or 2) is made
-      read -rp "Keepalive Choice [1-2]:" -e -i 1 NAT_CHOICE_SETTINGS # Read user input
+  # Define a function to set the NAT keepalive interval.
+  function nat-keepalive() {
+    # Prompt the user to specify the NAT keepalive interval.
+    echo "What do you want your NAT keepalive interval to be?"
+    # Provide the user with options for setting the interval.
+    echo "  1) 25 seconds (Default)"
+    echo "  2) Custom (Advanced)"
+    # Continue prompting the user until a valid option (1 or 2) is selected.
+    until [[ "${NAT_CHOICE_SETTINGS}" =~ ^[1-2]$ ]]; do
+      # Ask the user for their interval choice, with 1 as the default option.
+      read -rp "Keepalive Choice [1-2]:" -e -i 1 NAT_CHOICE_SETTINGS
     done
-    case ${NAT_CHOICE_SETTINGS} in # Evaluate user choice
-    1)                             # If user chose option 1
-      NAT_CHOICE="25"              # Set NAT_CHOICE to default interval (25)
-      ;;
-    2)                                                                                                          # If user chose option 2
-      until [[ "${NAT_CHOICE}" =~ ^[0-9]+$ ]] && [ "${NAT_CHOICE}" -ge 1 ] && [ "${NAT_CHOICE}" -le 65535 ]; do # Loop until a valid custom interval is entered
-        read -rp "Custom NAT [1-65535]:" NAT_CHOICE                                                             # Read user input for custom interval
-      done
-      if [ -z "${NAT_CHOICE}" ]; then # If NAT_CHOICE is empty
-        NAT_CHOICE="25"               # Set NAT_CHOICE to default interval (25)
-      fi
-      ;;
-    esac
-  }
-  # Keepalive interval
-  nat-keepalive # Call the nat-keepalive function
-
-  # Custom MTU or default settings
-  function mtu-set() {                                         # Define a function called mtu-set
-    echo "What MTU do you want to use?"                        # Prompt user for MTU setting
-    echo "  1) 1420|1280 (Recommended)"                        # Option 1: recommended MTU settings
-    echo "  2) Custom (Advanced)"                              # Option 2: custom MTU settings
-    until [[ "${MTU_CHOICE_SETTINGS}" =~ ^[1-2]$ ]]; do        # Loop until a valid choice (1 or 2) is made
-      read -rp "MTU Choice [1-2]:" -e -i 1 MTU_CHOICE_SETTINGS # Read user input
-    done
-    case ${MTU_CHOICE_SETTINGS} in # Evaluate user choice
-    1)                             # If user chose option 1
-      INTERFACE_MTU_CHOICE="1420"  # Set INTERFACE_MTU_CHOICE to recommended value (1420)
-      PEER_MTU_CHOICE="1280"       # Set PEER_MTU_CHOICE to recommended value (1280)
-      ;;
-    2)                                                                                                                                        # If user chose option 2
-      until [[ "${INTERFACE_MTU_CHOICE}" =~ ^[0-9]+$ ]] && [ "${INTERFACE_MTU_CHOICE}" -ge 1 ] && [ "${INTERFACE_MTU_CHOICE}" -le 65535 ]; do # Loop until a valid custom interface MTU is entered
-        read -rp "Custom Interface MTU [1-65535]:" INTERFACE_MTU_CHOICE                                                                       # Read user input for custom interface MTU
-      done
-      if [ -z "${INTERFACE_MTU_CHOICE}" ]; then # If INTERFACE_MTU_CHOICE is empty
-        INTERFACE_MTU_CHOICE="1420"             # Set INTERFACE_MTU_CHOICE to recommended value (1420)
-      fi
-      until [[ "${PEER_MTU_CHOICE}" =~ ^[0-9]+$ ]] && [ "${PEER_MTU_CHOICE}" -ge 1 ] && [ "${PEER_MTU_CHOICE}" -le 65535 ]; do # Loop until a valid custom peer MTU is entered
-        read -rp "Custom Peer MTU [1-65535]:" PEER_MTU_CHOICE                                                                  # Read user input for custom peer MTU
-      done
-      if [ -z "${PEER_MTU_CHOICE}" ]; then # If PEER_MTU_CHOICE is empty
-        PEER_MTU_CHOICE="1280"             # Set PEER_MTU_CHOICE to recommended value (1280)
-      fi
-      ;;
-    esac
-  }
-
-  # Set MTU
-  mtu-set # Call the mtu-set function
-
-  # What IP version would you like to be available on this WireGuard server?
-  function ipvx-select() {                                                 # Define a function called ipvx-select
-    echo "What IPv do you want to use to connect to the WireGuard server?" # Prompt user for IP version to use
-    echo "  1) IPv4 (Recommended)"                                         # Option 1: recommended IPv4
-    echo "  2) IPv6"                                                       # Option 2: IPv6
-    until [[ "${SERVER_HOST_SETTINGS}" =~ ^[1-2]$ ]]; do                   # Loop until a valid choice (1 or 2) is made
-      read -rp "IP Choice [1-2]:" -e -i 1 SERVER_HOST_SETTINGS             # Read user input
-    done
-    case ${SERVER_HOST_SETTINGS} in               # Evaluate user choice
-    1)                                            # If user chose option 1
-      if [ -n "${DEFAULT_INTERFACE_IPV4}" ]; then # If DEFAULT_INTERFACE_IPV4 is not empty
-        SERVER_HOST="${DEFAULT_INTERFACE_IPV4}"   # Set SERVER_HOST to DEFAULT_INTERFACE_IPV4
-      else
-        SERVER_HOST="[${DEFAULT_INTERFACE_IPV6}]" # Set SERVER_HOST to DEFAULT_INTERFACE_IPV6 (surrounded by brackets to indicate IPv6 address)
-      fi
-      ;;
-    2)                                            # If user chose option 2
-      if [ -n "${DEFAULT_INTERFACE_IPV6}" ]; then # If DEFAULT_INTERFACE_IPV6 is not empty
-        SERVER_HOST="[${DEFAULT_INTERFACE_IPV6}]" # Set SERVER_HOST to DEFAULT_INTERFACE_IPV6 (surrounded by brackets to indicate IPv6 address)
-      else
-        SERVER_HOST="${DEFAULT_INTERFACE_IPV4}" # Set SERVER_HOST to DEFAULT_INTERFACE_IPV4
-      fi
-      ;;
-    esac
-  }
-
-  # IPv4 or IPv6 Selector
-  ipvx-select # Call the ipvx-select function
-
-  # Would you like to allow connections to your LAN neighbors?
-  function client-allowed-ip() {                                                    # Define a function called client-allowed-ip
-    echo "What traffic do you want the client to forward through WireGuard?"        # Prompt user for allowed traffic
-    echo "  1) Everything (Recommended)"                                            # Option 1: allow all traffic
-    echo "  2) Custom (Advanced)"                                                   # Option 2: allow custom traffic
-    until [[ "${CLIENT_ALLOWED_IP_SETTINGS}" =~ ^[1-2]$ ]]; do                      # Loop until a valid choice (1 or 2) is made
-      read -rp "Client Allowed IP Choice [1-2]:" -e -i 1 CLIENT_ALLOWED_IP_SETTINGS # Read user input
-    done
-    case ${CLIENT_ALLOWED_IP_SETTINGS} in # Evaluate user choice
-    1)                                    # If user chose option 1
-      CLIENT_ALLOWED_IP="0.0.0.0/0,::/0"  # Set CLIENT_ALLOWED_IP to allow all traffic
-      ;;
-    2)                                         # If user chose option 2
-      read -rp "Custom IPs:" CLIENT_ALLOWED_IP # Prompt user for custom allowed IPs
-      if [ -z "${CLIENT_ALLOWED_IP}" ]; then   # If CLIENT_ALLOWED_IP is empty
-        CLIENT_ALLOWED_IP="0.0.0.0/0,::/0"     # Set CLIENT_ALLOWED_IP to allow all traffic
-      fi
-      ;;
-    esac
-  }
-
-  # Traffic Forwarding
-  client-allowed-ip # Call the client-allowed-ip function
-
-  # real-time updates
-  function enable-automatic-updates() {                                      # Define a function called enable-automatic-updates
-    echo "Would you like to setup real-time updates?"                        # Prompt user for real-time updates setting
-    echo "  1) Yes (Recommended)"                                            # Option 1: enable real-time updates
-    echo "  2) No (Advanced)"                                                # Option 2: disable real-time updates
-    until [[ "${AUTOMATIC_UPDATES_SETTINGS}" =~ ^[1-2]$ ]]; do               # Loop until a valid choice (1 or 2) is made
-      read -rp "Automatic Updates [1-2]:" -e -i 1 AUTOMATIC_UPDATES_SETTINGS # Read user input
-    done
-    case ${AUTOMATIC_UPDATES_SETTINGS} in # Evaluate user choice
-    1)                                    # If user chose option 1
-      crontab -l | {                      # Append to existing crontab or create a new one if none exists
-        cat
-        echo "0 0 * * * ${CURRENT_FILE_PATH} --update" # Add cron job to run the script with --update option every day at midnight
-      } | crontab -
-      if [[ "${CURRENT_INIT_SYSTEM}" == *"systemd"* ]]; then # If using systemd init system
-        systemctl enable --now ${SYSTEM_CRON_NAME}           # Enable and start the cron service
-      elif [[ "${CURRENT_INIT_SYSTEM}" == *"init"* ]]; then  # If using initd init system
-        service ${SYSTEM_CRON_NAME} start                    # Start the cron service
-      fi
-      ;;
-    2)                                  # If user chose option 2
-      echo "Real-time Updates Disabled" # Display message indicating real-time updates are disabled
-      ;;
-    esac
-  }
-
-  # real-time updates
-  enable-automatic-updates # Call the enable-automatic-updates function
-
-  # Define a function to enable automatic backup
-  function enable-automatic-backup() {
-    # Ask the user if they want to setup real-time backup
-    echo "Would you like to setup real-time backup?"
-    # Show two options
-    echo "  1) Yes (Recommended)"
-    echo "  2) No (Advanced)"
-    # Until the user inputs a valid option, keep asking
-    until [[ "${AUTOMATIC_BACKUP_SETTINGS}" =~ ^[1-2]$ ]]; do
-      # Read user input and set it to AUTOMATIC_BACKUP_SETTINGS variable
-      read -rp "Automatic Backup [1-2]:" -e -i 1 AUTOMATIC_BACKUP_SETTINGS
-    done
-    # Based on user input, execute the appropriate block of code
-    case ${AUTOMATIC_BACKUP_SETTINGS} in
-    # If user chooses option 1
+    # Set the NAT_CHOICE variable based on the user's choice.
+    case ${NAT_CHOICE_SETTINGS} in
     1)
-      # Append a cron job to backup current file path everyday at midnight
+      # If the user chose the default option, set the NAT_CHOICE to 25 seconds.
+      NAT_CHOICE="25"
+      ;;
+    2)
+      # If the user chose the custom option, prompt them to enter a custom interval.
+      until [[ "${NAT_CHOICE}" =~ ^[0-9]+$ ]] && [ "${NAT_CHOICE}" -ge 1 ] && [ "${NAT_CHOICE}" -le 65535 ]; do
+        read -rp "Custom NAT [1-65535]:" NAT_CHOICE
+      done
+      # If no custom interval is entered, set the NAT_CHOICE variable to the default of 25 seconds.
+      if [ -z "${NAT_CHOICE}" ]; then
+        NAT_CHOICE="25"
+      fi
+      ;;
+    esac
+  }
+  # Invoke the nat-keepalive function to set the NAT keepalive interval.
+  nat-keepalive
+
+  # Define a function to configure the Maximum Transmission Unit (MTU) settings.
+  function mtu-set() {
+    # Ask the user to specify the MTU settings.
+    echo "What MTU do you want to use?"
+    # Provide the user with options for setting the MTU.
+    echo "  1) 1420 for Interface, 1280 for Peer (Recommended)"
+    echo "  2) Custom (Advanced)"
+    # Continue prompting the user until a valid option (1 or 2) is selected.
+    until [[ "${MTU_CHOICE_SETTINGS}" =~ ^[1-2]$ ]]; do
+      # Ask the user for their MTU choice, with 1 as the default option.
+      read -rp "MTU Choice [1-2]:" -e -i 1 MTU_CHOICE_SETTINGS
+    done
+    # Set the MTU variables based on the user's choice.
+    case ${MTU_CHOICE_SETTINGS} in
+    1)
+      # If the user chose the default option, set the Interface MTU to 1420 and Peer MTU to 1280.
+      INTERFACE_MTU_CHOICE="1420"
+      PEER_MTU_CHOICE="1280"
+      ;;
+    2)
+      # If the user chose the custom option, prompt them to enter a custom MTU for Interface and Peer.
+      until [[ "${INTERFACE_MTU_CHOICE}" =~ ^[0-9]+$ ]] && [ "${INTERFACE_MTU_CHOICE}" -ge 1 ] && [ "${INTERFACE_MTU_CHOICE}" -le 65535 ]; do
+        read -rp "Custom Interface MTU [1-65535]:" INTERFACE_MTU_CHOICE
+      done
+      # If no custom Interface MTU is entered, set the INTERFACE_MTU_CHOICE variable to the default of 1420.
+      if [ -z "${INTERFACE_MTU_CHOICE}" ]; then
+        INTERFACE_MTU_CHOICE="1420"
+      fi
+      until [[ "${PEER_MTU_CHOICE}" =~ ^[0-9]+$ ]] && [ "${PEER_MTU_CHOICE}" -ge 1 ] && [ "${PEER_MTU_CHOICE}" -le 65535 ]; do
+        read -rp "Custom Peer MTU [1-65535]:" PEER_MTU_CHOICE
+      done
+      # If no custom Peer MTU is entered, set the PEER_MTU_CHOICE variable to the default of 1280.
+      if [ -z "${PEER_MTU_CHOICE}" ]; then
+        PEER_MTU_CHOICE="1280"
+      fi
+      ;;
+    esac
+  }
+
+  # Invoke the mtu-set function to configure the MTU settings.
+  mtu-set
+
+  # Define a function to select the IP version for the WireGuard server.
+  function ipvx-select() {
+    # Ask the user to specify the IP version to use for connecting to the WireGuard server.
+    echo "Which IP version do you want to use for the WireGuard server?"
+    # Provide the user with options for setting the IP version.
+    echo "  1) IPv4 (Recommended)"
+    echo "  2) IPv6"
+    # Continue prompting the user until a valid option (1 or 2) is selected.
+    until [[ "${SERVER_HOST_SETTINGS}" =~ ^[1-2]$ ]]; do
+      # Ask the user for their IP version choice, with 1 as the default option.
+      read -rp "IP Version Choice [1-2]:" -e -i 1 SERVER_HOST_SETTINGS
+    done
+    # Set the SERVER_HOST variable based on the user's choice.
+    case ${SERVER_HOST_SETTINGS} in
+    1)
+      # If the user chose IPv4 and a default IPv4 interface is available, use it.
+      if [ -n "${DEFAULT_INTERFACE_IPV4}" ]; then
+        SERVER_HOST="${DEFAULT_INTERFACE_IPV4}"
+      else
+        # If no default IPv4 interface is available, use the default IPv6 interface.
+        SERVER_HOST="[${DEFAULT_INTERFACE_IPV6}]"
+      fi
+      ;;
+    2)
+      # If the user chose IPv6 and a default IPv6 interface is available, use it.
+      if [ -n "${DEFAULT_INTERFACE_IPV6}" ]; then
+        SERVER_HOST="[${DEFAULT_INTERFACE_IPV6}]"
+      else
+        # If no default IPv6 interface is available, use the default IPv4 interface.
+        SERVER_HOST="${DEFAULT_INTERFACE_IPV4}"
+      fi
+      ;;
+    esac
+  }
+
+  # Invoke the ipvx-select function to select the IP version for the WireGuard server.
+  ipvx-select
+
+  # Define a function to configure the type of traffic the client is allowed to forward through WireGuard.
+  function client-allowed-ip() {
+    # Ask the user to specify the type of traffic to be forwarded.
+    echo "What type of traffic do you want the client to forward through WireGuard?"
+    # Provide the user with options for setting the traffic type.
+    echo "  1) All Traffic (Recommended)"
+    echo "  2) Custom Traffic (Advanced)"
+    # Continue prompting the user until a valid option (1 or 2) is selected.
+    until [[ "${CLIENT_ALLOWED_IP_SETTINGS}" =~ ^[1-2]$ ]]; do
+      # Ask the user for their traffic type choice, with 1 as the default option.
+      read -rp "Traffic Type Choice [1-2]:" -e -i 1 CLIENT_ALLOWED_IP_SETTINGS
+    done
+    # Set the CLIENT_ALLOWED_IP variable based on the user's choice.
+    case ${CLIENT_ALLOWED_IP_SETTINGS} in
+    1)
+      # If the user chose the default option, set the CLIENT_ALLOWED_IP to allow all traffic.
+      CLIENT_ALLOWED_IP="0.0.0.0/0,::/0"
+      ;;
+    2)
+      # If the user chose the custom option, prompt them to enter a custom IP range.
+      read -rp "Custom IP Range:" CLIENT_ALLOWED_IP
+      # If no custom IP range is entered, set the CLIENT_ALLOWED_IP variable to allow all traffic.
+      if [ -z "${CLIENT_ALLOWED_IP}" ]; then
+        CLIENT_ALLOWED_IP="0.0.0.0/0,::/0"
+      fi
+      ;;
+    esac
+  }
+
+  # Invoke the client-allowed-ip function to configure the type of traffic the client is allowed to forward.
+  client-allowed-ip
+
+  # Function to configure automatic updates
+  function enable-automatic-updates() {
+    # Prompt the user to decide if they want to enable automatic updates
+    echo "Would you like to setup real-time updates?"
+    # Option 1: Enable automatic updates
+    echo "  1) Yes (Recommended)"
+    # Option 2: Disable automatic updates
+    echo "  2) No (Advanced)"
+    # Loop until a valid choice (1 or 2) is made
+    until [[ "${AUTOMATIC_UPDATES_SETTINGS}" =~ ^[1-2]$ ]]; do
+      # Read user input for automatic updates setting
+      read -rp "Automatic Updates [1-2]:" -e -i 1 AUTOMATIC_UPDATES_SETTINGS
+    done
+    # Evaluate user choice for automatic updates
+    case ${AUTOMATIC_UPDATES_SETTINGS} in
+    1)
+      # If user chose to enable automatic updates, set up a cron job
       crontab -l | {
         cat
-        echo "0 0 * * * ${CURRENT_FILE_PATH} --backup"
+        # Add a cron job to run the script with --update option every day at midnight
+        echo "0 0 * * * ${CURRENT_FILE_PATH} --update"
       } | crontab -
-      # If current init system is systemd, enable and start the cron job
+      # Check the init system in use
       if [[ "${CURRENT_INIT_SYSTEM}" == *"systemd"* ]]; then
+        # If systemd is in use, enable and start the cron service
         systemctl enable --now ${SYSTEM_CRON_NAME}
-      # Otherwise, if current init system is init, start the cron job
       elif [[ "${CURRENT_INIT_SYSTEM}" == *"init"* ]]; then
+        # If initd is in use, start the cron service
         service ${SYSTEM_CRON_NAME} start
       fi
       ;;
-    2) # If user chooses option 2
-      # Inform the user that real-time backup is disabled
+    2)
+      # If user chose to disable automatic updates, display a confirmation message
+      echo "Real-time Updates Disabled"
+      ;;
+    esac
+  }
+
+  # Invoke the function to configure automatic updates
+  enable-automatic-updates
+
+  # Function to configure automatic backup
+  function enable-automatic-backup() {
+    # Prompt the user to decide if they want to enable automatic backup
+    echo "Would you like to setup real-time backup?"
+    # Option 1: Enable automatic backup
+    echo "  1) Yes (Recommended)"
+    # Option 2: Disable automatic backup
+    echo "  2) No (Advanced)"
+    # Loop until a valid choice (1 or 2) is made
+    until [[ "${AUTOMATIC_BACKUP_SETTINGS}" =~ ^[1-2]$ ]]; do
+      # Read user input for automatic backup setting
+      read -rp "Automatic Backup [1-2]:" -e -i 1 AUTOMATIC_BACKUP_SETTINGS
+    done
+    # Evaluate user choice for automatic backup
+    case ${AUTOMATIC_BACKUP_SETTINGS} in
+    1)
+      # If user chose to enable automatic backup, set up a cron job
+      crontab -l | {
+        cat
+        # Add a cron job to run the script with --backup option every day at midnight
+        echo "0 0 * * * ${CURRENT_FILE_PATH} --backup"
+      } | crontab -
+      # Check the init system in use
+      if [[ "${CURRENT_INIT_SYSTEM}" == *"systemd"* ]]; then
+        # If systemd is in use, enable and start the cron service
+        systemctl enable --now ${SYSTEM_CRON_NAME}
+      elif [[ "${CURRENT_INIT_SYSTEM}" == *"init"* ]]; then
+        # If initd is in use, start the cron service
+        service ${SYSTEM_CRON_NAME} start
+      fi
+      ;;
+    2)
+      # If user chose to disable automatic backup, display a confirmation message
       echo "Real-time Backup Disabled"
       ;;
     esac
   }
 
-  # Call the function to enable automatic backup
+  # Invoke the function to configure automatic backup
   enable-automatic-backup
 
-  # Define a function to ask the user which DNS provider to use.
+  # Function to prompt the user for their preferred DNS provider.
   function ask-install-dns() {
-    # Print out the available DNS provider options.
+    # Display the DNS provider options to the user.
     echo "Which DNS provider would you like to use?"
     echo "  1) Unbound (Recommended)"
     echo "  2) Custom (Advanced)"
-    # Loop until the user inputs a valid option.
+    # Continue prompting until the user enters a valid choice (1 or 2).
     until [[ "${DNS_PROVIDER_SETTINGS}" =~ ^[1-2]$ ]]; do
-      # Prompt the user for their choice and save it to DNS_PROVIDER_SETTINGS.
+      # Read the user's DNS provider choice and store it in DNS_PROVIDER_SETTINGS.
       read -rp "DNS provider [1-2]:" -e -i 1 DNS_PROVIDER_SETTINGS
     done
-    # Depending on the user's choice, set some variables.
+    # Set variables based on the user's DNS provider choice.
     case ${DNS_PROVIDER_SETTINGS} in
     1)
-      # The user chose Unbound.
+      # If the user chose Unbound, set INSTALL_UNBOUND to true.
       INSTALL_UNBOUND=true
       # Ask the user if they want to install a content-blocker.
       echo "Do you want to prevent advertisements, tracking, malware, and phishing using the content-blocker?"
       echo "  1) Yes (Recommended)"
       echo "  2) No"
-      # Loop until the user inputs a valid option.
+      # Continue prompting until the user enters a valid choice (1 or 2).
       until [[ "${CONTENT_BLOCKER_SETTINGS}" =~ ^[1-2]$ ]]; do
-        # Prompt the user for their choice and save it to CONTENT_BLOCKER_SETTINGS.
+        # Read the user's content blocker choice and store it in CONTENT_BLOCKER_SETTINGS.
         read -rp "Content Blocker Choice [1-2]:" -e -i 1 CONTENT_BLOCKER_SETTINGS
       done
-      # Depending on the user's choice, set INSTALL_BLOCK_LIST to true or false.
+      # Set INSTALL_BLOCK_LIST based on the user's content blocker choice.
       case ${CONTENT_BLOCKER_SETTINGS} in
       1)
+        # If the user chose to install the content blocker, set INSTALL_BLOCK_LIST to true.
         INSTALL_BLOCK_LIST=true
         ;;
       2)
+        # If the user chose not to install the content blocker, set INSTALL_BLOCK_LIST to false.
         INSTALL_BLOCK_LIST=false
         ;;
       esac
       ;;
     2)
-      # The user chose Custom.
+      # If the user chose to use a custom DNS provider, set CUSTOM_DNS to true.
       CUSTOM_DNS=true
       ;;
     esac
   }
 
-  # Call the ask-install-dns function to start the DNS installation process.
+  # Invoke the ask-install-dns function to begin the DNS provider selection process.
   ask-install-dns
 
   # Define a function to let users choose their custom DNS provider.
