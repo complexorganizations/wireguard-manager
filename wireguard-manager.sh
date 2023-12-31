@@ -937,12 +937,12 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
   # Invoke the ask-install-dns function to begin the DNS provider selection process.
   ask-install-dns
 
-  # Define a function to let users choose their custom DNS provider.
+  # Function to allow users to select a custom DNS provider.
   function custom-dns() {
-    # Check if the custom DNS option is enabled.
+    # If the custom DNS option is enabled, proceed with the DNS selection.
     if [ "${CUSTOM_DNS}" == true ]; then
-      # Display the available DNS options to the user.
-      echo "Which DNS do you want to use with the WireGuard connection?"
+      # Present the user with a list of DNS providers to choose from.
+      echo "Select the DNS provider you wish to use with your WireGuard connection:"
       echo "  1) Cloudflare (Recommended)"
       echo "  2) AdGuard"
       echo "  3) NextDNS"
@@ -952,48 +952,58 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
       echo "  7) Quad9"
       echo "  8) FDN"
       echo "  9) Custom (Advanced)"
+      # If Pi-Hole is installed, add it as an option.
       if [ -x "$(command -v pihole)" ]; then
         echo "  10) Pi-Hole (Advanced)"
       fi
-      # Prompt the user to enter their DNS choice.
+      # Prompt the user to make a selection from the list of DNS providers.
       until [[ "${CLIENT_DNS_SETTINGS}" =~ ^[0-9]+$ ]] && [ "${CLIENT_DNS_SETTINGS}" -ge 1 ] && [ "${CLIENT_DNS_SETTINGS}" -le 10 ]; do
         read -rp "DNS [1-10]:" -e -i 1 CLIENT_DNS_SETTINGS
       done
-      # Set the appropriate DNS based on the user's choice.
+      # Based on the user's selection, set the DNS addresses.
       case ${CLIENT_DNS_SETTINGS} in
       1)
+        # Set DNS addresses for Cloudflare.
         CLIENT_DNS="1.1.1.1,1.0.0.1,2606:4700:4700::1111,2606:4700:4700::1001"
         ;;
       2)
+        # Set DNS addresses for AdGuard.
         CLIENT_DNS="94.140.14.14,94.140.15.15,2a10:50c0::ad1:ff,2a10:50c0::ad2:ff"
         ;;
       3)
+        # Set DNS addresses for NextDNS.
         CLIENT_DNS="45.90.28.167,45.90.30.167,2a07:a8c0::12:cf53,2a07:a8c1::12:cf53"
         ;;
       4)
+        # Set DNS addresses for OpenDNS.
         CLIENT_DNS="208.67.222.222,208.67.220.220,2620:119:35::35,2620:119:53::53"
         ;;
       5)
+        # Set DNS addresses for Google.
         CLIENT_DNS="8.8.8.8,8.8.4.4,2001:4860:4860::8888,2001:4860:4860::8844"
         ;;
       6)
+        # Set DNS addresses for Verisign.
         CLIENT_DNS="64.6.64.6,64.6.65.6,2620:74:1b::1:1,2620:74:1c::2:2"
         ;;
       7)
+        # Set DNS addresses for Quad9.
         CLIENT_DNS="9.9.9.9,149.112.112.112,2620:fe::fe,2620:fe::9"
         ;;
       8)
+        # Set DNS addresses for FDN.
         CLIENT_DNS="80.67.169.40,80.67.169.12,2001:910:800::40,2001:910:800::12"
         ;;
       9)
-        # Prompt the user to enter a custom DNS.
+        # Prompt the user to enter a custom DNS address.
         read -rp "Custom DNS:" CLIENT_DNS
-        # If the user doesn't provide a custom DNS, use Google's DNS as the default.
+        # If the user doesn't provide a custom DNS, default to Google's DNS.
         if [ -z "${CLIENT_DNS}" ]; then
           CLIENT_DNS="8.8.8.8,8.8.4.4,2001:4860:4860::8888,2001:4860:4860::8844"
         fi
         ;;
       10)
+        # If Pi-Hole is installed, use its DNS. Otherwise, install Unbound and enable the block list.
         if [ -x "$(command -v pihole)" ]; then
           CLIENT_DNS="${GATEWAY_ADDRESS_V4},${GATEWAY_ADDRESS_V6}"
         else
@@ -1005,7 +1015,7 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     fi
   }
 
-  # Call the function to let users choose their custom DNS provider.
+  # Invoke the custom-dns function to allow the user to select a DNS provider.
   custom-dns
 
   # Define a function to ask for the first WireGuard peer's name.
