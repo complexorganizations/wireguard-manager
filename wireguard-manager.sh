@@ -1423,7 +1423,7 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${CLIENT_NAME}"-${WIRE
 # After WireGuard Install
 else
 
-  # Already installed what next?
+  # What to do if the software is already installed?
   function wireguard-next-questions-interface() {
     echo "What do you want to do?"
     echo "   1) Show WireGuard"
@@ -1446,31 +1446,31 @@ else
       read -rp "Select an Option [1-16]:" -e -i 0 WIREGUARD_OPTIONS
     done
     case ${WIREGUARD_OPTIONS} in
-    1) # WG Show
+    1) # Display WireGuard configuration
       wg show ${WIREGUARD_PUB_NIC}
       ;;
-    2) # Start WireGuard
+    2) # Initiate WireGuard service
       wg-quick up ${WIREGUARD_PUB_NIC}
       ;;
-    3) # Stop WireGuard
+    3) # Terminate WireGuard service
       wg-quick down ${WIREGUARD_PUB_NIC}
       ;;
-    4) # Restart WireGuard
-      # It checks whether the init system is "systemd" or "init"
-      # It restarts the WireGuard service accordingly.
+    4) # Restart the WireGuard service
+      # The script first identifies the init system (either "systemd" or "init")
+      # Then, it restarts the WireGuard service based on the identified init system
       if [[ "${CURRENT_INIT_SYSTEM}" == *"systemd"* ]]; then
         systemctl restart wg-quick@${WIREGUARD_PUB_NIC}
       elif [[ "${CURRENT_INIT_SYSTEM}" == *"init"* ]]; then
         service wg-quick@${WIREGUARD_PUB_NIC} restart
       fi
       ;;
-    5) # WireGuard add Peer
-      # Check if a new client name is provided; if not, prompt for a name
+    5) # Adding a new peer to WireGuard
+      # If a client name isn't supplied, the script will request one
       if [ -z "${NEW_CLIENT_NAME}" ]; then
         echo "Let's name the WireGuard Peer. Use one word only, no special characters, no spaces."
         read -rp "New client peer:" -e -i "$(openssl rand -hex 50)" NEW_CLIENT_NAME
       fi
-      # If a new client name is still not provided, generate a random name using openssl
+      # If no client name is provided, use openssl to generate a random name
       if [ -z "${NEW_CLIENT_NAME}" ]; then
         NEW_CLIENT_NAME="$(openssl rand -hex 50)"
       fi
