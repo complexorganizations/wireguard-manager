@@ -7,7 +7,7 @@
 
 # Usage Instructions:
 # 1. System Requirements: Ensure you have 'curl' installed on your system. This script is compatible with most Linux distributions.
-# 2. Downloading the Script: 
+# 2. Downloading the Script:
 #    - Use the following command to download the script:
 #      curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
 # 3. Making the Script Executable:
@@ -1799,14 +1799,14 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
     11) # Restore WireGuard Config
       # Check if the WireGuard config backup file does not exist, and if so, exit the script
       if [ ! -f "${WIREGUARD_CONFIG_BACKUP}" ]; then
-        echo "Error: WireGuard config backup file does not exist."
+        echo "Error: The WireGuard configuration backup file could not be found. Please ensure it exists and try again."
         exit
       fi
       # Prompt the user to enter the backup password and store it in the WIREGUARD_BACKUP_PASSWORD variable
       read -rp "Backup Password: " -e -i "$(cat "${WIREGUARD_BACKUP_PASSWORD_PATH}")" WIREGUARD_BACKUP_PASSWORD
       # If the WIREGUARD_BACKUP_PASSWORD variable is empty, exit the script
       if [ -z "${WIREGUARD_BACKUP_PASSWORD}" ]; then
-        echo "Error: Backup password cannot be empty."
+        echo "Error: The backup password field is empty. Please provide a valid password."
         exit
       fi
       # Unzip the backup file, overwriting existing files, using the specified backup password, and extract the contents to the WireGuard path
@@ -1858,12 +1858,12 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
       OLD_SERVER_PORT=$(head --lines=1 ${WIREGUARD_CONFIG} | cut --delimiter=" " --fields=4 | cut --delimiter=":" --fields=2)
       # Prompt the user to enter a valid custom port (between 1 and 65535) and store it in NEW_SERVER_PORT
       until [[ "${NEW_SERVER_PORT}" =~ ^[0-9]+$ ]] && [ "${NEW_SERVER_PORT}" -ge 1 ] && [ "${NEW_SERVER_PORT}" -le 65535 ]; do
-        read -rp "Custom port [1-65535]: " -e -i 51820 NEW_SERVER_PORT
+        read -rp "Enter a custom port number (between 1 and 65535): " -e -i 51820 NEW_SERVER_PORT
       done
       # Check if the chosen port is already in use by another application
       if [ "$(lsof -i UDP:"${NEW_SERVER_PORT}")" ]; then
         # If the port is in use, print an error message and exit the script
-        echo "Error: The port ${NEW_SERVER_PORT} is already used by a different application, please use a different port."
+        echo "Error: The port number ${NEW_SERVER_PORT} is already in use by another application. Please try a different port number."
         exit
       fi
       # If the old server port is different from the new server port, update the server port in the WireGuard config file
@@ -1921,7 +1921,7 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
       # Extract and display a list of peer names from the WireGuard config file
       grep start ${WIREGUARD_CONFIG} | cut --delimiter=" " --fields=2
       # Prompt the user to enter the desired peer's name and store it in the VIEW_CLIENT_INFO variable
-      read -rp "Peer's name:" VIEW_CLIENT_INFO
+      read -rp "Enter the name of the peer you want to view information for: " VIEW_CLIENT_INFO
       # Check if the config file for the specified peer exists
       if [ -f "${WIREGUARD_CLIENT_PATH}/${VIEW_CLIENT_INFO}-${WIREGUARD_PUB_NIC}.conf" ]; then
         # Generate a QR code for the specified peer's config file and display it in the terminal
@@ -1930,7 +1930,7 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
         echo "Peer's config --> ${WIREGUARD_CLIENT_PATH}/${VIEW_CLIENT_INFO}-${WIREGUARD_PUB_NIC}.conf"
       else
         # If the config file for the specified peer does not exist, print an error message
-        echo "Error: The specified peer does not exist."
+        echo "Error: The peer you specified could not be found. Please ensure you've entered the correct information."
         exit
       fi
       ;;
@@ -1940,12 +1940,14 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
         # Check if the output of `unbound-checkconf` run on `UNBOUND_CONFIG` contains "no errors"
         if [[ "$(unbound-checkconf ${UNBOUND_CONFIG})" != *"no errors"* ]]; then
           # If "no errors" was not found in output of previous command, print an error message
+          echo $(unbound-checkconf ${UNBOUND_CONFIG})
           echo "Error: We found an error on your unbound config file located at ${UNBOUND_CONFIG}"
           exit
         fi
         # Check if output of `unbound-host` run on `UNBOUND_CONFIG` with arguments `-C`, `-v`, and `cloudflare.com` contains "secure"
         if [[ "$(unbound-host -C ${UNBOUND_CONFIG} -v cloudflare.com)" != *"secure"* ]]; then
           # If "secure" was not found in output of previous command, print an error message
+          echo $(unbound-host -C ${UNBOUND_CONFIG} -v cloudflare.com)
           echo "Error: We found an error on your unbound DNS-SEC config file loacted at ${UNBOUND_CONFIG}"
           exit
         fi
