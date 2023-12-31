@@ -2018,14 +2018,14 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
         # Check if the output of `unbound-checkconf` run on `UNBOUND_CONFIG` contains "no errors"
         if [[ "$(unbound-checkconf ${UNBOUND_CONFIG})" != *"no errors"* ]]; then
           # If "no errors" was not found in output of previous command, print an error message
-          echo $(unbound-checkconf ${UNBOUND_CONFIG})
+          "$(unbound-checkconf ${UNBOUND_CONFIG})"
           echo "Error: We found an error on your unbound config file located at ${UNBOUND_CONFIG}"
           exit
         fi
         # Check if output of `unbound-host` run on `UNBOUND_CONFIG` with arguments `-C`, `-v`, and `cloudflare.com` contains "secure"
         if [[ "$(unbound-host -C ${UNBOUND_CONFIG} -v cloudflare.com)" != *"secure"* ]]; then
           # If "secure" was not found in output of previous command, print an error message
-          echo $(unbound-host -C ${UNBOUND_CONFIG} -v cloudflare.com)
+          "$(unbound-host -C ${UNBOUND_CONFIG} -v cloudflare.com)"
           echo "Error: We found an error on your unbound DNS-SEC config file loacted at ${UNBOUND_CONFIG}"
           exit
         fi
