@@ -99,7 +99,7 @@ function installing-system-requirements() {
       fi
     fi
   else
-    echo "Error: ${CURRENT_DISTRO} ${CURRENT_DISTRO_VERSION} is not supported."
+    echo "Error: Your current distribution ${CURRENT_DISTRO} version ${CURRENT_DISTRO_VERSION} is not supported by this script. Please consider updating your distribution or using a supported one."
     exit
   fi
 }
@@ -123,7 +123,7 @@ function virt-check() {
   case ${CURRENT_SYSTEM_VIRTUALIZATION} in
   "kvm" | "none" | "qemu" | "lxc" | "microsoft" | "vmware" | "xen" | "amazon" | "docker") ;;
   *)
-    echo "${CURRENT_SYSTEM_VIRTUALIZATION} virtualization is not supported (yet)."
+    echo "Error: the ${CURRENT_SYSTEM_VIRTUALIZATION} virtualization is currently not supported. Please stay tuned for future updates."
     exit
     ;;
   esac
@@ -148,14 +148,14 @@ function kernel-check() {
   # Extract the minor version number from the allowed kernel version.
   if [ "${CURRENT_KERNEL_MAJOR_VERSION}" -lt "${ALLOWED_KERNEL_MAJOR_VERSION}" ]; then
     # If the current major version is less than the allowed major version, show an error message and exit.
-    echo "Error: Kernel ${CURRENT_KERNEL_VERSION} not supported, please update to ${ALLOWED_KERNEL_VERSION}."
+    echo "Error: Your current kernel version ${CURRENT_KERNEL_VERSION} is not supported. Please update to version ${ALLOWED_KERNEL_VERSION} or later."
     exit
   fi
   if [ "${CURRENT_KERNEL_MAJOR_VERSION}" == "${ALLOWED_KERNEL_MAJOR_VERSION}" ]; then
     # If the current major version is equal to the allowed major version, check the minor version.
     if [ "${CURRENT_KERNEL_MINOR_VERSION}" -lt "${ALLOWED_KERNEL_MINOR_VERSION}" ]; then
       # If the current minor version is less than the allowed minor version, show an error message and exit.
-      echo "Error: Kernel ${CURRENT_KERNEL_VERSION} not supported, please update to ${ALLOWED_KERNEL_VERSION}."
+      echo "Error: Your current kernel version ${CURRENT_KERNEL_VERSION} is not supported. Please update to version ${ALLOWED_KERNEL_VERSION} or later."
       exit
     fi
   fi
@@ -177,7 +177,7 @@ function check-current-init-system() {
     ;;
   *)
     # If the init system is not one of the allowed options, display an error message and exit.
-    echo "${CURRENT_INIT_SYSTEM} init is not supported (yet)."
+    echo "Error: The ${CURRENT_INIT_SYSTEM} initialization system is currently not supported. Please stay tuned for future updates."
     exit
     ;;
   esac
@@ -195,7 +195,7 @@ function check-disk-space() {
   # This line calculates the available free space on the root partition in MB.
   if [ "${FREE_SPACE_ON_DRIVE_IN_MB}" -le 1024 ]; then
     # If the available free space is less than or equal to 1024 MB (1 GB), display an error message and exit.
-    echo "Error: More than 1 GB of free space is needed to install everything."
+    echo "Error: You need more than 1 GB of free space to install everything. Please free up some space and try again."
     exit
   fi
 }
@@ -331,22 +331,22 @@ function get-network-information() {
 
 # Usage Guide of the application
 function usage-guide() {
-  echo "usage: ./$(basename "${0}") <command>"
-  echo "  --install     Install WireGuard Interface"
-  echo "  --start       Start WireGuard Interface"
-  echo "  --stop        Stop WireGuard Interface"
-  echo "  --restart     Restart WireGuard Interface"
-  echo "  --list        Show WireGuard Peer(s)"
-  echo "  --add         Add WireGuard Peer"
-  echo "  --remove      Remove WireGuard Peer"
-  echo "  --reinstall   Reinstall WireGuard Interface"
-  echo "  --uninstall   Uninstall WireGuard Interface"
-  echo "  --update      Update WireGuard Manager"
-  echo "  --ddns        Update WireGuard IP Address"
-  echo "  --backup      Backup WireGuard"
-  echo "  --restore     Restore WireGuard"
-  echo "  --purge       Purge WireGuard Peer(s)"
-  echo "  --help        Show Usage Guide"
+  echo "Usage: ./$(basename "${0}") <command>"
+  echo "  --install     Installs the WireGuard interface on your system"
+  echo "  --start       Starts the WireGuard interface if it's not already running"
+  echo "  --stop        Stops the WireGuard interface if it's currently running"
+  echo "  --restart     Restarts the WireGuard interface"
+  echo "  --list        Lists all the peers currently connected to the WireGuard interface"
+  echo "  --add         Adds a new peer to the WireGuard interface"
+  echo "  --remove      Removes a specified peer from the WireGuard interface"
+  echo "  --reinstall   Reinstalls the WireGuard interface, keeping the current configuration"
+  echo "  --uninstall   Uninstalls the WireGuard interface from your system"
+  echo "  --update      Updates the WireGuard Manager to the latest version"
+  echo "  --ddns        Updates the IP address of the WireGuard interface using Dynamic DNS"
+  echo "  --backup      Creates a backup of your current WireGuard configuration"
+  echo "  --restore     Restores the WireGuard configuration from a previous backup"
+  echo "  --purge       Removes all peers from the WireGuard interface"
+  echo "  --help        Displays this usage guide"
 }
 
 # Define a function that takes command line arguments as input
@@ -460,7 +460,7 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
   # Define a function to set a custom IPv4 subnet
   function set-ipv4-subnet() {
     # Prompt the user for the desired IPv4 subnet
-    echo "What IPv4 subnet do you want to use?"
+    echo "Please specify the IPv4 subnet you want to use for the WireGuard interface. This should be a private subnet that is not in use elsewhere on your network. For example, you might choose '10.0.0.0/24' if it's not already in use."
     echo "  1) 10.0.0.0/8 (Recommended)"
     echo "  2) Custom (Advanced)"
     # Keep prompting the user until they enter a valid subnet choice
@@ -487,12 +487,12 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
   # Define a function to set a custom IPv6 subnet
   function set-ipv6-subnet() {
     # Ask the user which IPv6 subnet they want to use
-    echo "What IPv6 subnet do you want to use?"
+    echo "Please specify the IPv6 subnet you want to use for the WireGuard interface. This should be a private subnet that is not in use elsewhere on your network. For example, you might choose 'fd00::/64' if it's not already in use."
     echo "  1) fd00:00:00::0/8 (Recommended)"
     echo "  2) Custom (Advanced)"
     # Use a loop to ensure the user inputs a valid option
     until [[ "${PRIVATE_SUBNET_V6_SETTINGS}" =~ ^[1-2]$ ]]; do
-      read -rp "Subnet Choice [1-2]:" -e -i 1 PRIVATE_SUBNET_V6_SETTINGS
+      read -rp "Please choose the IPv6 subnet for your WireGuard interface [Option 1-2]: " -e -i 1 PRIVATE_SUBNET_V6_SETTINGS
     done
     # Use a case statement to set the IPv6 subnet based on the user's choice
     case ${PRIVATE_SUBNET_V6_SETTINGS} in
@@ -502,7 +502,7 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
       ;;
     2)
       # Ask the user for a custom IPv6 subnet if they choose option 2
-      read -rp "Custom IPv6 Subnet:" PRIVATE_SUBNET_V6
+      read -rp "Please enter a custom IPv6 subnet for your WireGuard interface: " PRIVATE_SUBNET_V6
       # If the user does not input a subnet, use the recommended one
       if [ -z "${PRIVATE_SUBNET_V6}" ]; then
         PRIVATE_SUBNET_V6="fd00:00:00::0/8"
@@ -514,36 +514,37 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
   # Call the set-ipv6-subnet function to set the custom IPv6 subnet
   set-ipv6-subnet
 
-  # Private Subnet Mask IPv4
+  # Define the private subnet mask for the IPv4 network used by the WireGuard interface
   PRIVATE_SUBNET_MASK_V4=$(echo "${PRIVATE_SUBNET_V4}" | cut --delimiter="/" --fields=2) # Get the subnet mask of IPv4
-  # IPv4 Gateway
+  # Define the IPv4 gateway for the WireGuard interface
   GATEWAY_ADDRESS_V4=$(echo "${PRIVATE_SUBNET_V4}" | cut --delimiter="." --fields=1-3).1 # Get the gateway address of IPv4
-  # Private Subnet Mask IPv6
+  # Define the private subnet mask for the IPv6 network used by the WireGuard interface
   PRIVATE_SUBNET_MASK_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter="/" --fields=2) # Get the subnet mask of IPv6
-  # IPv6 Gateway
+  # Define the IPv6 gateway for the WireGuard interface
   GATEWAY_ADDRESS_V6=$(echo "${PRIVATE_SUBNET_V6}" | cut --delimiter=":" --fields=1-3)::1 # Get the gateway address of IPv6
-  # Get the networking data
-  get-network-information # Call a function to get the networking data
+  # Retrieve the networking configuration details
+  get-network-information
+  # Call a function to get the networking data
 
-  # Get the IPv4
+  # Define a function to retrieve the IPv4 address of the WireGuard interface
   function test-connectivity-v4() {
-    # Prompt user to select the IPv4 detection method
+    # Prompt the user to choose the method for detecting the IPv4 address
     echo "How would you like to detect IPv4?"
     echo "  1) Curl (Recommended)"
     echo "  2) Custom (Advanced)"
-    # Loop until input is valid
+    # Loop until the user provides a valid input
     until [[ "${SERVER_HOST_V4_SETTINGS}" =~ ^[1-2]$ ]]; do
       read -rp "IPv4 Choice [1-2]:" -e -i 1 SERVER_HOST_V4_SETTINGS
     done
-    # Select the IPv4 detection method
+    # Choose the method for detecting the IPv4 address based on the user's input
     case ${SERVER_HOST_V4_SETTINGS} in
     1)
       SERVER_HOST_V4=${DEFAULT_INTERFACE_IPV4} # Use the default IPv4 address
       ;;
     2)
-      # Prompt user to specify a custom IPv4 address
+      # Prompt the user to enter a custom IPv4 address
       read -rp "Custom IPv4:" SERVER_HOST_V4
-      # If input is empty, use default IPv4
+      # If the user doesn't provide an input, use the default IPv4 address
       if [ -z "${SERVER_HOST_V4}" ]; then
         SERVER_HOST_V4=${DEFAULT_INTERFACE_IPV4}
       fi
@@ -551,39 +552,38 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
     esac
   }
 
-  # Call the function to get the IPv4
-  test-connectivity-v4 # Call a function to get the IPv4 address
+  # Call the function to retrieve the IPv4 address
+  test-connectivity-v4 
+  # Invoke the function to get the IPv4 address
 
-  # Determine IPv6
+  # Define a function to retrieve the IPv6 address of the WireGuard interface
   function test-connectivity-v6() {
-    # Ask the user how they would like to detect IPv6
+    # Prompt the user to choose the method for detecting the IPv6 address
     echo "How would you like to detect IPv6?"
     echo "  1) Curl (Recommended)"
     echo "  2) Custom (Advanced)"
-    # Ask the user to choose between the two options
+    # Loop until the user provides a valid input
     until [[ "${SERVER_HOST_V6_SETTINGS}" =~ ^[1-2]$ ]]; do
       read -rp "IPv6 Choice [1-2]:" -e -i 1 SERVER_HOST_V6_SETTINGS
     done
-    # If the user selected option 1
+    # Choose the method for detecting the IPv6 address based on the user's input
     case ${SERVER_HOST_V6_SETTINGS} in
     1)
-      # Set the IPv6 to the default interface
-      SERVER_HOST_V6=${DEFAULT_INTERFACE_IPV6}
+      SERVER_HOST_V6=${DEFAULT_INTERFACE_IPV6} # Use the default IPv6 address
       ;;
     2)
-      # Ask the user to input a custom IPv6
+      # Prompt the user to enter a custom IPv6 address
       read -rp "Custom IPv6:" SERVER_HOST_V6
-      # If the user did not input a custom IPv6
+      # If the user doesn't provide an input, use the default IPv6 address
       if [ -z "${SERVER_HOST_V6}" ]; then
-        # Set the IPv6 to the default interface
         SERVER_HOST_V6=${DEFAULT_INTERFACE_IPV6}
       fi
       ;;
     esac
   }
 
-  # Get the IPv6
-  test-connectivity-v6
+  # Call the function to retrieve the IPv6 address
+  test-connectivity-v6 
 
   # Define a function to determine the public NIC.
   function server-pub-nic() {
