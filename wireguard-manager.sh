@@ -47,23 +47,21 @@ function check_root() {
 # Call the function to check root privileges
 check_root
 
-# The following function retrieves the current system information.
+# Function to gather current system details
 function system-information() {
-  # This function retrieves the ID, version, and major version of the current system.
+  # This function fetches the ID, version, and major version of the current system
   if [ -f /etc/os-release ]; then
-    # Check if the /etc/os-release file exists, and if so, source it to get the system information.
+    # If /etc/os-release file is present, source it to obtain system details
     # shellcheck source=/dev/null
     source /etc/os-release
-    CURRENT_DISTRO=${ID}                                                                              # CURRENT_DISTRO is the ID of the current system
-    CURRENT_DISTRO_VERSION=${VERSION_ID}                                                              # CURRENT_DISTRO_VERSION is the VERSION_ID of the current system
-    CURRENT_DISTRO_MAJOR_VERSION=$(echo "${CURRENT_DISTRO_VERSION}" | cut --delimiter="." --fields=1) # CURRENT_DISTRO_MAJOR_VERSION is the major version of the current system (e.g. "16" for Ubuntu 16.04)
+    CURRENT_DISTRO=${ID}                                                                              # CURRENT_DISTRO holds the system's ID
+    CURRENT_DISTRO_VERSION=${VERSION_ID}                                                              # CURRENT_DISTRO_VERSION holds the system's VERSION_ID
+    CURRENT_DISTRO_MAJOR_VERSION=$(echo "${CURRENT_DISTRO_VERSION}" | cut --delimiter="." --fields=1) # CURRENT_DISTRO_MAJOR_VERSION holds the major version of the system (e.g., "16" for Ubuntu 16.04)
   fi
 }
 
-# The system-information function is being called.
-
+# Invoke the system-information function
 system-information
-# Calls the system-information function.
 
 # Define a function to check system requirements
 function installing-system-requirements() {
