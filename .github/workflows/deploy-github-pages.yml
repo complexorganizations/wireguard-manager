@@ -57,7 +57,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: github-pages
-          path: "."
+          path: |
+            assets/hosts
+            assets/named.cache
+            wireguard-manager.sh
       # Deploy the artifact to GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
