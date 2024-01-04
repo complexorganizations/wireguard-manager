@@ -1861,7 +1861,6 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
         # Zip the WireGuard config file using the generated backup password and save it as a backup
         zip -P "${BACKUP_PASSWORD}" -rj ${WIREGUARD_CONFIG_BACKUP} ${WIREGUARD_CONFIG}
       fi
-
       ;;
     11) # Restore WireGuard Config
       # Check if the WireGuard config backup file does not exist, and if so, exit the script
