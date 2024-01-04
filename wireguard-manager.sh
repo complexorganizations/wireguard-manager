@@ -2030,6 +2030,16 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
         fi
         echo "Your unbound config file located at ${UNBOUND_CONFIG} is valid."
       fi
+      # Check if the `wg` command is available on the system by checking if it is executable
+      if [ -x "$(command -v wg)" ]; then
+        # Check if the output of `wg` contains "interface" and "public key"
+        if [[ "$(wg)" != *"interface"* ]] && [[ "$(wg)" != *"public key"* ]]; then
+          # If "interface" and "public key" were not found in output of previous command, print an error message
+          echo "Error: We found an error on your WireGuard interface."
+          exit
+        fi
+        echo "Your WireGuard interface is valid."
+      fi
       ;;
     esac
   }
