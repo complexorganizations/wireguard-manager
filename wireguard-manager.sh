@@ -1842,8 +1842,10 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
         # Once everything is completed, restart the unbound service
         if [[ "${CURRENT_INIT_SYSTEM}" == *"systemd"* ]]; then
           systemctl restart unbound
+          echo "Restarting unbound service..."
         elif [[ "${CURRENT_INIT_SYSTEM}" == *"init"* ]]; then
           service unbound restart
+          echo "Restarting unbound service..."
         fi
       fi
       ;;
@@ -1851,10 +1853,12 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
       # If the WireGuard config backup file exists, remove it
       if [ -f "${WIREGUARD_CONFIG_BACKUP}" ]; then
         rm --force ${WIREGUARD_CONFIG_BACKUP}
+        echo "Removing existing backup..."
       fi
       # If the system backup path directory does not exist, create it along with any necessary parent directories
       if [ ! -d "${SYSTEM_BACKUP_PATH}" ]; then
         mkdir --parents ${SYSTEM_BACKUP_PATH}
+        echo "Creating backup directory..."
       fi
       # If the WireGuard path directory exists, proceed with the backup process
       if [ -d "${WIREGUARD_PATH}" ]; then
