@@ -90,7 +90,7 @@ jobs:
       - name: Upload Configuration Files as Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: config-files-before-purge
+          name: config-files-installation
           path: |
             /etc/wireguard/wg0.conf
             /etc/wireguard/clients/*
@@ -120,7 +120,7 @@ jobs:
       - name: Upload Configuration Files as Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: config-files-after-purge
+          name: config-files-uninstall
           path: |
             /etc/wireguard/wg0.conf
             /etc/wireguard/clients/*
