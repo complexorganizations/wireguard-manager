@@ -99,6 +99,9 @@ jobs:
             /etc/unbound/root.hints
             /etc/unbound/unbound.conf.d/hosts.conf
             /etc/resolv.conf
+          if-no-files-found: warn
+          compression-level: 7
+          overwrite: false
 
       # Change permissions to deny access
       - name: Restore deny acess to the files
@@ -129,6 +132,9 @@ jobs:
             /etc/unbound/root.hints
             /etc/unbound/unbound.conf.d/hosts.conf
             /etc/resolv.conf
+          if-no-files-found: warn
+          compression-level: 7
+          overwrite: false
 
       # Display crontab rules post-uninstallation
       - name: Display Crontab Rules Post-Uninstallation
