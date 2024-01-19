@@ -99,8 +99,6 @@ jobs:
             /etc/unbound/root.hints
             /etc/unbound/unbound.conf.d/hosts.conf
             /etc/resolv.conf
-          retries: 5
-          timeout-minutes: 10
 
       # Change permissions to deny access
       - name: Restore deny acess to the files
@@ -131,8 +129,6 @@ jobs:
             /etc/unbound/root.hints
             /etc/unbound/unbound.conf.d/hosts.conf
             /etc/resolv.conf
-          retries: 5
-          timeout-minutes: 10
 
       # Display crontab rules post-uninstallation
       - name: Display Crontab Rules Post-Uninstallation
