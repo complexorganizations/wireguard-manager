@@ -435,7 +435,7 @@ function headless-install() {
     AUTOMATIC_BACKUP_SETTINGS=${AUTOMATIC_BACKUP_SETTINGS=1}   # Default to 1 if not specified
     DNS_PROVIDER_SETTINGS=${DNS_PROVIDER_SETTINGS=1}           # Default to 1 if not specified
     CONTENT_BLOCKER_SETTINGS=${CONTENT_BLOCKER_SETTINGS=1}     # Default to 1 if not specified
-    CLIENT_NAME=${CLIENT_NAME=$(openssl rand -hex 50)}         # Generate a random client name if not specified
+    CLIENT_NAME=${CLIENT_NAME=$(openssl rand -hex 25)}         # Generate a random client name if not specified
     AUTOMATIC_CONFIG_REMOVER=${AUTOMATIC_CONFIG_REMOVER=1}     # Default to 1 if not specified
   fi
 }
@@ -1014,11 +1014,11 @@ if [ ! -f "${WIREGUARD_CONFIG}" ]; then
       # Display naming rules to the user.
       echo "Please provide a name for the WireGuard Peer. The name should be a single word, without special characters or spaces."
       # Read the user's input, offering a random string as the default name.
-      read -rp "Client name:" -e -i "$(openssl rand -hex 50)" CLIENT_NAME
+      read -rp "Client name:" -e -i "$(openssl rand -hex 25)" CLIENT_NAME
     fi
     # If no name is provided by the user, assign a random string as the name.
     if [ -z "${CLIENT_NAME}" ]; then
-      CLIENT_NAME="$(openssl rand -hex 50)"
+      CLIENT_NAME="$(openssl rand -hex 25)"
     fi
   }
 
@@ -1457,11 +1457,11 @@ else
       # If a client name isn't supplied, the script will request one
       if [ -z "${NEW_CLIENT_NAME}" ]; then
         echo "Let's name the WireGuard Peer. Use one word only, no special characters, no spaces."
-        read -rp "New client peer:" -e -i "$(openssl rand -hex 50)" NEW_CLIENT_NAME
+        read -rp "New client peer:" -e -i "$(openssl rand -hex 25)" NEW_CLIENT_NAME
       fi
       # If no client name is provided, use openssl to generate a random name
       if [ -z "${NEW_CLIENT_NAME}" ]; then
-        NEW_CLIENT_NAME="$(openssl rand -hex 50)"
+        NEW_CLIENT_NAME="$(openssl rand -hex 25)"
       fi
       # Extract the last IPv4 address used in the WireGuard configuration file
       LASTIPV4=$(grep "AllowedIPs" ${WIREGUARD_CONFIG} | cut --delimiter=" " --fields=3 | cut --delimiter="/" --fields=1 | cut --delimiter="." --fields=4 | tail --lines=1)
@@ -1863,7 +1863,7 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
       # If the WireGuard path directory exists, proceed with the backup process
       if [ -d "${WIREGUARD_PATH}" ]; then
         # Generate a random 50-character hexadecimal backup password and store it in a file
-        BACKUP_PASSWORD="$(openssl rand -hex 50)"
+        BACKUP_PASSWORD="$(openssl rand -hex 25)"
         echo "${BACKUP_PASSWORD}" >"${WIREGUARD_BACKUP_PASSWORD_PATH}"
         # Zip the WireGuard config file using the generated backup password and save it as a backup
         zip -P "${BACKUP_PASSWORD}" -rj ${WIREGUARD_CONFIG_BACKUP} ${WIREGUARD_CONFIG}
