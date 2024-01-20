@@ -89,16 +89,16 @@ jobs:
       # Display Configuration Files
       - name: Show Configuration Files
         run: |
-            cat /etc/wireguard/wg0.conf
-            cat /etc/unbound/unbound.conf
-            cat /var/lib/unbound/root.key
-            cat /etc/unbound/root.hints
-            cat /etc/unbound/unbound.conf.d/hosts.conf
-            cat /etc/resolv.conf
-            for file in /etc/wireguard/clients/*; do
-              echo "Showing $file"
-              cat "$file"
-            done
+          cat /etc/wireguard/wg0.conf
+          cat /etc/unbound/unbound.conf
+          cat /var/lib/unbound/root.key
+          cat /etc/unbound/root.hints
+          cat /etc/unbound/unbound.conf.d/hosts.conf
+          cat /etc/resolv.conf
+          for file in /etc/wireguard/clients/*; do
+            echo "Showing $file"
+            cat "$file"
+          done
 
       # Change permissions to deny access
       - name: Restore deny acess to the files
@@ -119,16 +119,16 @@ jobs:
       # Display Configuration Files
       - name: Show Configuration Files
         run: |
-            cat /etc/wireguard/wg0.conf
-            cat /etc/unbound/unbound.conf
-            cat /var/lib/unbound/root.key
-            cat /etc/unbound/root.hints
-            cat /etc/unbound/unbound.conf.d/hosts.conf
-            cat /etc/resolv.conf
-            for file in /etc/wireguard/clients/*; do
-              echo "Showing $file"
-              cat "$file"
-            done
+          cat /etc/wireguard/wg0.conf
+          cat /etc/unbound/unbound.conf
+          cat /var/lib/unbound/root.key
+          cat /etc/unbound/root.hints
+          cat /etc/unbound/unbound.conf.d/hosts.conf
+          cat /etc/resolv.conf
+          for file in /etc/wireguard/clients/*; do
+            echo "Showing $file"
+            cat "$file"
+          done
 
       # Display crontab rules post-uninstallation
       - name: Display Crontab Rules Post-Uninstallation
