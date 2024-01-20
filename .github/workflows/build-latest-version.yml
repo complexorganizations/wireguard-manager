@@ -89,15 +89,19 @@ jobs:
       # Display Configuration Files
       - name: Show Configuration Files
         run: |
-          cat /etc/wireguard/wg0.conf
-          cat /etc/unbound/unbound.conf
-          cat /var/lib/unbound/root.key
-          cat /etc/unbound/root.hints
-          cat /etc/unbound/unbound.conf.d/hosts.conf
-          cat /etc/resolv.conf
+          [ -f /etc/wireguard/wg0.conf ] && cat /etc/wireguard/wg0.conf || echo "wg0.conf not found"
+          [ -f /etc/unbound/unbound.conf ] && cat /etc/unbound/unbound.conf || echo "unbound.conf not found"
+          [ -f /var/lib/unbound/root.key ] && cat /var/lib/unbound/root.key || echo "root.key not found"
+          [ -f /etc/unbound/root.hints ] && cat /etc/unbound/root.hints || echo "root.hints not found"
+          [ -f /etc/unbound/unbound.conf.d/hosts.conf ] && cat /etc/unbound/unbound.conf.d/hosts.conf || echo "hosts.conf not found"
+          [ -f /etc/resolv.conf ] && cat /etc/resolv.conf || echo "resolv.conf not found"
           for file in /etc/wireguard/clients/*; do
-            echo "Showing $file"
-            cat "$file"
+            if [ -f "$file" ]; then
+              echo "Showing $file"
+              cat "$file"
+            else
+              echo "File $file not found"
+            fi
           done
 
       # Change permissions to deny access
@@ -119,15 +123,19 @@ jobs:
       # Display Configuration Files
       - name: Show Configuration Files
         run: |
-          cat /etc/wireguard/wg0.conf
-          cat /etc/unbound/unbound.conf
-          cat /var/lib/unbound/root.key
-          cat /etc/unbound/root.hints
-          cat /etc/unbound/unbound.conf.d/hosts.conf
-          cat /etc/resolv.conf
+          [ -f /etc/wireguard/wg0.conf ] && cat /etc/wireguard/wg0.conf || echo "wg0.conf not found"
+          [ -f /etc/unbound/unbound.conf ] && cat /etc/unbound/unbound.conf || echo "unbound.conf not found"
+          [ -f /var/lib/unbound/root.key ] && cat /var/lib/unbound/root.key || echo "root.key not found"
+          [ -f /etc/unbound/root.hints ] && cat /etc/unbound/root.hints || echo "root.hints not found"
+          [ -f /etc/unbound/unbound.conf.d/hosts.conf ] && cat /etc/unbound/unbound.conf.d/hosts.conf || echo "hosts.conf not found"
+          [ -f /etc/resolv.conf ] && cat /etc/resolv.conf || echo "resolv.conf not found"
           for file in /etc/wireguard/clients/*; do
-            echo "Showing $file"
-            cat "$file"
+            if [ -f "$file" ]; then
+              echo "Showing $file"
+              cat "$file"
+            else
+              echo "File $file not found"
+            fi
           done
 
       # Display crontab rules post-uninstallation
