@@ -86,22 +86,19 @@ jobs:
       - name: Allow acess to the files
         run: sudo chmod -R 777 /etc/wireguard/
 
-      # Upload configuration files as artifacts
-      - name: Upload Configuration Files as Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: config-files-installation
-          path: |
-            /etc/wireguard/wg0.conf
-            /etc/wireguard/clients/*
-            /etc/unbound/unbound.conf
-            /var/lib/unbound/root.key
-            /etc/unbound/root.hints
-            /etc/unbound/unbound.conf.d/hosts.conf
-            /etc/resolv.conf
-          if-no-files-found: warn
-          compression-level: 7
-          overwrite: false
+      # Display Configuration Files
+      - name: Show Configuration Files
+        run: |
+            cat /etc/wireguard/wg0.conf
+            cat /etc/unbound/unbound.conf
+            cat /var/lib/unbound/root.key
+            cat /etc/unbound/root.hints
+            cat /etc/unbound/unbound.conf.d/hosts.conf
+            cat /etc/resolv.conf
+            for file in /etc/wireguard/clients/*; do
+              echo "Showing $file"
+              cat "$file"
+            done
 
       # Change permissions to deny access
       - name: Restore deny acess to the files
@@ -119,22 +116,19 @@ jobs:
       - name: Uninstall WireGuard Manager
         run: sudo ./wireguard-manager.sh --uninstall
 
-      # Upload configuration files as artifacts
-      - name: Upload Configuration Files as Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: config-files-uninstall
-          path: |
-            /etc/wireguard/wg0.conf
-            /etc/wireguard/clients/*
-            /etc/unbound/unbound.conf
-            /var/lib/unbound/root.key
-            /etc/unbound/root.hints
-            /etc/unbound/unbound.conf.d/hosts.conf
-            /etc/resolv.conf
-          if-no-files-found: warn
-          compression-level: 7
-          overwrite: false
+      # Display Configuration Files
+      - name: Show Configuration Files
+        run: |
+            cat /etc/wireguard/wg0.conf
+            cat /etc/unbound/unbound.conf
+            cat /var/lib/unbound/root.key
+            cat /etc/unbound/root.hints
+            cat /etc/unbound/unbound.conf.d/hosts.conf
+            cat /etc/resolv.conf
+            for file in /etc/wireguard/clients/*; do
+              echo "Showing $file"
+              cat "$file"
+            done
 
       # Display crontab rules post-uninstallation
       - name: Display Crontab Rules Post-Uninstallation
