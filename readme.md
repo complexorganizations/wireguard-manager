@@ -428,7 +428,9 @@ Join our community on [![Discord](https://raw.githubusercontent.com/complexorgan
 
 ## 🤝 Sponsors
 
-This project is sponsored by [![Digital Ocean](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/images/icons/digitalocean.svg)](https://www.digitalocean.com)
+This project is sponsored by
+
+[![Digital Ocean](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/images/icons/digitalocean.svg)](https://www.digitalocean.com) [![Google Cloud](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/images/icons/gcp.svg)](https://cloud.google.com) [![AWS](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/images/icons/aws.svg)](https://aws.amazon.com) [![Linode](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/images/icons/linode.svg)](https://linode.com)
 
 ## 📝 License
 
