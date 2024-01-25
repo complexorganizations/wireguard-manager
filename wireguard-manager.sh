@@ -87,7 +87,8 @@ function installing-system-requirements() {
         pacman -Su --noconfirm --needed curl coreutils jq iproute2 lsof cronie gawk procps-ng grep qrencode sed zip unzip openssl nftables ifupdown e2fsprogs gnupg systemd
       elif [ "${CURRENT_DISTRO}" == "alpine" ]; then
         apk update
-        apk add curl coreutils jq iproute2 lsof cronie gawk procps grep qrencode sed zip unzip openssl nftables ifupdown e2fsprogs gnupg systemd
+        apk add curl coreutils jq iproute2 lsof cronie gawk procps grep sed zip unzip openssl nftables e2fsprogs gnupg
+        # apk add curl coreutils jq iproute2 lsof cronie gawk procps grep qrencode sed zip unzip openssl nftables ifupdown e2fsprogs gnupg systemd
       elif [ "${CURRENT_DISTRO}" == "freebsd" ]; then
         pkg update
         pkg install curl coreutils jq iproute2 lsof cronie gawk procps grep qrencode sed zip unzip openssl nftables ifupdown e2fsprogs gnupg systemd
@@ -170,7 +171,7 @@ function check-current-init-system() {
   # This line retrieves the current init system by checking the process name of PID 1.
   case ${CURRENT_INIT_SYSTEM} in
   # The case statement checks if the retrieved init system is one of the allowed options.
-  *"systemd"* | *"init"* | *"bash"*)
+  *"systemd"* | *"init"* | *"bash"* | *"sh"*)
     # If the init system is systemd or sysvinit (init), continue with the script.
     ;;
   *)
