@@ -47,6 +47,28 @@ function check_root() {
 # Call the function to check root privileges
 check_root
 
+# Check either if its linux or macos
+function check_os() {
+  if { [ "$(uname)" != "Linux" ] && [ "$(uname)" != "Darwin" ]; }; then
+    echo "Error: This script is only supported on Linux and MacOS."
+    exit 1
+  fi
+  if [ "$(uname)" == "Darwin" ]; then
+    macos=true
+  fi
+  if [ "$(uname)" == "Linux" ]; then
+    linux=true
+  fi
+}
+
+# Call the function to check the operating system
+check_os
+
+# Run For MacOS Install
+if [ "$(uname)" == "Darwin" ]; then
+# Check for brew install
+fi
+
 # Function to gather current system details
 function system-information() {
   # This function fetches the ID, version, and major version of the current system
