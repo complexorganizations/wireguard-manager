@@ -85,23 +85,69 @@ https://github.com/complexorganizations/wireguard-manager/assets/102563715/dd539
 
 ## 🐧 Installation
 
-First, use `curl` to download the script and save it in `/usr/local/bin/`:
+To ensure the successful installation of the WireGuard Manager script on various Linux systems, it's crucial to have `curl` and `bash` installed. Here's an expanded installation guide that includes instructions for installing `curl` and `bash` on different Linux distributions:
+
+### Installing `curl` and `bash` on Linux Systems
+
+#### Debian/Ubuntu-based Systems (e.g., Ubuntu, Debian, Linux Mint):
 
 ```bash
-curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
+sudo apt update
+sudo apt install curl bash
 ```
 
-Next, make the script user executable:
+#### Red Hat-based Systems (e.g., CentOS, RHEL, Fedora):
 
 ```bash
-chmod +x /usr/local/bin/wireguard-manager.sh
+sudo yum install curl bash    # For CentOS/RHEL
 ```
 
-It's finally time to execute the script
+or
 
 ```bash
-bash /usr/local/bin/wireguard-manager.sh
+sudo dnf install curl bash    # For Fedora
 ```
+
+#### Arch-based Systems (e.g., Arch Linux, Manjaro):
+
+```bash
+sudo pacman -Sy curl bash
+```
+
+#### Alpine Linux:
+
+```bash
+sudo apk update
+sudo apk add curl bash
+```
+
+#### Other Distributions:
+
+For other Linux distributions, you can use the package manager specific to that distribution to install `curl` and `bash`. The package names may vary slightly.
+
+### Installing WireGuard Manager Script
+
+Now that you have `curl` and `bash` installed, you can proceed with installing the WireGuard Manager script using the provided instructions:
+
+1. First, use `curl` to download the script and save it in `/usr/local/bin/`:
+
+   ```bash
+   curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
+   ```
+
+2. Next, make the script user executable:
+
+   ```bash
+   chmod +x /usr/local/bin/wireguard-manager.sh
+   ```
+
+3. Finally, execute the script:
+
+   ```bash
+   bash /usr/local/bin/wireguard-manager.sh
+   ```
+
+### Connecting to WireGuard Interface
 
 In your `/etc/wireguard/clients` directory, you will find `.conf` files. These are the peer configuration files. Download them from your WireGuard Interface and connect using your favorite WireGuard Peer.
 
