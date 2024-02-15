@@ -99,13 +99,13 @@ sudo apt install curl bash
 #### Red Hat-based Systems (e.g., CentOS, RHEL, Fedora):
 
 ```bash
-sudo yum install curl bash    # For CentOS/RHEL
+sudo yum install curl bash
 ```
 
 or
 
 ```bash
-sudo dnf install curl bash    # For Fedora
+sudo dnf install curl bash
 ```
 
 #### Arch-based Systems (e.g., Arch Linux, Manjaro):
