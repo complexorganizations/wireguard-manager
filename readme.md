@@ -87,43 +87,43 @@ https://github.com/complexorganizations/wireguard-manager/assets/102563715/dd539
 
 To ensure the successful installation of the WireGuard Manager script on various Linux systems, it's crucial to have `curl` and `bash` installed. Here's an expanded installation guide that includes instructions for installing `curl` and `bash` on different Linux distributions:
 
-### Installing `curl` and `bash` on Linux Systems
+### Installing `curl` & `bash` & `resolvconf` on Linux Systems
 
 #### Debian/Ubuntu-based Systems (e.g., Ubuntu, Debian, Linux Mint):
 
 ```bash
 sudo apt update
-sudo apt install curl bash
+sudo apt install curl bash resolvconf
 ```
 
 #### Red Hat-based Systems (e.g., CentOS, RHEL, Fedora):
 
 ```bash
-sudo yum install curl bash
+sudo yum install curl bash resolvconf
 ```
 
 or
 
 ```bash
-sudo dnf install curl bash
+sudo dnf install curl bash resolvconf
 ```
 
 #### Arch-based Systems (e.g., Arch Linux, Manjaro):
 
 ```bash
-sudo pacman -Sy curl bash
+sudo pacman -Sy curl bash resolvconf
 ```
 
 #### Alpine Linux:
 
 ```bash
 sudo apk update
-sudo apk add curl bash
+sudo apk add curl bash resolvconf
 ```
 
 #### Other Distributions:
 
-For other Linux distributions, you can use the package manager specific to that distribution to install `curl` and `bash`. The package names may vary slightly.
+For other Linux distributions, you can use the package manager specific to that distribution to install `curl` & `bash` & `resolvconf`. The package names may vary slightly.
 
 ### Installing WireGuard Manager Script
 
