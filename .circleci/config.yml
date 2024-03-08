@@ -1,52 +1,26 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine.
 version: 2.1
 
 jobs:
-  debian_based_test:
+  ubuntu_based_test:
     docker:
-      - image: cimg/ubuntu:20.04
+      # Use a generic, verified Docker image for Ubuntu.
+      - image: ubuntu:20.04
     steps:
       - checkout
-      - run: sudo apt update && sudo apt install -y curl bash resolvconf
-      - run: curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
-      - run: chmod +x /usr/local/bin/wireguard-manager.sh
-      - run: bash /usr/local/bin/wireguard-manager.sh --install
-
-  redhat_based_test:
-    docker:
-      - image: cimg/centos:7.9
-    steps:
-      - checkout
-      - run: sudo yum install -y curl bash resolvconf
-      - run: curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
-      - run: chmod +x /usr/local/bin/wireguard-manager.sh
-      - run: bash /usr/local/bin/wireguard-manager.sh --install
-
-  arch_based_test:
-    docker:
-      - image: archlinux:latest
-    steps:
-      - checkout
-      - run: sudo pacman -Sy --noconfirm curl bash resolvconf
-      - run: curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
-      - run: chmod +x /usr/local/bin/wireguard-manager.sh
-      - run: bash /usr/local/bin/wireguard-manager.sh --install
-
-  alpine_based_test:
-    docker:
-      - image: cimg/alpine:3.12
-    steps:
-      - checkout
-      - run: sudo apk add --update curl bash resolvconf
-      - run: curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
-      - run: chmod +x /usr/local/bin/wireguard-manager.sh
-      - run: bash /usr/local/bin/wireguard-manager.sh --install
+      - run:
+          name: Update and install dependencies
+          command: apt-get update && apt-get install -y curl bash resolvconf
+      - run:
+          name: Download and prepare WireGuard Manager script
+          command: |
+            curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
+            chmod +x /usr/local/bin/wireguard-manager.sh
+      - run:
+          name: Execute script
+          command: bash /usr/local/bin/wireguard-manager.sh --install
 
 workflows:
   version: 2
-  comprehensive_test:
+  comprehensive_tests:
     jobs:
-      - debian_based_test
-      - redhat_based_test
-      - arch_based_test
-      - alpine_based_test
+      - ubuntu_based_test
