@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   ubuntu_test:
     docker:
-      - image: ubuntu:20.04
+      - image: ubuntu:latest
     steps:
       - checkout
       - run: apt-get update && apt-get install -y curl bash coreutils
@@ -16,7 +16,7 @@ jobs:
 
   debian_test:
     docker:
-      - image: debian:10
+      - image: debian:latest
     steps:
       - checkout
       - run: apt-get update && apt-get install -y curl bash coreutils
@@ -29,7 +29,7 @@ jobs:
 
   centos_test:
     docker:
-      - image: centos:8
+      - image: centos:latest
     steps:
       - checkout
       - run: yum update && yum install -y curl bash coreutils
@@ -42,7 +42,7 @@ jobs:
 
   alpine_test:
     docker:
-      - image: alpine:3.12
+      - image: alpine:latest
     steps:
       - checkout
       - run: apk update && apk add --update curl bash coreutils
