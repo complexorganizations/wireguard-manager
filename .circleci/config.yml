@@ -10,7 +10,7 @@ jobs:
       - run:
           name: Update and install git, ssh (if needed), and other dependencies
           command: |
-            apt-get update && apt-get install -y curl bash git ssh
+            apt-get update && apt-get install curl bash coreutils -y
       - run:
           name: Download and prepare WireGuard Manager script
           command: |
