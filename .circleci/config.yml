@@ -10,9 +10,7 @@ jobs:
       - run:
           name: Update and install git, ssh (if needed), and other dependencies
           command: |
-            apt-get update && apt-get install -y curl bash resolvconf git
-            # Install ssh only if you need it for operations like accessing private repositories
-            # apt-get install -y ssh
+            apt-get update && apt-get install -y curl bash git ssh
       - run:
           name: Download and prepare WireGuard Manager script
           command: |
