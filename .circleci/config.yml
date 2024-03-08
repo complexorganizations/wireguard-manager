@@ -1,27 +1,63 @@
 version: 2.1
 
 jobs:
-  ubuntu_based_test:
+  ubuntu_test:
     docker:
-      # Use a Docker image where you might need to install git manually.
-      - image: ubuntu:24.04
+      - image: ubuntu:20.04
     steps:
       - checkout
+      - run: apt-get update && apt-get install -y git ssh curl bash coreutils
       - run:
-          name: Update and install git, ssh (if needed), and other dependencies
-          command: |
-            apt-get update && apt-get install curl bash coreutils -y
-      - run:
-          name: Download and prepare WireGuard Manager script
+          name: Configure environment and execute WireGuard Manager
           command: |
             curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
             chmod +x /usr/local/bin/wireguard-manager.sh
+            bash /usr/local/bin/wireguard-manager.sh --install
+
+  debian_test:
+    docker:
+      - image: debian:10
+    steps:
+      - checkout
+      - run: apt-get update && apt-get install -y git ssh curl bash coreutils
       - run:
-          name: Execute script
-          command: bash /usr/local/bin/wireguard-manager.sh --install
+          name: Configure environment and execute WireGuard Manager
+          command: |
+            curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
+            chmod +x /usr/local/bin/wireguard-manager.sh
+            bash /usr/local/bin/wireguard-manager.sh --install
+
+  centos_test:
+    docker:
+      - image: centos:8
+    steps:
+      - checkout
+      - run: yum install -y git openssh-clients curl bash coreutils
+      - run:
+          name: Configure environment and execute WireGuard Manager
+          command: |
+            curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
+            chmod +x /usr/local/bin/wireguard-manager.sh
+            bash /usr/local/bin/wireguard-manager.sh --install
+
+  alpine_test:
+    docker:
+      - image: alpine:3.12
+    steps:
+      - checkout
+      - run: apk add --update git openssh-client curl bash coreutils
+      - run:
+          name: Configure environment and execute WireGuard Manager
+          command: |
+            curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
+            chmod +x /usr/local/bin/wireguard-manager.sh
+            bash /usr/local/bin/wireguard-manager.sh --install
 
 workflows:
   version: 2
   comprehensive_tests:
     jobs:
-      - ubuntu_based_test
+      - ubuntu_test
+      - debian_test
+      - centos_test
+      - alpine_test
