@@ -32,7 +32,7 @@ jobs:
       - image: centos:8
     steps:
       - checkout
-      - run: yum install -y curl bash coreutils
+      - run: yum update && yum install -y curl bash coreutils
       - run:
           name: Configure environment and execute WireGuard Manager
           command: |
@@ -45,7 +45,7 @@ jobs:
       - image: alpine:3.12
     steps:
       - checkout
-      - run: apk add --update curl bash coreutils
+      - run: apk update && apk add --update curl bash coreutils
       - run:
           name: Configure environment and execute WireGuard Manager
           command: |
