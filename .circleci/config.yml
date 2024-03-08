@@ -6,7 +6,7 @@ jobs:
       - image: ubuntu:20.04
     steps:
       - checkout
-      - run: apt-get update && apt-get install -y git ssh curl bash coreutils
+      - run: apt-get update && apt-get install -y curl bash coreutils
       - run:
           name: Configure environment and execute WireGuard Manager
           command: |
@@ -19,7 +19,7 @@ jobs:
       - image: debian:10
     steps:
       - checkout
-      - run: apt-get update && apt-get install -y git ssh curl bash coreutils
+      - run: apt-get update && apt-get install -y curl bash coreutils
       - run:
           name: Configure environment and execute WireGuard Manager
           command: |
@@ -32,7 +32,7 @@ jobs:
       - image: centos:8
     steps:
       - checkout
-      - run: yum install -y git openssh-clients curl bash coreutils
+      - run: yum install -y curl bash coreutils
       - run:
           name: Configure environment and execute WireGuard Manager
           command: |
@@ -45,7 +45,7 @@ jobs:
       - image: alpine:3.12
     steps:
       - checkout
-      - run: apk add --update git openssh-client curl bash coreutils
+      - run: apk add --update curl bash coreutils
       - run:
           name: Configure environment and execute WireGuard Manager
           command: |
