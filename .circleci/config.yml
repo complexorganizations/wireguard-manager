@@ -4,7 +4,7 @@ jobs:
   ubuntu_based_test:
     docker:
       # Use a Docker image where you might need to install git manually.
-      - image: ubuntu:20.04
+      - image: ubuntu:24.04
     steps:
       - checkout
       - run:
