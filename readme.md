@@ -470,7 +470,7 @@ This project is made possible thanks to the Open Source Community.
 
 ## 📱 Community and Contributions
 
-Join our community on [![Discord](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/images/icons/discord.svg)](https://discord.gg/HyhugYT9u7) and [![Slack](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/images/icons/slack.svg)](https://parking-unitedcom.slack.com/archives/C05QM7PS9GV/p1693631754500589) to contribute to the project, share ideas, and get help.
+Join our community on [![Discord](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/images/icons/discord.svg)](https://discord.gg/HyhugYT9u7) and [![Slack](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/images/icons/slack.svg)](https://join.slack.com/t/complexorgani-w5b4873/shared_invite/zt-2e9gz2wh2-dWuylZLgaEgFywNKF_iQRQ) to contribute to the project, share ideas, and get help.
 
 ## 🤝 Sponsors
 
