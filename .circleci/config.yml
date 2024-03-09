@@ -6,7 +6,7 @@ jobs:
       - image: ubuntu:latest
     steps:
       - checkout
-      - run: apt-get update && apt-get install -y curl bash coreutils
+      - run: apt-get update && apt-get install curl bash coreutils -y
       - run:
           name: Configure environment and execute WireGuard Manager
           command: |
@@ -19,7 +19,7 @@ jobs:
       - image: debian:latest
     steps:
       - checkout
-      - run: apt-get update && apt-get install -y curl bash coreutils
+      - run: apt-get update && apt-get install curl bash coreutils -y
       - run:
           name: Configure environment and execute WireGuard Manager
           command: |
@@ -32,7 +32,7 @@ jobs:
       - image: centos:latest
     steps:
       - checkout
-      - run: yum update && yum install -y curl bash coreutils
+      - run: yum update && yum install epel-release elrepo-release -y && yum update && yum install curl bash coreutils -y
       - run:
           name: Configure environment and execute WireGuard Manager
           command: |
