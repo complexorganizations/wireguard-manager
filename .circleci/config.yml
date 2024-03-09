@@ -32,7 +32,7 @@ jobs:
       - image: centos:latest
     steps:
       - checkout
-      - run: yum clean all && yum update && yum install epel-release elrepo-release -y && yum update && yum install curl bash coreutils -y
+      - run: yum update && yum install curl bash coreutils -y
       - run:
           name: Configure environment and execute WireGuard Manager
           command: |
