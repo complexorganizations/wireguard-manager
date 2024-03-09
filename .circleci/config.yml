@@ -32,7 +32,8 @@ jobs:
       - image: centos:latest
     steps:
       - checkout
-      - run: dnf update && dnf install epel-release elrepo-release -y && dnf update && dnf install curl bash coreutils -y
+      - run: echo "mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=AppStream&infra=$infra" >>/etc/yum.repos.d/CentOS-AppStream.repo
+      - run: yum update && yum install epel-release elrepo-release -y && yum update && yum install curl bash coreutils -y
       - run:
           name: Configure environment and execute WireGuard Manager
           command: |
