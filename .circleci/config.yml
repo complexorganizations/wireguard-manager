@@ -1,0 +1,63 @@
+version: 2.1
+
+jobs:
+  ubuntu_test:
+    docker:
+      - image: ubuntu:latest
+    steps:
+      - checkout
+      - run: apt-get update && apt-get install curl bash coreutils -y
+      - run:
+          name: Configure environment and execute WireGuard Manager
+          command: |
+            curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
+            chmod +x /usr/local/bin/wireguard-manager.sh
+            bash /usr/local/bin/wireguard-manager.sh --install
+
+  debian_test:
+    docker:
+      - image: debian:latest
+    steps:
+      - checkout
+      - run: apt-get update && apt-get install curl bash coreutils -y
+      - run:
+          name: Configure environment and execute WireGuard Manager
+          command: |
+            curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
+            chmod +x /usr/local/bin/wireguard-manager.sh
+            bash /usr/local/bin/wireguard-manager.sh --install
+
+  centos_test:
+    docker:
+      - image: centos:latest
+    steps:
+      - checkout
+      - run: yum update && yum install curl bash coreutils -y
+      - run:
+          name: Configure environment and execute WireGuard Manager
+          command: |
+            curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
+            chmod +x /usr/local/bin/wireguard-manager.sh
+            bash /usr/local/bin/wireguard-manager.sh --install
+
+  alpine_test:
+    docker:
+      - image: alpine:latest
+    steps:
+      - checkout
+      - run: apk update && apk add --update curl bash coreutils
+      - run:
+          name: Configure environment and execute WireGuard Manager
+          command: |
+            curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
+            chmod +x /usr/local/bin/wireguard-manager.sh
+            bash /usr/local/bin/wireguard-manager.sh --install
+
+workflows:
+  version: 2
+  comprehensive_tests:
+    jobs:
+      - ubuntu_test
+      - debian_test
+      - centos_test
+      - alpine_test
