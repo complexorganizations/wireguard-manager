@@ -8,6 +8,7 @@ commands:
     steps:
       - run: |
           if [ "<< parameters.package_manager >>" = "yum" ]; then
+            echo "nameserver 8.8.8.8" > /etc/resolv.conf
             yum clean all
             yum -y install yum-utils
             yum-config-manager --setopt=appstream.skip_if_unavailable=true --save
