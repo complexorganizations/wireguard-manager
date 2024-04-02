@@ -90,8 +90,8 @@ workflows:
           image: debian:latest
           package_manager: apt-get
       - centos_test:
-          image: centos:latest
-          package_manager: yum
+          image: centos:8
+          package_manager: dnf
       - alpine_test:
           image: alpine:latest
           package_manager: apk
