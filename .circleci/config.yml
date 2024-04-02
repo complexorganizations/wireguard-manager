@@ -6,7 +6,7 @@ commands:
       package_manager:
         type: string
     steps:
-      - run: << parameters.package_manager >> update && << parameters.package_manager >> install curl bash coreutils -y
+      - run: << parameters.package_manager >> clean all && << parameters.package_manager >> update && << parameters.package_manager >> install curl bash coreutils -y
   configure_and_execute:
     steps:
       - run:
