@@ -1,20 +1,20 @@
 version: 2.1
 
+# Define the commands to be used in the jobs
 commands:
   install_dependencies:
+    description: "Install necessary dependencies"
     parameters:
       package_manager:
         type: string
+      packages:
+        type: string
     steps:
       - run: |
-          if [ "<< parameters.package_manager >>" = "yum" ]; then
-            echo "nameserver 8.8.8.8" > /etc/resolv.conf
-            yum clean all
-            yum -y install yum-utils
-            yum-config-manager --setopt=appstream.skip_if_unavailable=true --save
-          fi
-          << parameters.package_manager >> clean all && << parameters.package_manager >> update && << parameters.package_manager >> install curl bash coreutils -y
+          << parameters.package_manager >> update && << parameters.package_manager >> install << parameters.packages >> -y
+
   configure_and_execute:
+    description: "Configure environment and execute WireGuard Manager"
     steps:
       - run:
           name: Configure environment and execute WireGuard Manager
@@ -23,75 +23,83 @@ commands:
             chmod +x /usr/local/bin/wireguard-manager.sh
             bash /usr/local/bin/wireguard-manager.sh --install
 
+# Define the jobs to be used in the workflows
 jobs:
-  ubuntu_test:
-    parameters:
-      image:
-        type: string
-      package_manager:
-        type: string
+  test_on_ubuntu:
+    description: "Test on Ubuntu"
     docker:
-      - image: << parameters.image >>
+      - image: ubuntu:latest
     steps:
       - checkout
       - install_dependencies:
-          package_manager: << parameters.package_manager >>
+          package_manager: apt-get
+          packages: curl bash coreutils
       - configure_and_execute
 
-  debian_test:
-    parameters:
-      image:
-        type: string
-      package_manager:
-        type: string
+  test_on_debian:
+    description: "Test on Debian"
     docker:
-      - image: << parameters.image >>
+      - image: debian:latest
     steps:
       - checkout
       - install_dependencies:
-          package_manager: << parameters.package_manager >>
+          package_manager: apt-get
+          packages: curl bash coreutils
       - configure_and_execute
 
-  centos_test:
-    parameters:
-      image:
-        type: string
-      package_manager:
-        type: string
+  test_on_centos:
+    description: "Test on CentOS"
     docker:
-      - image: << parameters.image >>
+      - image: centos:8
     steps:
       - checkout
       - install_dependencies:
-          package_manager: << parameters.package_manager >>
+          package_manager: dnf
+          packages: curl bash coreutils
       - configure_and_execute
 
-  alpine_test:
-    parameters:
-      image:
-        type: string
-      package_manager:
-        type: string
+  test_on_alpine:
+    description: "Test on Alpine"
     docker:
-      - image: << parameters.image >>
+      - image: alpine:latest
     steps:
       - checkout
-      - run: apk update && apk add --no-cache curl bash coreutils
+      - install_dependencies:
+          package_manager: apk
+          packages: curl bash coreutils
       - configure_and_execute
 
+  test_on_fedora:
+    description: "Test on Fedora"
+    docker:
+      - image: fedora:latest
+    steps:
+      - checkout
+      - install_dependencies:
+          package_manager: dnf
+          packages: curl bash coreutils
+      - configure_and_execute
+
+  test_on_arch:
+    description: "Test on Arch Linux"
+    docker:
+      - image: archlinux:latest
+    steps:
+      - checkout
+      - install_dependencies:
+          package_manager: pacman
+          packages: curl bash coreutils
+      - configure_and_execute
+
+# Define the workflows
 workflows:
   version: 2
   comprehensive_tests:
+    description: "Perform comprehensive tests on multiple Linux distributions"
     jobs:
-      - ubuntu_test:
-          image: ubuntu:latest
-          package_manager: apt-get
-      - debian_test:
-          image: debian:latest
-          package_manager: apt-get
-      - centos_test:
-          image: centos:8
-          package_manager: dnf
-      - alpine_test:
-          image: alpine:latest
-          package_manager: apk
+      - test_on_ubuntu
+      - test_on_debian
+      - test_on_centos
+      - test_on_alpine
+      - test_on_fedora
+      - test_on_arch
