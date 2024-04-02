@@ -1,63 +1,49 @@
 version: 2.1
 
+commands:
+  install_dependencies:
+    parameters:
+      package_manager:
+        type: string
+    steps:
+      - run: << parameters.package_manager >> update && << parameters.package_manager >> install curl bash coreutils -y
+  configure_and_execute:
+    steps:
+      - run:
+          name: Configure environment and execute WireGuard Manager
+          command: |
+            curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
+            chmod +x /usr/local/bin/wireguard-manager.sh
+            bash /usr/local/bin/wireguard-manager.sh --install
+
 jobs:
-  ubuntu_test:
+  test:
+    parameters:
+      image:
+        type: string
+      package_manager:
+        type: string
     docker:
-      - image: ubuntu:latest
+      - image: << parameters.image >>
     steps:
       - checkout
-      - run: apt-get update && apt-get install curl bash coreutils -y
-      - run:
-          name: Configure environment and execute WireGuard Manager
-          command: |
-            curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
-            chmod +x /usr/local/bin/wireguard-manager.sh
-            bash /usr/local/bin/wireguard-manager.sh --install
-
-  debian_test:
-    docker:
-      - image: debian:latest
-    steps:
-      - checkout
-      - run: apt-get update && apt-get install curl bash coreutils -y
-      - run:
-          name: Configure environment and execute WireGuard Manager
-          command: |
-            curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
-            chmod +x /usr/local/bin/wireguard-manager.sh
-            bash /usr/local/bin/wireguard-manager.sh --install
-
-  centos_test:
-    docker:
-      - image: centos:latest
-    steps:
-      - checkout
-      - run: yum update && yum install curl bash coreutils -y
-      - run:
-          name: Configure environment and execute WireGuard Manager
-          command: |
-            curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
-            chmod +x /usr/local/bin/wireguard-manager.sh
-            bash /usr/local/bin/wireguard-manager.sh --install
-
-  alpine_test:
-    docker:
-      - image: alpine:latest
-    steps:
-      - checkout
-      - run: apk update && apk add --update curl bash coreutils
-      - run:
-          name: Configure environment and execute WireGuard Manager
-          command: |
-            curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
-            chmod +x /usr/local/bin/wireguard-manager.sh
-            bash /usr/local/bin/wireguard-manager.sh --install
+      - install_dependencies:
+          package_manager: << parameters.package_manager >>
+      - configure_and_execute
 
 workflows:
   version: 2
   comprehensive_tests:
     jobs:
-      - ubuntu_test
-      - debian_test
-      - centos_test
-      - alpine_test
+      - test:
+          image: ubuntu:latest
+          package_manager: apt-get
+      - test:
+          image: debian:latest
+          package_manager: apt-get
+      - test:
+          image: centos:latest
+          package_manager: yum
+      - test:
+          image: alpine:latest
+          package_manager: apk
