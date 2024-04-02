@@ -69,8 +69,7 @@ jobs:
       - image: << parameters.image >>
     steps:
       - checkout
-      - install_dependencies:
-          package_manager: << parameters.package_manager >>
+      - run: apk update && apk add --no-cache curl bash coreutils
       - configure_and_execute
 
 workflows:
