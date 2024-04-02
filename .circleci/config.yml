@@ -6,7 +6,13 @@ commands:
       package_manager:
         type: string
     steps:
-      - run: << parameters.package_manager >> clean all && << parameters.package_manager >> update && << parameters.package_manager >> install curl bash coreutils -y
+      - run: |
+          if [ "<< parameters.package_manager >>" = "yum" ]; then
+            yum clean all
+            yum -y install yum-utils
+            yum-config-manager --setopt=appstream.skip_if_unavailable=true --save
+          fi
+          << parameters.package_manager >> clean all && << parameters.package_manager >> update && << parameters.package_manager >> install curl bash coreutils -y
   configure_and_execute:
     steps:
       - run:
