@@ -17,7 +17,49 @@ commands:
             bash /usr/local/bin/wireguard-manager.sh --install
 
 jobs:
-  test:
+  ubuntu_test:
+    parameters:
+      image:
+        type: string
+      package_manager:
+        type: string
+    docker:
+      - image: << parameters.image >>
+    steps:
+      - checkout
+      - install_dependencies:
+          package_manager: << parameters.package_manager >>
+      - configure_and_execute
+
+  debian_test:
+    parameters:
+      image:
+        type: string
+      package_manager:
+        type: string
+    docker:
+      - image: << parameters.image >>
+    steps:
+      - checkout
+      - install_dependencies:
+          package_manager: << parameters.package_manager >>
+      - configure_and_execute
+
+  centos_test:
+    parameters:
+      image:
+        type: string
+      package_manager:
+        type: string
+    docker:
+      - image: << parameters.image >>
+    steps:
+      - checkout
+      - install_dependencies:
+          package_manager: << parameters.package_manager >>
+      - configure_and_execute
+
+  alpine_test:
     parameters:
       image:
         type: string
@@ -35,15 +77,15 @@ workflows:
   version: 2
   comprehensive_tests:
     jobs:
-      - test:
+      - ubuntu_test:
           image: ubuntu:latest
           package_manager: apt-get
-      - test:
+      - debian_test:
           image: debian:latest
           package_manager: apt-get
-      - test:
+      - centos_test:
           image: centos:latest
           package_manager: yum
-      - test:
+      - alpine_test:
           image: alpine:latest
           package_manager: apk
