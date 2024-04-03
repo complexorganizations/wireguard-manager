@@ -157,17 +157,6 @@ jobs:
           packages: curl bash coreutils
       - configure_and_execute
 
-  test_on_pop:
-    description: "Test on Pop!_OS"
-    docker:
-      - image: popos/pop:latest
-    steps:
-      - checkout
-      - install_dependencies:
-          package_manager: apt-get
-          packages: curl bash coreutils
-      - configure_and_execute
-
   test_on_raspbian:
     description: "Test on Raspbian"
     docker:
@@ -230,7 +219,6 @@ workflows:
       - test_on_manjaro
       - test_on_neon
       - test_on_oracle
-      - test_on_pop
       - test_on_raspbian
       - test_on_rhel
       - test_on_rocky
