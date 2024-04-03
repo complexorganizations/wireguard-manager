@@ -5,13 +5,16 @@ commands:
   install_dependencies:
     description: "Install necessary dependencies"
     parameters:
-      package_manager:
+      update_command:
+        type: string
+      install_command:
         type: string
       packages:
         type: string
     steps:
       - run: |
-          << parameters.package_manager >> update && << parameters.package_manager >> install << parameters.packages >>
+          << parameters.update_command >>
+          << parameters.install_command >> << parameters.packages >>
 
   configure_and_execute:
     description: "Configure environment and execute WireGuard Manager"
@@ -25,6 +28,18 @@ commands:
 
 # Define the jobs to be used in the workflows
 jobs:
+  test_on_alma:
+    description: "Test on AlmaLinux"
+    docker:
+      - image: alma:latest
+    steps:
+      - checkout
+      - install_dependencies:
+          update_command: dnf -y update
+          install_command: dnf -y install
+          packages: curl bash coreutils
+      - configure_and_execute
+
   test_on_alpine:
     description: "Test on Alpine Linux"
     docker:
@@ -32,7 +47,8 @@ jobs:
     steps:
       - checkout
       - install_dependencies:
-          package_manager: apk
+          update_command: apk update
+          install_command: apk add
           packages: curl bash coreutils
       - configure_and_execute
 
@@ -43,7 +59,8 @@ jobs:
     steps:
       - checkout
       - install_dependencies:
-          package_manager: pacman
+          update_command: pacman -Syu --noconfirm
+          install_command: pacman -S --noconfirm
           packages: curl bash coreutils
       - configure_and_execute
 
@@ -54,8 +71,9 @@ jobs:
     steps:
       - checkout
       - install_dependencies:
-          package_manager: dnf
-          packages: curl bash coreutils -y
+          update_command: dnf -y update
+          install_command: dnf -y install
+          packages: curl bash coreutils
       - configure_and_execute
 
   test_on_debian:
@@ -65,8 +83,9 @@ jobs:
     steps:
       - checkout
       - install_dependencies:
-          package_manager: apt-get
-          packages: curl bash coreutils -y
+          update_command: apt-get update
+          install_command: apt-get -y install
+          packages: curl bash coreutils
       - configure_and_execute
 
   test_on_fedora:
@@ -76,8 +95,9 @@ jobs:
     steps:
       - checkout
       - install_dependencies:
-          package_manager: dnf
-          packages: curl bash coreutils -y
+          update_command: dnf -y update
+          install_command: dnf -y install
+          packages: curl bash coreutils
       - configure_and_execute
 
   test_on_kali:
@@ -87,8 +107,9 @@ jobs:
     steps:
       - checkout
       - install_dependencies:
-          package_manager: apt-get
-          packages: curl bash coreutils -y
+          update_command: apt-get update
+          install_command: apt-get -y install
+          packages: curl bash coreutils
       - configure_and_execute
 
   test_on_mint:
@@ -98,8 +119,9 @@ jobs:
     steps:
       - checkout
       - install_dependencies:
-          package_manager: apt-get
-          packages: curl bash coreutils -y
+          update_command: apt-get update
+          install_command: apt-get -y install
+          packages: curl bash coreutils
       - configure_and_execute
 
   test_on_manjaro:
@@ -109,8 +131,9 @@ jobs:
     steps:
       - checkout
       - install_dependencies:
-          package_manager: pacman
-          packages: curl bash coreutils -y
+          update_command: pacman -Syu --noconfirm
+          install_command: pacman -S --noconfirm
+          packages: curl bash coreutils
       - configure_and_execute
 
   test_on_neon:
@@ -120,8 +143,9 @@ jobs:
     steps:
       - checkout
       - install_dependencies:
-          package_manager: apt-get
-          packages: curl bash coreutils -y
+          update_command: apt-get update
+          install_command: apt-get -y install
+          packages: curl bash coreutils
       - configure_and_execute
 
   test_on_oracle:
@@ -131,10 +155,34 @@ jobs:
     steps:
       - checkout
       - install_dependencies:
-          package_manager: dnf
-          packages: curl bash coreutils -y
+          update_command: dnf -y update
+          install_command: dnf -y install
+          packages: curl bash coreutils
       - configure_and_execute
 
+  test_on_pop:
+    description: "Test on Pop!_OS"
+    docker:
+      - image: popos/pop:latest
+    steps:
+      - checkout
+      - install_dependencies:
+          update_command: apt-get update
+          install_command: apt-get -y install
+          packages: curl bash coreutils
+      - configure_and_execute
+
+  test_on_raspbian:
+    description: "Test on Raspbian"
+    docker:
+      - image: raspbian/stretch
+    steps:
+      - checkout
+      - install_dependencies:
+          update_command: apt-get update
+          install_command: apt-get -y install
+          packages: curl bash coreutils
+      - configure_and_execute
   test_on_rhel:
     description: "Test on Red Hat Enterprise Linux"
     docker:
@@ -142,8 +190,9 @@ jobs:
     steps:
       - checkout
       - install_dependencies:
-          package_manager: dnf
-          packages: curl bash coreutils -y
+          update_command: dnf -y update
+          install_command: dnf -y install
+          packages: curl bash coreutils
       - configure_and_execute
 
   test_on_rocky:
@@ -153,8 +202,9 @@ jobs:
     steps:
       - checkout
       - install_dependencies:
-          package_manager: dnf
-          packages: curl bash coreutils -y
+          update_command: dnf -y update
+          install_command: dnf -y install
+          packages: curl bash coreutils
       - configure_and_execute
 
   test_on_ubuntu:
@@ -164,8 +214,9 @@ jobs:
     steps:
       - checkout
       - install_dependencies:
-          package_manager: apt-get
-          packages: curl bash coreutils -y
+          update_command: apt-get update
+          install_command: apt-get -y install
+          packages: curl bash coreutils
       - configure_and_execute
 
 # Define the workflows
@@ -174,6 +225,7 @@ workflows:
   comprehensive_tests:
     description: "Perform comprehensive tests on multiple Linux distributions"
     jobs:
+      - test_on_alma
       - test_on_alpine
       - test_on_arch
       - test_on_centos
@@ -184,6 +236,8 @@ workflows:
       - test_on_manjaro
       - test_on_neon
       - test_on_oracle
+      - test_on_pop
+      - test_on_raspbian
       - test_on_rhel
       - test_on_rocky
       - test_on_ubuntu
