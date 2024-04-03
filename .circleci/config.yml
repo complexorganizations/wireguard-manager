@@ -71,7 +71,7 @@ jobs:
   test_on_centos:
     description: "Test on CentOS"
     docker:
-      - image: centos:8
+      - image: centos:latest
     steps:
       - checkout
       - install_dependencies:
