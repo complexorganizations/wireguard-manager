@@ -14,8 +14,8 @@ commands:
         type: string
     steps:
       - run: |
-          << parameters.update_command >>
-          << parameters.install_command >> << parameters.packages >>
+          sudo << parameters.update_command >>
+          sudo << parameters.install_command >> << parameters.packages >>
 
   # Define a command to configure the environment and execute WireGuard Manager
   configure_and_execute:
