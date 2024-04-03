@@ -36,7 +36,7 @@ jobs:
       - checkout
       - install_dependencies:
           update_command: dnf -y update
-          install_command: dnf -y install
+          install_command: dnf -y install --allowerasing
           packages: curl bash coreutils
       - configure_and_execute
 
