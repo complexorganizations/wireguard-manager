@@ -55,7 +55,7 @@ jobs:
       - checkout
       - install_dependencies:
           package_manager: dnf
-          packages: curl bash coreutils
+          packages: curl bash coreutils -y
       - configure_and_execute
 
   test_on_debian:
