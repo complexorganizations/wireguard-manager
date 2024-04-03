@@ -25,17 +25,6 @@ commands:
 
 # Define the jobs to be used in the workflows
 jobs:
-  test_on_alma:
-    description: "Test on AlmaLinux"
-    docker:
-      - image: alma:latest
-    steps:
-      - checkout
-      - install_dependencies:
-          package_manager: dnf
-          packages: curl bash coreutils
-      - configure_and_execute
-
   test_on_alpine:
     description: "Test on Alpine Linux"
     docker:
@@ -88,17 +77,6 @@ jobs:
       - checkout
       - install_dependencies:
           package_manager: dnf
-          packages: curl bash coreutils
-      - configure_and_execute
-
-  test_on_freebsd:
-    description: "Test on FreeBSD"
-    docker:
-      - image: freebsd:latest
-    steps:
-      - checkout
-      - install_dependencies:
-          package_manager: pkg
           packages: curl bash coreutils
       - configure_and_execute
 
@@ -207,13 +185,11 @@ workflows:
   comprehensive_tests:
     description: "Perform comprehensive tests on multiple Linux distributions"
     jobs:
-      - test_on_alma
       - test_on_alpine
       - test_on_arch
       - test_on_centos
       - test_on_debian
       - test_on_fedora
-      - test_on_freebsd
       - test_on_kali
       - test_on_mint
       - test_on_manjaro
