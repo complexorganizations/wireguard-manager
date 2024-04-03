@@ -165,7 +165,7 @@ jobs:
       - checkout
       - install_dependencies:
           package_manager: apt-get
-          packages: curl bash coreutils
+          packages: curl bash coreutils -y
       - configure_and_execute
 
 # Define the workflows
