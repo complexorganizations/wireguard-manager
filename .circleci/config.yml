@@ -11,7 +11,7 @@ commands:
         type: string
     steps:
       - run: |
-          << parameters.package_manager >> install << parameters.packages >> -y
+          << parameters.package_manager >> update && << parameters.package_manager >> install << parameters.packages >> -y
 
   configure_and_execute:
     description: "Configure environment and execute WireGuard Manager"
