@@ -90,7 +90,7 @@ jobs:
       - install_dependencies:
           update_command: apt-get update
           install_command: apt-get -y install
-          packages: curl bash coreutils resolvconf
+          packages: curl bash coreutils
       - configure_and_execute
 
   # Define a job to test on Fedora
@@ -207,7 +207,7 @@ jobs:
       - install_dependencies:
           update_command: apt-get update
           install_command: apt-get -y install
-          packages: curl bash coreutils resolvconf
+          packages: curl bash coreutils
       - configure_and_execute
 
 # Define the workflows
