@@ -2,6 +2,7 @@ version: 2.1
 
 # Define the commands to be used in the jobs
 commands:
+  # Define a command to install necessary dependencies
   install_dependencies:
     description: "Install necessary dependencies"
     parameters:
@@ -16,6 +17,7 @@ commands:
           << parameters.update_command >>
           << parameters.install_command >> << parameters.packages >>
 
+  # Define a command to configure the environment and execute WireGuard Manager
   configure_and_execute:
     description: "Configure environment and execute WireGuard Manager"
     steps:
@@ -40,6 +42,7 @@ jobs:
           packages: curl bash coreutils
       - configure_and_execute
 
+  # Define a job to test on Alpine Linux
   test_on_alpine:
     description: "Test on Alpine Linux"
     docker:
@@ -52,6 +55,7 @@ jobs:
           packages: curl bash coreutils
       - configure_and_execute
 
+  # Define a job to test on Arch Linux
   test_on_arch:
     description: "Test on Arch Linux"
     docker:
@@ -76,6 +80,7 @@ jobs:
           packages: curl bash coreutils
       - configure_and_execute
 
+  # Define a job to test on Debian
   test_on_debian:
     description: "Test on Debian"
     docker:
@@ -88,6 +93,7 @@ jobs:
           packages: curl bash coreutils
       - configure_and_execute
 
+  # Define a job to test on Fedora
   test_on_fedora:
     description: "Test on Fedora"
     docker:
@@ -100,6 +106,7 @@ jobs:
           packages: curl bash coreutils
       - configure_and_execute
 
+  # Define a job to test on Kali Linux
   test_on_kali:
     description: "Test on Kali Linux"
     docker:
@@ -112,6 +119,7 @@ jobs:
           packages: curl bash coreutils
       - configure_and_execute
 
+  # Define a job to test on Linux Mint
   test_on_mint:
     description: "Test on Linux Mint"
     docker:
@@ -124,6 +132,7 @@ jobs:
           packages: curl bash coreutils
       - configure_and_execute
 
+  # Define a job to test on Manjaro Linux
   test_on_manjaro:
     description: "Test on Manjaro Linux"
     docker:
@@ -136,6 +145,7 @@ jobs:
           packages: curl bash coreutils
       - configure_and_execute
 
+  # Define a job to test on KDE Neon
   test_on_neon:
     description: "Test on KDE Neon"
     docker:
@@ -148,6 +158,7 @@ jobs:
           packages: curl bash coreutils
       - configure_and_execute
 
+  # Define a job to test on Oracle Linux
   test_on_oracle:
     description: "Test on Oracle Linux"
     docker:
@@ -160,6 +171,7 @@ jobs:
           packages: curl bash coreutils
       - configure_and_execute
 
+  # Define a job to test on Red Hat Enterprise Linux
   test_on_rhel:
     description: "Test on Red Hat Enterprise Linux"
     docker:
@@ -172,6 +184,7 @@ jobs:
           packages: curl bash coreutils
       - configure_and_execute
 
+  # Define a job to test on Rocky Linux
   test_on_rocky:
     description: "Test on Rocky Linux"
     docker:
@@ -184,6 +197,7 @@ jobs:
           packages: curl bash coreutils
       - configure_and_execute
 
+  # Define a job to test on Ubuntu
   test_on_ubuntu:
     description: "Test on Ubuntu"
     docker:
