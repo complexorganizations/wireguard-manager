@@ -166,7 +166,7 @@ In your `/etc/wireguard/clients` directory, you will find `.conf` files. These a
 
 ## 🔑 Usage
 
-```bash
+```md
 usage: ./wireguard-manager.sh <command>
   --install     Installs the WireGuard interface on your system
   --start       Starts the WireGuard interface if it's not already running
