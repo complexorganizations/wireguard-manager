@@ -168,21 +168,21 @@ In your `/etc/wireguard/clients` directory, you will find `.conf` files. These a
 
 ```bash
 usage: ./wireguard-manager.sh <command>
-  --install     Install WireGuard
-  --start       Start WireGuard
-  --stop        Stop WireGuard
-  --restart     Restart WireGuard
-  --list        Show WireGuard
-  --add         Add WireGuard Peer
-  --remove      Remove WireGuard Peer
-  --reinstall   Reinstall WireGuard
-  --uninstall   Uninstall WireGuard
-  --update      Update WireGuard Manager
-  --ddns        Update WireGuard IP Address
-  --backup      Backup WireGuard
-  --restore     Restore WireGuard
-  --purge       Purge WireGuard Peer(s)
-  --help        Show Usage Guide
+  --install     Installs the WireGuard interface on your system
+  --start       Starts the WireGuard interface if it's not already running
+  --stop        Stops the WireGuard interface if it's currently running
+  --restart     Restarts the WireGuard interface
+  --list        Lists all the peers currently connected to the WireGuard interface
+  --add         Adds a new peer to the WireGuard interface
+  --remove      Removes a specified peer from the WireGuard interface
+  --reinstall   Reinstalls the WireGuard interface, keeping the current configuration
+  --uninstall   Uninstalls the WireGuard interface from your system
+  --update      Updates the WireGuard Manager to the latest version
+  --ddns        Updates the IP address of the WireGuard interface using Dynamic DNS
+  --backup      Creates a backup of your current WireGuard configuration
+  --restore     Restores the WireGuard configuration from a previous backup
+  --purge       Removes all peers from the WireGuard interface
+  --help        Displays this usage guide
 ```
 
 ## 🥰 Features
