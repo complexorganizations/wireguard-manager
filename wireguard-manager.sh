@@ -246,7 +246,7 @@ fi
 UNBOUND_CONFIG_DIRECTORY="${UNBOUND_ROOT}/unbound.conf.d"
 # Assigns a path for the Unbound hosts configuration file
 UNBOUND_CONFIG_HOST="${UNBOUND_CONFIG_DIRECTORY}/hosts.conf"
-case $(shuf --input-range=1-4 --head-count=1) in
+case $(shuf --input-range=1-5 --head-count=1) in
 1)
   UNBOUND_ROOT_SERVER_CONFIG_URL="https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/named.cache"
   ;;
@@ -259,8 +259,11 @@ case $(shuf --input-range=1-4 --head-count=1) in
 4)
   UNBOUND_ROOT_SERVER_CONFIG_URL="https://www.internic.net/domain/named.cache"
   ;;
+5)
+  UNBOUND_ROOT_SERVER_CONFIG_URL="https://gitlab.com/complexorganizations/wireguard-manager/-/raw/main/assets/named.cache"
+  ;;
 esac
-case $(shuf --input-range=1-4 --head-count=1) in
+case $(shuf --input-range=1-5 --head-count=1) in
 1)
   UNBOUND_CONFIG_HOST_URL="https://raw.githubusercontent.com/complexorganizations/content-blocker/main/assets/hosts"
   ;;
@@ -273,8 +276,11 @@ case $(shuf --input-range=1-4 --head-count=1) in
 4)
   UNBOUND_CONFIG_HOST_URL="https://combinatronics.io/complexorganizations/content-blocker/main/assets/hosts"
   ;;
+5)
+  UNBOUND_CONFIG_HOST_URL="https://gitlab.com/complexorganizations/wireguard-manager/-/raw/main/assets/hosts"
+  ;;
 esac
-case $(shuf --input-range=1-4 --head-count=1) in
+case $(shuf --input-range=1-5 --head-count=1) in
 1)
   WIREGUARD_MANAGER_UPDATE="https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh"
   ;;
@@ -286,6 +292,9 @@ case $(shuf --input-range=1-4 --head-count=1) in
   ;;
 4)
   WIREGUARD_MANAGER_UPDATE="https://combinatronics.io/complexorganizations/wireguard-manager/main/wireguard-manager.sh"
+  ;;
+5)
+  WIREGUARD_MANAGER_UPDATE="https://gitlab.com/complexorganizations/wireguard-manager/-/raw/main/wireguard-manager.sh"
   ;;
 esac
 # Check if the CURRENT_DISTRO variable matches any of the following distros:
