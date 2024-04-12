@@ -151,23 +151,10 @@ Now that you have `curl` and `bash` installed, you can proceed with installing t
 
 In your `/etc/wireguard/clients` directory, you will find `.conf` files. These are the peer configuration files. Download them from your WireGuard Interface and connect using your favorite WireGuard Peer.
 
-## 💣 Post-Installation
-
-- Show WireGuard Interface
-- Start WireGuard Interface
-- Stop WireGuard Interface
-- Restart WireGuard Interface
-- Add WireGuard Peer
-- Remove WireGuard Peer
-- Uninstall WireGuard Interface
-- Update this script
-- Encrypt & Backup Configs
-- Restore WireGuard Configs
-
 ## 🔑 Usage
 
 ```md
-usage: ./wireguard-manager.sh <command>
+usage: bash /usr/local/bin/wireguard-manager.sh # --install
   --install     Installs the WireGuard interface on your system
   --start       Starts the WireGuard interface if it's not already running
   --stop        Stops the WireGuard interface if it's currently running
