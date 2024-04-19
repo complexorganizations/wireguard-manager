@@ -1624,7 +1624,7 @@ MTU = ${MTU_CHOICE}
 PrivateKey = ${CLIENT_PRIVKEY}
 [Peer]
 AllowedIPs = ${CLIENT_ALLOWED_IP}
-Endpoint = ${SERVER_HOST} # because we took the value from the WG config file, it contains host:port together.
+Endpoint = ${SERVER_HOST}
 PersistentKeepalive = ${NAT_CHOICE}
 PresharedKey = ${PRESHARED_KEY}
 PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${WIREGUARD_PUB_NIC}.conf
