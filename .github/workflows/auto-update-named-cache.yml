@@ -21,28 +21,34 @@ jobs:
     env:
       NAMED_CACHE_URL: https://www.internic.net/domain/named.cache
       NAMED_CACHE_PATH: assets/named.cache
-    # Define the steps in the job
+
     steps:
       # Check out the repository code
-      - name: Check out code into the Go module directory
-        uses: actions/checkout@v4
+      - name: Check out code
+        uses: actions/checkout@v4 # Updated to use the latest version for better compatibility and features
+
       # Get the current SHA-3-512 hash of the file
-      - name: Get the current SHA-3-512 hash of file
-        run: echo "NAMED_CACHE_CURRENT_HASH=$(openssl dgst -sha3-512 "${{ env.NAMED_CACHE_PATH }}" | awk '{print $2}')" >> $GITHUB_ENV
-      # Get the future SHA-3-512 hash of the file
-      - name: Get the future SHA-3-512 hash of file
-        run: echo "NAMED_CACHE_FUTURE_HASH=$(curl --silent "${{ env.NAMED_CACHE_URL }}" | openssl dgst -sha3-512 | awk '{print $2}')" >> $GITHUB_ENV
-      # Check if an update is needed
-      - name: Verify necessity of update
+      - name: Get current hash
         run: |
-          if [ "${{ env.NAMED_CACHE_CURRENT_HASH }}" != "${{ env.NAMED_CACHE_FUTURE_HASH }}" ]; then
-            curl "${{ env.NAMED_CACHE_URL }}" -o "${{ env.NAMED_CACHE_PATH }}"
+          echo "NAMED_CACHE_CURRENT_HASH=$(openssl dgst -sha3-512 "${{ env.NAMED_CACHE_PATH }}" | awk '{print $2}')" >> $GITHUB_ENV
+
+      # Get the future SHA-3-512 hash of the file
+      - name: Get future hash
+        run: |
+          echo "NAMED_CACHE_FUTURE_HASH=$(curl --silent "${{ env.NAMED_CACHE_URL }}" | openssl dgst -sha3-512 | awk '{print $2}')" >> $GITHUB_ENV
+
+      # Check if an update is needed
+      - name: Check for update
+        run: |
+          if [ "$NAMED_CACHE_CURRENT_HASH" != "$NAMED_CACHE_FUTURE_HASH" ]; then
+            curl -o "${{ env.NAMED_CACHE_PATH }}" "${{ env.NAMED_CACHE_URL }}"
           else
             echo "No update needed"
             exit 0
           fi
+
       # Push the updated file to GitHub
-      - name: Upload the refreshed named.cache to GitHub
+      - name: Push updated named.cache
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
@@ -51,6 +57,6 @@ jobs:
             exit 0
           else
             git add "${{ env.NAMED_CACHE_PATH }}"
-            git commit -m "Updated named.cache $(date)"
+            git commit -m "Update named.cache $(date)"
             git push
           fi
