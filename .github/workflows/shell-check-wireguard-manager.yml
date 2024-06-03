@@ -3,14 +3,11 @@ name: ShellCheck WireGuard Manager
 
 # Define the events that trigger the workflow
 on:
-  # Trigger the workflow on push events
+  # Trigger the workflow on push events and pull request events for changes in .sh files
   push:
-    # Only for .sh files
     paths:
       - "**.sh"
-  # Trigger the workflow on pull request events
   pull_request:
-    # Only for .sh files
     paths:
       - "**.sh"
   # Allow manual triggering of the workflow
@@ -25,8 +22,8 @@ jobs:
     # Define the steps in the job
     steps:
       # Check out the repository code
-      - name: Check out code into the Go module directory
-        uses: actions/checkout@v4 # Updated to use the latest version
+      - name: Check out code
+        uses: actions/checkout@v4 # Use v2 of checkout action for better compatibility and features
       # Run shellcheck on the shell scripts
       - name: Run ShellCheck
-        uses: ludeeus/action-shellcheck@2.0.0 # Updated to use a specific version instead of master
+        uses: ludeeus/action-shellcheck@v2.0.0 # Use a specific version instead of master
