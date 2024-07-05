@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # WireGuard-Manager Installation Script
 # Purpose: This script automates the installation of WireGuard-Manager, a comprehensive tool for managing WireGuard VPN configurations.
