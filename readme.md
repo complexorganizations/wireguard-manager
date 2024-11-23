@@ -187,6 +187,7 @@ usage: bash /usr/local/bin/wireguard-manager.sh # --install
 
 ## 💡 Configuration Options
 
+- `IP_VERSION_SETTINGS`: This sets the IP version for the VPN: `1` for both IPv4 and IPv6, `2` for IPv4 only, and `3` for IPv6 only. The default is `1`.
 - `PRIVATE_SUBNET_V4_SETTINGS`: This defines the private IPv4 subnet used within the VPN. The default is `10.0.0.0/8`, a standard private IP range.
 - `PRIVATE_SUBNET_V6_SETTINGS`: This sets the private IPv6 subnet. The default `fd00:00:00::0/8` is a typical private IPv6 range.
 - `SERVER_HOST_V4_SETTINGS`: This is used to detect the public IPv4 address of the server, crucial for establishing connections from outside the local network.
