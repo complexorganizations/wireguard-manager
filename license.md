@@ -1,13 +1,15 @@
-**MIT License**
+**General License**
 
 **Copyright (c) 2023 ComplexOrganizations**
 
-This license grants everyone a free permission to obtain, use, modify, and distribute this software, referred to as the "Software," along with its documentation. This is allowed without any restrictions, encompassing but not limited to the rights for using, copying, modifying, merging, publishing, distributing, sublicensing, and/or selling copies of the Software. It also permits the Software to be provided to other individuals under these terms.
+This license grants everyone the right to use, copy, modify, distribute, and/or sell the work (referred to as the "Work") and any associated documentation, under the following conditions:
 
-These conditions must be followed:
+1. **Attribution**: Every distribution or reproduction of the Work, or substantial portions thereof, must include the original copyright notice and this permission notice, along with any relevant acknowledgments.
 
-- Every distribution of the Software or its substantial portions must include the above copyright notice and this permission notice.
+2. **Modifications**: You are allowed to modify the Work and create derivative works based on it. If you distribute modified versions of the Work, you must include the same copyright notice and permission notice, along with a statement that the version you are distributing has been modified.
+
+3. **Scope**: You may use the Work for any lawful purpose, including but not limited to personal, educational, commercial, or research purposes.
 
 **Disclaimer:**
 
-The Software is provided "as is," without any warranty of any kind, either expressed or implied. This includes, but is not limited to, implied warranties of merchantability and fitness for a particular purpose. The authors or copyright holders bear no liability for any claims, damages, or other liabilities, whether in an action of contract, tort or otherwise, that arise from, are related to, or are connected with the Software or the use or other dealings in the Software.
+The Work is provided "as is," without warranty of any kind, either expressed or implied, including but not limited to the implied warranties of merchantability and fitness for a particular purpose. The authors or copyright holders bear no responsibility for any claims, damages, or other liabilities, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with the Work or the use or other dealings in the Work.
