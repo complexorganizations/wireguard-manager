@@ -1626,13 +1626,25 @@ PublicKey = ${SERVER_PUBKEY}" >>${WIREGUARD_CLIENT_PATH}/"${NEW_CLIENT_NAME}"-${
 
   # Function to remove a WireGuard peer
   function remove_wireguard_peer() {
-    # Remove WireGuard Peer
-    # Prompt the user to choose a WireGuard peer to remove
-    echo "Which WireGuard peer would you like to remove?"
-    # List all the peers' names in the WireGuard configuration file
-    grep start ${WIREGUARD_CONFIG} | cut --delimiter=" " --fields=2
-    # Read the user input for the peer's name
-    read -rp "Peer's name:" REMOVECLIENT
+    # If the user passed the peer name as an argument, use that
+    if [ -n "$1" ]; then
+      REMOVECLIENT="$1"
+    else
+      # Prompt the user to choose a WireGuard peer to remove
+      echo "Which WireGuard peer would you like to remove?"
+
+      # List all the peers' names with numbers
+      PEERS=$(grep start ${WIREGUARD_CONFIG} | cut --delimiter=" " --fields=2)
+      PS3="Select a peer (enter the number): "
+      select PEER in $PEERS; do
+        if [ -n "$PEER" ]; then
+          REMOVECLIENT="$PEER"
+          break
+        else
+          echo "Invalid selection. Please choose a valid number."
+        fi
+      done
+    fi
     # Extract the public key of the selected peer from the configuration file
     CLIENTKEY=$(sed -n "/\# ${REMOVECLIENT} start/,/\# ${REMOVECLIENT} end/p" ${WIREGUARD_CONFIG} | grep PublicKey | cut --delimiter=" " --fields=3)
     # Remove the selected peer from the WireGuard interface using the extracted public key
