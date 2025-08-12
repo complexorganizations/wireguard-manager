@@ -25,7 +25,7 @@ jobs:
     steps:
       # Check out the repository code
       - name: Check out code
-        uses: actions/checkout@v4 # Updated to use the latest version for better compatibility and features
+        uses: actions/checkout@v5 # Updated to use the latest version for better compatibility and features
 
       # Get the current SHA-3-512 hash of the file
       - name: Get current hash

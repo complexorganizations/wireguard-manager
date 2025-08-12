@@ -23,7 +23,7 @@ jobs:
     steps:
       # Check out the repository code
       - name: Check out code
-        uses: actions/checkout@v4 # Use v2 of checkout action for better compatibility and features
+        uses: actions/checkout@v5 # Use v2 of checkout action for better compatibility and features
       # Run shellcheck on the shell scripts
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@v2.0.0 # Use a specific version instead of master

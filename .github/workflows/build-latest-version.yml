@@ -32,7 +32,7 @@ jobs:
     steps:
       # Check out the repository code
       - name: Check out Repository Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Install required tools
       - name: Install Required Tools
