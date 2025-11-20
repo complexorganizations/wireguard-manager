@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4 # Updated to use the latest version for better compatibility and features
+        uses: actions/checkout@v6 # Updated to use the latest version for better compatibility and features
 
       - name: Get Current Date
         id: current_date
