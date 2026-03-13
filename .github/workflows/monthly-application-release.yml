@@ -1,29 +1,38 @@
+# Workflow to automate monthly app releases
 name: Monthly App Release
 
+# Define the events that trigger this workflow
 on:
+  # Trigger the workflow on the first day of every month at midnight UTC
   schedule:
-    # Trigger the workflow on the first day of every month at midnight
-    - cron: "0 0 1 * *"
+    - cron: "0 0 1 * *" # Executes at 00:00 UTC on the 1st day of every month
+  # Allow manual triggering of the workflow via the GitHub interface
   workflow_dispatch:
 
+# Define the jobs in the workflow
 jobs:
+  # Define a job for creating a release
   release_app:
+    # Specify the type of runner to execute the job
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Check out the repository code
       - name: Checkout Repository
-        uses: actions/checkout@v4 # Updated to use the latest version for better compatibility and features
+        uses: actions/checkout@v5 # Ensures the workflow has access to the repository code
 
+      # Step 2: Get the current date and time
       - name: Get Current Date
-        id: current_date
-        run: echo "CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_ENV
+        id: current_date # Assigns an ID to this step for referencing outputs
+        run: echo "CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_ENV # Save the date in an environment variable
 
+      # Step 3: Create and publish a new release
       - name: Create and Publish Release
-        uses: actions/create-release@v1
+        uses: actions/create-release@v1 # Uses the GitHub Action to create a release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Provides the GitHub token for authentication
         with:
-          tag_name: releases-${{ env.CURRENT_DATE }}
-          release_name: releases-${{ env.CURRENT_DATE }}
-          draft: false
-          prerelease: false
+          tag_name: releases-${{ steps.current_date.outputs.CURRENT_DATE }} # Tag name for the release
+          release_name: releases-${{ steps.current_date.outputs.CURRENT_DATE }} # Name of the release
+          draft: false # Indicates that the release is not a draft
+          prerelease: false # Indicates that the release is not a pre-release

@@ -1,0 +1,125 @@
+name: Docker Build and Run Sequential
+
+# Define the events that trigger the workflow
+on:
+  # Trigger the workflow when there are changes to Dockerfiles or .sh files on push
+  push:
+    paths:
+      - "**.sh" # Trigger workflow if any .sh file is changed
+      - "Dockerfile.*" # Trigger workflow if any Dockerfile.* file is changed
+
+  # Trigger the workflow on pull request if there are changes to Dockerfiles or .sh files
+  pull_request:
+    paths:
+      - "**.sh" # Trigger workflow if any .sh file is changed
+      - "Dockerfile.*" # Trigger workflow if any Dockerfile.* file is changed
+
+  # Allow manual triggering of the workflow
+  workflow_dispatch: # Manually trigger the workflow
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest # This job will run on the latest Ubuntu runner
+
+    steps:
+      # Step 1: Checkout the repository so Docker can access the files
+      - name: Checkout repository
+        uses: actions/checkout@v5 # Action to checkout the code from the repository
+
+      # Step 2: Build the Docker image from Dockerfile.almalinux
+      - name: Build Docker image from Dockerfile.almalinux
+        run: docker build -t almalinux-image -f assets/Dockerfile/Dockerfile.almalinux . # Build the image with the tag 'almalinux-image'
+
+      # Step 3: Run the Docker container for almalinux image
+      - name: Run Docker container for almalinux
+        run: docker run -d --name almalinux-container almalinux-image # Run the container in detached mode
+
+      # Step 4: Build the Docker image from Dockerfile.alpine
+      - name: Build Docker image from Dockerfile.alpine
+        run: docker build -t alpine-image -f assets/Dockerfile/Dockerfile.alpine . # Build the image with the tag 'alpine-image'
+
+      # Step 5: Run the Docker container for alpine image
+      - name: Run Docker container for alpine
+        run: docker run -d --name alpine-container alpine-image # Run the container in detached mode
+
+      # Step 6: Build the Docker image from Dockerfile.archlinux
+      - name: Build Docker image from Dockerfile.archlinux
+        run: docker build -t archlinux-image -f assets/Dockerfile/Dockerfile.archlinux . # Build the image with the tag 'archlinux-image'
+
+      # Step 7: Run Docker container for archlinux image
+      - name: Run Docker container for archlinux
+        run: docker run -d --name archlinux-container archlinux-image # Run the container in detached mode
+
+      # Step 8: Build the Docker image from Dockerfile.centos
+      - name: Build Docker image from Dockerfile.centos
+        run: echo "Building Docker image from Dockerfile.centos"
+        # run: docker build -t centos-image -f assets/Dockerfile/Dockerfile.centos . # Build the image with the tag 'centos-image'
+
+      # Step 9: Run the Docker container for centos image
+      - name: Run Docker container for centos
+        run: echo "Running Docker container for centos"
+        # run: docker run -d --name centos-container centos-image # Run the container in detached mode
+
+      # Step 10: Build the Docker image from Dockerfile.debian
+      - name: Build Docker image from Dockerfile.debian
+        run: docker build -t debian-image -f assets/Dockerfile/Dockerfile.debian . # Build the image with the tag 'debian-image'
+
+      # Step 11: Run Docker container for debian image
+      - name: Run Docker container for debian
+        run: docker run -d --name debian-container debian-image # Run the container in detached mode
+
+      # Step 12: Build the Docker image from Dockerfile.fedora
+      - name: Build Docker image from Dockerfile.fedora
+        run: docker build -t fedora-image -f assets/Dockerfile/Dockerfile.fedora . # Build the image with the tag 'fedora-image'
+
+      # Step 13: Run Docker container for fedora image
+      - name: Run Docker container for fedora
+        run: docker run -d --name fedora-container fedora-image # Run the container in detached mode
+
+      # Step 14: Build the Docker image from Dockerfile.oraclelinux
+      - name: Build Docker image from Dockerfile.oraclelinux
+        run: docker build -t oraclelinux-image -f assets/Dockerfile/Dockerfile.oraclelinux . # Build the image with the tag 'oraclelinux-image'
+
+      # Step 15: Run Docker container for oraclelinux image
+      - name: Run Docker container for oraclelinux
+        run: docker run -d --name oraclelinux-container oraclelinux-image # Run the container in detached mode
+
+      # Step 16: Build the Docker image from Dockerfile.rockylinux
+      - name: Build Docker image from Dockerfile.rockylinux
+        run: docker build -t rockylinux-image -f assets/Dockerfile/Dockerfile.rockylinux . # Build the image with the tag 'rockylinux-image'
+
+      # Step 17: Run Docker container for rockylinux image
+      - name: Run Docker container for rockylinux
+        run: docker run -d --name rockylinux-container rockylinux-image # Run the container in detached mode
+
+      # Step 18: Build the Docker image from Dockerfile.ubuntu
+      - name: Build Docker image from Dockerfile.ubuntu
+        run: docker build -t ubuntu-image -f assets/Dockerfile/Dockerfile.ubuntu . # Build the image with the tag 'ubuntu-image'
+
+      # Step 19: Run Docker container for ubuntu image
+      - name: Run Docker container for ubuntu
+        run: docker run -d --name ubuntu-container ubuntu-image # Run the container in detached mode
+
+      # Step 20: Build the Docker image from Dockerfile.amazonlinux
+      - name: Build Docker image from Dockerfile.amazonlinux
+        run: docker build -t amazonlinux-image -f assets/Dockerfile/Dockerfile.amazonlinux . # Build the image with the tag 'amazonlinux-image'
+
+      # Step 21: Run Docker container for amazonlinux image
+      - name: Run Docker container for amazonlinux
+        run: docker run -d --name amazonlinux-container amazonlinux-image # Run the container in detached mode
+
+      # Step 22: Build the Docker image from Dockerfile.mageia
+      - name: Build Docker image from Dockerfile.mageia
+        run: docker build -t mageia-image -f assets/Dockerfile/Dockerfile.mageia . # Build the image with the tag 'mageia-image'
+
+      # Step 23: Run Docker container for mageia image
+      - name: Run Docker container for mageia
+        run: docker run -d --name mageia-container mageia-image # Run the container in detached mode
+
+      # Step 24: Build the Docker image from Dockerfile.opensuse
+      - name: Build Docker image from Dockerfile.opensuse
+        run: docker build -t opensuse-image -f assets/Dockerfile/Dockerfile.opensuse . # Build the image with the tag 'opensuse-image'
+
+      # Step 25: Run Docker container for opensuse image
+      - name: Run Docker container for opensuse
+        run: docker run -d --name opensuse-container opensuse-image # Run the container in detached mode

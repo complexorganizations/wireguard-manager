@@ -1,0 +1,17 @@
+# Use the latest rockylinux as the base image
+FROM rockylinux:9
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Update package lists and install necessary dependencies
+RUN dnf update -y && dnf install bash curl sudo -y --allowerasing
+
+# Copy the script into the container
+COPY wireguard-manager.sh /app/wireguard-manager.sh
+
+# Grant execution permissions to the script
+RUN chmod +x /app/wireguard-manager.sh
+
+# Execute the script during build
+RUN /bin/bash /app/wireguard-manager.sh --install

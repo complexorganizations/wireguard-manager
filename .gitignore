@@ -1,0 +1,25 @@
+# Ignore Terraform state files
+*.tfstate
+*.tfstate.*
+
+# Ignore crash logs
+crash.log
+
+# Ignore Terraform plan output
+*.tfplan
+
+# Ignore local variables and secrets files
+*.tfvars
+
+# Ignore the .terraform directory
+.terraform/
+
+# Ignore Terraform lock file
+.terraform.lock.hcl
+
+# Ignore private keys and credentials
+*.pem
+*.key
+
+# Ignore WireGuard Config Files
+*.conf

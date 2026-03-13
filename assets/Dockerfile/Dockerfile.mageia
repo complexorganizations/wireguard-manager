@@ -1,0 +1,17 @@
+# Use the latest Mageia as the base image
+FROM mageia:latest
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Update package lists and install necessary dependencies
+RUN urpmi.update -a && urpmi curl bash sudo
+
+# Copy the script into the container
+COPY wireguard-manager.sh /app/wireguard-manager.sh
+
+# Grant execution permissions to the script
+RUN chmod +x /app/wireguard-manager.sh
+
+# Execute the script during build
+RUN /bin/bash /app/wireguard-manager.sh --install

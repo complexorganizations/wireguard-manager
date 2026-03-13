@@ -1,64 +1,79 @@
-# Name of the workflow
+# Workflow to automatically update the blocked hosts file from a remote source
 name: Automated Update of Blocked Hosts File
 
-# Define the events that trigger the workflow
+# Define the events that trigger this workflow
 on:
-  # Trigger the workflow on a schedule (every day at midnight)
+  # Schedule the workflow to run daily at midnight UTC
   schedule:
-    - cron: "0 0 * * *"
-  # Allow manual triggering of the workflow
+    - cron: "0 0 * * *" # Executes once every day at 00:00 UTC
+
+  # Allow manual triggering of the workflow via the GitHub interface
   workflow_dispatch:
 
 # Define the jobs in the workflow
 jobs:
-  # Define a job named "build"
-  build:
-    # Name of the job that will be displayed on GitHub
-    name: Automated Hosts File Update
-    # The type of runner that the job will run on
+  # Job to check for updates and apply them to the hosts file
+  update-blocked-hosts-file:
+    # Job name displayed in the GitHub Actions interface
+    name: Update Blocked Hosts File Automatically
+
+    # Define the type of runner for this job (Ubuntu in this case)
     runs-on: ubuntu-latest
-    # Environment variables available to all steps in the job
+
+    # Environment variables to use in this job
     env:
-      CONTENT_BLOCKER_URL: https://raw.githubusercontent.com/complexorganizations/content-blocker/main/assets/hosts
-      CONTENT_BLOCKER_PATH: assets/hosts
+      HOSTS_FILE_URL: https://raw.githubusercontent.com/complexorganizations/content-blocker/main/assets/hosts # URL of the blocked hosts file
+      LOCAL_HOSTS_FILE_PATH: assets/hosts # Local path to the hosts file in the repository
 
     steps:
-      # Check out the repository code
-      - name: Check out code
-        uses: actions/checkout@v4  # Updated to use the latest version for better compatibility and features
+      # Step 1: Checkout the latest repository code so that we can modify the hosts file
+      - name: Checkout Code
+        uses: actions/checkout@v5 # Checkout the latest code from the repository to the runner
 
-      # Get the current SHA-3-512 hash of the file
-      - name: Get current hash
+      # Step 2: Get the current hash of the locally stored hosts file in the repository
+      - name: Get Current Hosts File Hash
         run: |
-          CONTENT_BLOCKER_CURRENT_HASH=$(openssl dgst -sha3-512 "${{ env.CONTENT_BLOCKER_PATH }}" | awk '{print $2}')
-          echo "CONTENT_BLOCKER_CURRENT_HASH=$CONTENT_BLOCKER_CURRENT_HASH" >> $GITHUB_ENV
+          # Calculate the SHA-3-512 hash of the current hosts file in the repository
+          LOCAL_FILE_HASH=$(openssl dgst -sha3-512 "${{ env.LOCAL_HOSTS_FILE_PATH }}" | awk '{print $2}')
+          # Store the hash of the local file in GitHub environment variables for later comparison
+          echo "LOCAL_FILE_HASH=$LOCAL_FILE_HASH" >> $GITHUB_ENV
 
-      # Get the future SHA-3-512 hash of the file
-      - name: Get future hash
+      # Step 3: Get the hash of the remote hosts file for comparison
+      - name: Get Remote Hosts File Hash
         run: |
-          CONTENT_BLOCKER_FUTURE_HASH=$(curl --silent "${{ env.CONTENT_BLOCKER_URL }}" | openssl dgst -sha3-512 | awk '{print $2}')
-          echo "CONTENT_BLOCKER_FUTURE_HASH=$CONTENT_BLOCKER_FUTURE_HASH" >> $GITHUB_ENV
+          # Fetch the updated hosts file from the remote URL and calculate its SHA-3-512 hash
+          REMOTE_FILE_HASH=$(curl --silent "${{ env.HOSTS_FILE_URL }}" | openssl dgst -sha3-512 | awk '{print $2}')
+          # Store the hash of the remote file in GitHub environment variables
+          echo "REMOTE_FILE_HASH=$REMOTE_FILE_HASH" >> $GITHUB_ENV
 
-      # Check if an update is needed
-      - name: Check for update
+      # Step 4: Compare the local and remote file hashes to determine if an update is needed
+      - name: Check for Hosts File Update
         run: |
-          if [ "$CONTENT_BLOCKER_CURRENT_HASH" != "$CONTENT_BLOCKER_FUTURE_HASH" ]; then
-            curl -o "${{ env.CONTENT_BLOCKER_PATH }}" "${{ env.CONTENT_BLOCKER_URL }}"
+          # If the hashes differ, update the local hosts file with the remote version
+          if [ "$LOCAL_FILE_HASH" != "$REMOTE_FILE_HASH" ]; then
+            echo "Hosts file has changed. Updating the local file..."
+            # Download the updated hosts file from the remote source and save it locally
+            curl -o "${{ env.LOCAL_HOSTS_FILE_PATH }}" "${{ env.HOSTS_FILE_URL }}"
           else
-            echo "No update needed"
-            exit 0
+            # If the hashes are the same, no update is needed
+            echo "No update required. The hosts file is up to date."
+            exit 0  # Exit the job early if no update is necessary
           fi
 
-      # Push the updated file to GitHub
-      - name: Push updated hosts file
+      # Step 5: Commit and push the updated hosts file to the repository
+      - name: Commit and Push Changes
         run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          if git diff --exit-code --quiet -- "${{ env.CONTENT_BLOCKER_PATH }}"; then
-            echo "No changes to commit"
-            exit 0
+          # Configure Git user details for the commit
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          # Check if there are any changes in the hosts file
+          if git diff --exit-code --quiet -- "${{ env.LOCAL_HOSTS_FILE_PATH }}"; then
+            echo "No changes detected. Skipping commit and push."
+            exit 0  # Exit if there are no changes
           else
-            git add "${{ env.CONTENT_BLOCKER_PATH }}"
-            git commit -m "Update hosts file $(date)"
-            git push
+            # If there are changes, add, commit, and push the updated hosts file
+            git add "${{ env.LOCAL_HOSTS_FILE_PATH }}"
+            git commit -m "Update blocked hosts file: $(date)"  # Commit message with current timestamp
+            git push  # Push the committed changes to the remote repository
           fi

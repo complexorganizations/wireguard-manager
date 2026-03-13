@@ -41,6 +41,40 @@ Welcome to WireGuard-Manager, your solution for setting up WireGuard, a cutting-
 - **Project License**: Our work is under the Apache 2.0 License:
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/complexorganizations/wireguard-manager/blob/main/license.md)
 
+## 📢 Support
+
+We understand that setting up and managing a WireGuard VPN can sometimes be challenging, especially if you’re new to Linux or networking. That’s why we’re here to help!
+
+### 💬 Join Our Discord Community
+
+For support, guidance, or just to chat with like-minded individuals, join our friendly Discord server:  
+[**Join us on Discord**](https://discord.gg/WwNCxCcE)
+
+#### What You Can Expect
+
+Our Discord is the go-to place for:
+
+- **Quick Assistance**: Get real-time help for any issues related to WireGuard or Linux.
+- **Expert Advice**: Receive tips and recommendations from experienced users and developers.
+- **Learning Opportunities**: Expand your knowledge of Linux, VPNs, and networking.
+- **Community Support**: Engage with a welcoming community that’s eager to help.
+
+#### Topics We Cover
+
+- Troubleshooting WireGuard setup and configurations.
+- Optimizing VPN performance and security.
+- Learning the basics (and advanced aspects) of Linux.
+- Understanding networking concepts and practices.
+
+Whether you’re stuck on a command, confused by a configuration, or just need advice, our team and community are here for you.
+
+### 🛠 How to Reach Us
+
+- **Discord**: [**Click here to join**](https://discord.gg/WwNCxCcE)
+- **Open an Issue**: If your question is specific to this project, consider opening an issue directly in this repository.
+
+We’re committed to making sure you have the support you need to succeed with WireGuard and Linux!
+
 ## ✊ Show Your Support
 
 If you've found this project useful, please consider giving it a star and forking it. Your support is greatly appreciated!
@@ -81,44 +115,44 @@ WireGuard is a straightforward yet fast and modern VPN that utilizes state-of-th
 
 ## Installation Guide
 
-https://github.com/complexorganizations/wireguard-manager/assets/102563715/dd539835-2c30-4146-b4f8-940329aa6070
+[![Watch the YouTube Video](https://img.youtube.com/vi/inRir_AGsKQ/0.jpg)](https://youtu.be/inRir_AGsKQ)
 
 ## 🐧 Installation
 
 To ensure the successful installation of the WireGuard Manager script on various Linux systems, it's crucial to have `curl` and `bash` installed. Here's an expanded installation guide that includes instructions for installing `curl` and `bash` on different Linux distributions:
 
-### Installing `curl` & `bash` & `resolvconf` on Linux Systems
+### Installing `curl` & `sudo` & `bash` & `resolvconf` on Linux Systems
 
 #### Debian/Ubuntu-based Systems (e.g., Ubuntu, Debian, Linux Mint):
 
 ```bash
 sudo apt update
-sudo apt install curl bash resolvconf
+sudo apt install curl sudo bash resolvconf -y
 ```
 
 #### Red Hat-based Systems (e.g., CentOS, RHEL, Fedora):
 
 ```bash
-sudo yum install curl bash resolvconf
+sudo yum install curl sudo bash resolvconf -y
 ```
 
 or
 
 ```bash
-sudo dnf install curl bash resolvconf
+sudo dnf install curl sudo bash resolvconf -y
 ```
 
 #### Arch-based Systems (e.g., Arch Linux, Manjaro):
 
 ```bash
-sudo pacman -Sy curl bash resolvconf
+sudo pacman -Sy curl sudo bash resolvconf -y
 ```
 
 #### Alpine Linux:
 
 ```bash
 sudo apk update
-sudo apk add curl bash resolvconf
+sudo apk add curl sudo bash resolvconf -y
 ```
 
 #### Other Distributions:
@@ -132,7 +166,7 @@ Now that you have `curl` and `bash` installed, you can proceed with installing t
 1. First, use `curl` to download the script and save it in `/usr/local/bin/`:
 
    ```bash
-   curl https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
+   curl https://raw.githubusercontent.com/Strong-Foundation/wireguard-manager/main/wireguard-manager.sh --create-dirs -o /usr/local/bin/wireguard-manager.sh
    ```
 
 2. Next, make the script user executable:
@@ -155,21 +189,21 @@ In your `/etc/wireguard/clients` directory, you will find `.conf` files. These a
 
 ```md
 usage: bash /usr/local/bin/wireguard-manager.sh # --install
-  --install     Installs the WireGuard interface on your system
-  --start       Starts the WireGuard interface if it's not already running
-  --stop        Stops the WireGuard interface if it's currently running
-  --restart     Restarts the WireGuard interface
-  --list        Lists all the peers currently connected to the WireGuard interface
-  --add         Adds a new peer to the WireGuard interface
-  --remove      Removes a specified peer from the WireGuard interface
-  --reinstall   Reinstalls the WireGuard interface, keeping the current configuration
-  --uninstall   Uninstalls the WireGuard interface from your system
-  --update      Updates the WireGuard Manager to the latest version
-  --ddns        Updates the IP address of the WireGuard interface using Dynamic DNS
-  --backup      Creates a backup of your current WireGuard configuration
-  --restore     Restores the WireGuard configuration from a previous backup
-  --purge       Removes all peers from the WireGuard interface
-  --help        Displays this usage guide
+--install Installs the WireGuard interface on your system
+--start Starts the WireGuard interface if it's not already running
+--stop Stops the WireGuard interface if it's currently running
+--restart Restarts the WireGuard interface
+--list Lists all the peers currently connected to the WireGuard interface
+--add Adds a new peer to the WireGuard interface
+--remove Removes a specified peer from the WireGuard interface
+--reinstall Reinstalls the WireGuard interface, keeping the current configuration
+--uninstall Uninstalls the WireGuard interface from your system
+--update Updates the WireGuard Manager to the latest version
+--ddns Updates the IP address of the WireGuard interface using Dynamic DNS
+--backup Creates a backup of your current WireGuard configuration
+--restore Restores the WireGuard configuration from a previous backup
+--purge Removes all peers from the WireGuard interface
+--help Displays this usage guide
 ```
 
 ## 🥰 Features
@@ -187,8 +221,8 @@ usage: bash /usr/local/bin/wireguard-manager.sh # --install
 
 ## 💡 Configuration Options
 
-- `PRIVATE_SUBNET_V4_SETTINGS`: This defines the private IPv4 subnet used within the VPN. The default is `10.0.0.0/8`, a standard private IP range.
-- `PRIVATE_SUBNET_V6_SETTINGS`: This sets the private IPv6 subnet. The default `fd00:00:00::0/8` is a typical private IPv6 range.
+- `PRIVATE_SUBNET_V4_SETTINGS`: This defines the private IPv4 subnet used within the VPN. The default is `10.32.0.0/12`, a standard private IP range.
+- `PRIVATE_SUBNET_V6_SETTINGS`: This sets the private IPv6 subnet. The default `fd32:00:00::0/12` is a typical private IPv6 range.
 - `SERVER_HOST_V4_SETTINGS`: This is used to detect the public IPv4 address of the server, crucial for establishing connections from outside the local network.
 - `SERVER_HOST_V6_SETTINGS`: This is the IPv6 counterpart to the previous setting, used for detecting the server's public IPv6 address.
 - `SERVER_PUB_NIC_SETTINGS`: This determines the local public network interface using the `ip` command, essential for server communication on the public network.
@@ -325,15 +359,95 @@ usage: bash /usr/local/bin/wireguard-manager.sh # --install
 
 To set up your own VPN server, you will need the following items:
 
-### Raspberry Pi 5 Setup Components
+### **Raspberry Pi 5 VPN Setup Components**
 
-- **Raspberry Pi 5**: [View Product](https://www.raspberrypi.com/products/raspberry-pi-5/)
-- **Raspberry Pi Case**: [View Product](https://www.raspberrypi.com/products/raspberry-pi-5-case/)
-- **Raspberry Pi Active Cooler**: [View Product](https://www.raspberrypi.com/products/active-cooler)
-- **Raspberry Pi USB-C Power Supply**: [View Product](https://www.raspberrypi.com/products/27w-power-supply/)
-- **Micro SD Card**: [View on Amazon](https://www.amazon.com/dp/B06XWMQ81P)
-- **Ethernet Cable**: [View on Amazon](https://www.amazon.com/dp/B00N2VIALK)
-- **SD Card Reader**: [View on Amazon](https://www.amazon.com/dp/B0957HQ4D1)
+To set up a Raspberry Pi 5 as a VPN server or client, you will need the following components:
+
+#### **1. Raspberry Pi 5**
+
+- **Key Features:** Quad-core ARM Cortex-A76, up to 8GB RAM, dual 4K HDMI, USB 3.0, and Gigabit Ethernet.
+- **[View Product](https://www.raspberrypi.com/products/raspberry-pi-5/)**
+
+#### **2. Raspberry Pi Case**
+
+- **Key Features:** Custom fit with passive cooling for the Raspberry Pi 5, helps with heat management.
+- **[View Product](https://www.raspberrypi.com/products/raspberry-pi-5-case/)**
+
+#### **3. Raspberry Pi Active Cooler**
+
+- **Key Features:** Active cooling with a quiet fan, essential for extended VPN use.
+- **[View Product](https://www.raspberrypi.com/products/active-cooler)**
+
+#### **4. Raspberry Pi USB-C Power Supply**
+
+- **Key Features:** 5V/3A, ensures stable power for continuous VPN operation.
+- **[View Product](https://www.raspberrypi.com/products/27w-power-supply/)**
+
+#### **5. Micro SD Card**
+
+- **Key Features:** High-speed UHS-I card (32GB or higher recommended), stores OS and VPN configurations.
+- **[View on Amazon](https://www.amazon.com/dp/B06XWMQ81P)**
+
+#### **6. Ethernet Cable**
+
+- **Key Features:** Gigabit Ethernet for fast, reliable connection to the internet and local network.
+- **[View on Amazon](https://www.amazon.com/dp/B00N2VIALK)**
+
+#### **7. SD Card Reader**
+
+- **Key Features:** High-speed transfer for setting up the Raspberry Pi OS and VPN software.
+- **[View on Amazon](https://www.amazon.com/dp/B0957HQ4D1)**
+
+---
+
+### **Additional Components for VPN Setup**
+
+#### **8. USB Wi-Fi Adapter** (Optional)
+
+- **Key Features:** If you're setting up a wireless VPN server, a compatible USB Wi-Fi adapter is needed for wireless connectivity.
+- **[View on Amazon](https://www.amazon.com/dp/B08T5C76F2)**
+
+#### **9. External Hard Drive/SSD** (Optional)
+
+- **Key Features:** For storing large amounts of VPN logs or data, an external drive provides more storage.
+- **[View on Amazon](https://www.amazon.com/dp/B08PCFFCLP)**
+
+#### **10. VPN Configuration Files**
+
+- **Key Features:** Pre-configured VPN client/server files for easy setup. These include configuration files for WireGuard or OpenVPN.
+- **Download for WireGuard:** [WireGuard Downloads](https://www.wireguard.com/install/)
+- **Download for OpenVPN:** [OpenVPN Downloads](https://openvpn.net/community-downloads/)
+
+#### **11. Static IP Address** (Optional)
+
+- **Key Features:** For remote VPN access, a static IP address (or dynamic DNS) ensures consistent connectivity to your Raspberry Pi.
+- **[Learn More about Dynamic DNS](https://www.noip.com/)**
+
+#### **12. Router Port Forwarding**
+
+- **Key Features:** Forwarding ports (e.g., UDP port 51820 for WireGuard or UDP 1194 for OpenVPN) on your router is necessary for external access to your VPN.
+- **[Learn How to Port Forward](https://www.portforward.com/)**
+
+#### **13. USB Keyboard and Mouse**
+
+- **Key Features:** Required for initial setup and configuration of the Raspberry Pi via the desktop interface.
+- **[View on Amazon](https://www.amazon.com/dp/B08BLR5S4G)**
+
+#### **14. Monitor/HDMI Cable**
+
+- **Key Features:** If you’re doing the setup directly on the Raspberry Pi, a monitor and HDMI cable will be required to interact with the GUI.
+- **[View on Amazon](https://www.amazon.com/dp/B0855T1W4Q)**
+
+---
+
+### **Optional Software and Tools**
+
+- **WireGuard or OpenVPN Software**
+
+  - WireGuard or OpenVPN can be installed for secure, high-performance VPN connections. Use the Raspberry Pi terminal to install them via commands.
+
+- **Dynamic DNS Service**
+  - Useful for giving your Raspberry Pi a consistent hostname to connect to, especially if your external IP address changes frequently.
 
 ### Estimated Cost for Building Your Own VPN
 
@@ -353,23 +467,63 @@ This section compares the internet speed differences between using no VPN, WireG
 
 ### No VPN (Normal Connection)
 
-![No VPN Speed Test](https://www.speedtest.net/result/15776043000.png)
+![No VPN Speed Test](https://www.speedtest.net/result/17272708312.png)
 
 ### WireGuard Speed Test
 
-![Wireguard Speed Test](https://www.speedtest.net/result/15776045897.png)
+![Wireguard Speed Test](https://www.speedtest.net/result/17272711810.png)
 
 ### OpenVPN Speed Test
 
-![OpenVPN Speed Test](https://www.speedtest.net/result/15593895433.png)
+![OpenVPN Speed Test](https://www.speedtest.net/result/17272725718.png)
 
 ## 🙅 Content-Blocking vs. No Content-Blocking
 
-https://user-images.githubusercontent.com/16564273/125283630-9845d180-e2e6-11eb-8b7d-f30a8f2eae8a.mp4
+[![Watch the YouTube Short](https://img.youtube.com/vi/GHD7Et2_3ho/0.jpg)](https://youtube.com/shorts/GHD7Et2_3ho)
 
 ## 📐 Architecture
 
-![Wireguard Manager Architecture](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/Wireguard-Manager.png)
+```mermaid
+graph LR
+  %% VPN Client Devices (Direct Connection)
+  subgraph "VPN Client Devices"
+    phone[Phone - WireGuard Client]
+    laptop[Laptop - WireGuard Client]
+  end
+
+  %% Local Network Devices Connecting Through Router
+  subgraph "Local Network Devices"
+    localWatch[Watch] -->|Sends Traffic to Local Router| localRouter[Local Router With WireGuard]
+    localSmartTV[Smart TV] -->|Sends Traffic to Local Router| localRouter
+    localRouter
+  end
+
+  %% Internet Block
+  subgraph "Internet"
+    internet -->|"Sends Encrypted Traffic to VPN Server"| vpnServer[WireGuard VPN Server]
+  end
+
+  %% WireGuard VPN Server - Processing Encrypted Traffic
+  subgraph "WireGuard VPN Server"
+    vpnServer -->|Decrypts Traffic| wireGuardVPN[VPN Traffic Processor]
+    wireGuardVPN -->|Handles DNS Requests| dnsServer[DNS Server]
+    firewall[Firewall] -->|Filters Incoming/Outgoing Traffic| wireGuardVPN
+    router[Router] -->|Performs NAT for VPN Traffic| wireGuardVPN
+    wireGuardVPN -->|Routes Decrypted Traffic to Destination| internetDestination["Internet Destination"]
+  end
+
+  %% Internet Destination - Services Handling Requests
+  subgraph "Internet Destination"
+    internetDestination -->|Routes Traffic to Services| destinationServices[Destination Servers]
+  end
+
+  %% Connections to the Internet
+  internet
+  vpnServer
+  localRouter -->|"Encrypts Traffic and Sends to Internet"| internet
+  laptop -->|"Encrypts Traffic and Sends to Internet"| internet
+  phone -->|"Encrypts Traffic and Sends to Internet"| internet
+```
 
 ## 🤝 Code Development
 
@@ -388,13 +542,13 @@ For a comprehensive debugging process, you might want to clone the repository to
 1. **Clone the Repository**: Use the Git command to clone the repository to your preferred directory, such as `/root/` in this example. This step copies all the code from the online repository to your local machine.
 
 ```bash
-git clone https://github.com/complexorganizations/wireguard-manager /root/
+git clone https://github.com/complexorganizations/wireguard-manager /root/wireguard-manager
 ```
 
 2. **Start Debugging**: After cloning, navigate to the script's directory and initiate the debugging process. The script will be executed in debug mode, providing detailed output of each step. This output is redirected to a log file for easier examination. The log file, located in the same directory, stores all the debugging information, making it easy to trace any issues or understand the script's behavior.
 
 ```bash
-bash -x /root/wireguard-manager/wireguard-manager.sh >>/root/wireguard-manager/wireguard-manager.log
+bash -x /root/wireguard-manager/wireguard-manager.sh 2>&1 | tee /root/wireguard-manager/wireguard-manager.log
 ```
 
 Following these steps, you can either quickly modify the code online without cloning or perform a more comprehensive debugging process by cloning the repository to your local machine. Each method offers different benefits depending on your needs and the extent of your work with the WireGuard Manager script.
@@ -423,7 +577,7 @@ Following these steps, you can either quickly modify the code online without clo
 
 5. **Running the Script in Debug Mode**
 
-   - Run the script with `bash -x` to get detailed trace outputs: `bash -x /path/to/local-directory/wireguard-manager/wireguard-manager.sh >> /path/to/local-directory/wireguard-manager.log`
+   - Run the script with `bash -x` to get detailed trace outputs: `bash -x /path/to/local-directory/wireguard-manager/wireguard-manager.sh 2>&1 | tee /path/to/local-directory/wireguard-manager.log`
    - Regularly check the log file for errors or unexpected behavior.
 
 6. **Testing in Different Environments**
@@ -457,17 +611,13 @@ This project is made possible thanks to the Open Source Community.
 
 ## 📱 Community and Contributions
 
-Join our community on [![Discord](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/images/icons/discord.svg)](https://discord.gg/CdjBYMScMS) and [![Slack](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/images/icons/slack.svg)](https://join.slack.com/t/complexorgani-w5b4873/shared_invite/zt-2e9gz2wh2-dWuylZLgaEgFywNKF_iQRQ) to contribute to the project, share ideas, and get help.
+Join our community on [![Discord](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/images/icons/discord.svg)](https://discord.gg/WwNCxCcE) to contribute to the project, share ideas, and get help.
 
 ## 🤝 Sponsors
 
 This project is sponsored by
 
 [![Digital Ocean](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/images/icons/digitalocean.svg)](https://www.digitalocean.com) [![Google Cloud](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/images/icons/gcp.svg)](https://cloud.google.com) [![AWS](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/images/icons/aws.svg)](https://aws.amazon.com) [![Linode](https://raw.githubusercontent.com/complexorganizations/wireguard-manager/main/assets/images/icons/linode.svg)](https://linode.com)
-
-## Backup
-
-https://gitlab.com/complexorganizations/wireguard-manager
 
 ## 📝 License
 

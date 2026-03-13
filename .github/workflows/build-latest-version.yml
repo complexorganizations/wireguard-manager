@@ -1,16 +1,14 @@
-# Name of the workflow
+# Workflow to construct the most recent release with WireGuard Manager
 name: Construct Most Recent Release
 
 # Define the events that trigger the workflow
 on:
-  # Trigger the workflow on push events
+  # Trigger the workflow on push for .sh files
   push:
-    # Only for .sh files
     paths:
       - "**.sh"
-  # Trigger the workflow on pull request events
+  # Trigger the workflow on pull request for .sh files
   pull_request:
-    # Only for .sh files
     paths:
       - "**.sh"
   # Allow manual triggering of the workflow
@@ -18,84 +16,85 @@ on:
 
 # Define the jobs in the workflow
 jobs:
-  # Define a job named "build"
+  # Job to build and test WireGuard Manager
   build:
-    # Name of the job that will be displayed on GitHub
+    # Display name of the job
     name: Build on Ubuntu
-    # The type of runner that the job will run on
+    # Use the latest Ubuntu runner
     runs-on: ubuntu-latest
-    # Environment variables available to all steps in the job
+    # Environment variables used throughout the job
     env:
       IP_SERVICE_NAME: checkip.amazonaws.com
       IP_SERVICE_URL: https://checkip.amazonaws.com
-    # Define the steps in the job
-    steps:
-      # Check out the repository code
-      - name: Check out Repository Code
-        uses: actions/checkout@v4
 
-      # Install required tools
+    steps:
+      # Step 1: Checkout the repository code
+      - name: Check out Repository Code
+        uses: actions/checkout@v5
+
+      # Step 2: Install required tools
       - name: Install Required Tools
         run: sudo apt-get update && sudo apt-get install curl -y
 
-      # Test network connectivity
+      # Step 3: Test network connectivity
       - name: Test Network Connectivity
         run: curl "${{ env.IP_SERVICE_URL }}"
 
-      # Install WireGuard Manager
+      # Step 4: Install WireGuard Manager
       - name: Install WireGuard Manager
-        run: sudo ./wireguard-manager.sh --install
+        run: sudo bash -x wireguard-manager.sh --install
 
-      # Stop WireGuard service
+      # Step 5: Stop WireGuard service
       - name: Stop WireGuard Service
-        run: sudo ./wireguard-manager.sh --stop
+        run: sudo bash -x wireguard-manager.sh --stop
 
-      # Start WireGuard service
+      # Step 6: Start WireGuard service
       - name: Start WireGuard Service
-        run: sudo ./wireguard-manager.sh --start
+        run: sudo bash -x wireguard-manager.sh --start
 
-      # Restart WireGuard service
+      # Step 7: Restart WireGuard service
       - name: Restart WireGuard Service
-        run: sudo ./wireguard-manager.sh --restart
+        run: sudo bash -x wireguard-manager.sh --restart
 
-      # View WireGuard status
+      # Step 8: View WireGuard service status
       - name: View WireGuard Status
         run: sudo systemctl status wg-quick@wg0
 
-      # Add multiple WireGuard peers
+      # Step 9: Add multiple WireGuard peers (10 in this case)
       - name: Add Multiple WireGuard Peers
-        run: for i in {1..10}; do echo -e "\n" | sudo ./wireguard-manager.sh --add; done
+        run: for i in {1..10}; do echo -e "\n" | sudo bash -x wireguard-manager.sh --add; done
 
-      # Update dynamic DNS settings
+      # Step 10: Update dynamic DNS settings
       - name: Update Dynamic DNS Settings
-        run: sudo ./wireguard-manager.sh --ddns
+        run: sudo IP_UPDATE_METHOD=1 bash -x wireguard-manager.sh --ddns
 
-      # Create WireGuard backup
+      # Step 11: Create a WireGuard backup
       - name: Create WireGuard Backup
-        run: sudo ./wireguard-manager.sh --backup
+        run: sudo bash -x wireguard-manager.sh --backup
 
-      # List WireGuard peers
+      # Step 12: List all WireGuard peers
       - name: List WireGuard Peers
-        run: sudo ./wireguard-manager.sh --list
+        run: sudo bash -x wireguard-manager.sh --list
 
-      # Update WireGuard Manager
+      # Step 13: Update WireGuard Manager
       - name: Update WireGuard Manager
-        run: sudo ./wireguard-manager.sh --update
+        run: sudo bash -x wireguard-manager.sh --update
 
-      # Change permissions to allow access
-      - name: Allow acess to the files
+      # Step 14: Allow full access to WireGuard files (for testing or review purposes)
+      - name: Allow Access to Files
         run: sudo chmod -R 777 /etc/wireguard/
 
-      # Display Configuration Files
+      # Step 15: Display WireGuard and related configuration files
       - name: Show Configuration Files
         run: |
-          [ -f /etc/wireguard/wg0.conf ] && cat /etc/wireguard/wg0.conf || echo "wg0.conf not found"
-          [ -f /etc/unbound/unbound.conf ] && cat /etc/unbound/unbound.conf || echo "unbound.conf not found"
-          [ -f /var/lib/unbound/root.key ] && cat /var/lib/unbound/root.key || echo "root.key not found"
-          [ -f /etc/unbound/root.hints ] && cat /etc/unbound/root.hints || echo "root.hints not found"
-          [ -f /etc/unbound/unbound.conf.d/hosts.conf ] && cat /etc/unbound/unbound.conf.d/hosts.conf || echo "hosts.conf not found"
-          [ -f /etc/resolv.conf ] && cat /etc/resolv.conf || echo "resolv.conf not found"
-          for file in /etc/wireguard/clients/*; do
+          for file in \
+            /etc/wireguard/wg0.conf \
+            /etc/unbound/unbound.conf \
+            /var/lib/unbound/root.key \
+            /etc/unbound/root.hints \
+            /etc/unbound/unbound.conf.d/hosts.conf \
+            /etc/resolv.conf \
+            /etc/wireguard/clients/*; do
             if [ -f "$file" ]; then
               echo "Showing $file"
               cat "$file"
@@ -104,32 +103,33 @@ jobs:
             fi
           done
 
-      # Change permissions to deny access
-      - name: Restore deny acess to the files
+      # Step 16: Restrict access to WireGuard files
+      - name: Restore File Permissions
         run: sudo chmod -R 600 /etc/wireguard/
 
-      # Display crontab rules
+      # Step 17: Display current crontab rules
       - name: Display Crontab Rules
         run: sudo crontab -l
 
-      # Purge WireGuard configuration
+      # Step 18: Purge WireGuard configuration
       - name: Purge WireGuard Configuration
         run: sudo ./wireguard-manager.sh --purge
 
-      # Uninstall WireGuard Manager
+      # Step 19: Uninstall WireGuard Manager
       - name: Uninstall WireGuard Manager
         run: sudo ./wireguard-manager.sh --uninstall
 
-      # Display Configuration Files
-      - name: Show Configuration Files
+      # Step 20: Display configuration files post-uninstallation
+      - name: Show Configuration Files (Post-Uninstallation)
         run: |
-          [ -f /etc/wireguard/wg0.conf ] && cat /etc/wireguard/wg0.conf || echo "wg0.conf not found"
-          [ -f /etc/unbound/unbound.conf ] && cat /etc/unbound/unbound.conf || echo "unbound.conf not found"
-          [ -f /var/lib/unbound/root.key ] && cat /var/lib/unbound/root.key || echo "root.key not found"
-          [ -f /etc/unbound/root.hints ] && cat /etc/unbound/root.hints || echo "root.hints not found"
-          [ -f /etc/unbound/unbound.conf.d/hosts.conf ] && cat /etc/unbound/unbound.conf.d/hosts.conf || echo "hosts.conf not found"
-          [ -f /etc/resolv.conf ] && cat /etc/resolv.conf || echo "resolv.conf not found"
-          for file in /etc/wireguard/clients/*; do
+          for file in \
+            /etc/wireguard/wg0.conf \
+            /etc/unbound/unbound.conf \
+            /var/lib/unbound/root.key \
+            /etc/unbound/root.hints \
+            /etc/unbound/unbound.conf.d/hosts.conf \
+            /etc/resolv.conf \
+            /etc/wireguard/clients/*; do
             if [ -f "$file" ]; then
               echo "Showing $file"
               cat "$file"
@@ -138,10 +138,10 @@ jobs:
             fi
           done
 
-      # Display crontab rules post-uninstallation
+      # Step 21: Display crontab rules post-uninstallation
       - name: Display Crontab Rules Post-Uninstallation
         run: sudo crontab -l
 
-      # Final network test
+      # Step 22: Final network test
       - name: Final Network Test
         run: curl "${{ env.IP_SERVICE_URL }}"

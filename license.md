@@ -1,13 +1,15 @@
-**MIT License**
+**License**
 
 **Copyright (c) 2023 ComplexOrganizations**
 
-This license grants everyone a free permission to obtain, use, modify, and distribute this software, referred to as the "Software," along with its documentation. This is allowed without any restrictions, encompassing but not limited to the rights for using, copying, modifying, merging, publishing, distributing, sublicensing, and/or selling copies of the Software. It also permits the Software to be provided to other individuals under these terms.
+You are free to:
 
-These conditions must be followed:
+- Use, copy, modify, and distribute the Work and any related documentation.
 
-- Every distribution of the Software or its substantial portions must include the above copyright notice and this permission notice.
+However, if you modify or distribute the Work, you must:
+
+- **Open-source your changes**: Any modified versions or derivative works must be made available under the same terms, and the modified Work must be shared publicly.
 
 **Disclaimer:**
 
-The Software is provided "as is," without any warranty of any kind, either expressed or implied. This includes, but is not limited to, implied warranties of merchantability and fitness for a particular purpose. The authors or copyright holders bear no liability for any claims, damages, or other liabilities, whether in an action of contract, tort or otherwise, that arise from, are related to, or are connected with the Software or the use or other dealings in the Software.
+The Work is provided "as is." No warranties are given. The creators are not responsible for any issues that come from using the Work.

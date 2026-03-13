@@ -1,0 +1,98 @@
+# Name of the workflow
+name: Terraform Workflow # Define the name of the workflow
+
+# Trigger the workflow on push, pull request events, or schedule it weekly
+on:
+  # Trigger the workflow on any push to the main branch
+  push:
+    branches:
+      - main # Trigger workflow on push to main branch
+    paths:
+      - "**.tf" # Only trigger workflow if any .tf files have been modified
+
+  # Trigger the workflow on any pull request to the main branch
+  pull_request:
+    branches:
+      - main # Trigger workflow on pull request to main branch
+    paths:
+      - "**.tf" # Only trigger workflow if any .tf files have been modified
+
+  # Schedule the workflow to run every week at 00:00 UTC
+  schedule:
+    - cron: "0 0 * * 0" # Run every week at 00:00 UTC
+
+  # Allow manual triggering of the workflow
+  workflow_dispatch: # Allow manual triggering of the workflow
+
+# Define the jobs in the workflow
+jobs:
+  terraform:
+    # Name of the job
+    name: Terraform Workflow # Define the job name
+    # Specify the type of runner to use for the job
+    runs-on: ubuntu-latest # Use the latest Ubuntu runner
+
+    # Define the main.tf file as a variable for easier maintenance
+    env:
+      MAIN_TF_FILE: main.tf # Assign the main.tf filename to a variable for reuse
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }} # Use AWS Access Key from GitHub Secrets
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # Use AWS Secret Key from GitHub Secrets
+
+    steps:
+      # Step to checkout the repository code
+      - name: Checkout code
+        uses: actions/checkout@v5 # Checkout repository code from GitHub
+
+      # Step to set up Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: latest # Use the latest version of Terraform
+
+      # Step to initialize Terraform
+      - name: Terraform Init
+        run: terraform init -input=false # Initialize Terraform without asking for user input
+
+      # Step to validate Terraform configuration
+      - name: Terraform Validate
+        run: terraform validate # Validate the Terraform configuration to ensure it's correct
+
+      # Step to check and format Terraform code
+      - name: Terraform Format Check
+        run: terraform fmt # Check if the Terraform files are properly formatted
+
+      # Step to install TFLint for linting Terraform code
+      - name: Install TFLint
+        run: |
+          # Download and install TFLint from the official repository
+          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash # Install TFLint for linting Terraform code
+
+      # Step to run TFLint for linting
+      - name: Run TFLint
+        run: tflint # Run TFLint to check Terraform code for potential issues
+
+      # Combined Step to Generate, Apply, or Destroy Terraform Plan
+      - name: Terraform Plan, Apply, or Destroy
+        run: |
+          # Generate the Terraform plan
+          terraform plan -var "aws_access_key=${{ secrets.AWS_ACCESS_KEY_ID }}" -var "aws_secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" -out=wireguard-manager.tfplan -input=false # Generate a plan to preview the changes
+
+          # Apply the Terraform plan
+          terraform apply -var "aws_access_key=${{ secrets.AWS_ACCESS_KEY_ID }}" -var "aws_secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" -auto-approve wireguard-manager.tfplan # Apply the changes automatically without prompting for approval
+
+          # Destroy the infrastructure after applying the plan
+          terraform destroy -var "aws_access_key=${{ secrets.AWS_ACCESS_KEY_ID }}" -var "aws_secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" -auto-approve # Destroy the resources to clean up after applying the plan
+
+      # Final step to check if changes occurred and commit and push any changes to main.tf (if formatted)
+      - name: Check Changes and Commit to main.tf
+        run: |
+          # Check if there were any changes to main.tf after formatting or apply
+          if ! git diff --quiet --exit-code; then
+            echo "Changes detected in ${MAIN_TF_FILE}, committing changes." # Notify if there were changes
+            git config --global user.name "github-actions" # Set Git username for the commit
+            git config --global user.email "github-actions@users.noreply.github.com" # Set Git user email
+            git add ${MAIN_TF_FILE} # Add the modified main.tf file to the commit
+            git commit -m "chore: apply Terraform fmt changes to main.tf" # Commit the changes with a clear message
+            git push # Push the changes to the repository
+          else
+            echo "No changes detected in ${MAIN_TF_FILE}, skipping commit." # Notify if no changes were detected
