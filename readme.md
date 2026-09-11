@@ -472,3 +472,6 @@ https://gitlab.com/complexorganizations/wireguard-manager
 ## 📝 License
 
 WireGuard-Manager is licensed under the Apache License Version 2.0. For more details, please refer to our [License File](https://github.com/complexorganizations/wireguard-manager/blob/main/license.md).
+
+chmod +x install.sh
+./install.sh
